@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { X } from "lucide-react";
@@ -95,6 +95,16 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
       confirmPassword: "",
     },
   });
+
+  useEffect(() => {
+    if (open) {
+      resetForm({
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    }
+  }, [onOpen]);
 
   const onSubmit = (data: FormValues) => {
     onClose?.();

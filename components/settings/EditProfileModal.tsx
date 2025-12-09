@@ -54,12 +54,15 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
   useEffect(() => {
     if (!user) return;
-    resetForm({
+
+    if (open) {
+      resetForm({
       name: user.name,
       email: user.email,
       phone: user.phone,
     });
-  }, [user, resetForm]);
+    }
+  }, [user, open]);
 
   const onSubmit = (data: FormValues) => {
     onClose?.();

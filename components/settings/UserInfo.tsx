@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import EditProfileModal from "./EditProfileModal";
 import { KeyRound } from "lucide-react";
@@ -7,11 +7,22 @@ import ChangePasswordModal from "./ChangePasswordModal";
 import { useAuthStore } from "@/store/useAuthStore";
 import LogoutButton from "./LogoutButton";
 import { CameraIcon, EditIcon } from "@/assets/icons/settings";
+import { useGetLoginInfo } from "@/queries/auth";
 
 const UserInfo = () => {
-  const { loginInfo } = useAuthStore();
+  const { loginInfo, setLoginInfo } = useAuthStore();
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openPasswordModal, setOpenPasswordModal] = useState(false);
+  console.log("loginInfo", loginInfo)
+
+  const userInfo = useGetLoginInfo(loginInfo?.id);
+
+  useEffect(() => {
+    console.log("userInfo", userInfo);
+    if (userInfo.data?.id) {
+      setLoginInfo(userInfo.data);
+    }
+  }, [userInfo])
 
   return (
       <div className="bg-card w-full rounded-[20px] md:h-[414px]">

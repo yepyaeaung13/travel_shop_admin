@@ -1,11 +1,12 @@
 import {
   adminLogin,
   changePasswordSeller,
+  getLoginInfo,
   PasswordChangeSellerParams,
   updateProfile,
   UpdateProfileParams,
 } from "@/services/auth.service";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useAdminLogin = () => {
   return useMutation({
@@ -13,6 +14,15 @@ export const useAdminLogin = () => {
       adminLogin(payload),
   });
 };
+
+export const useGetLoginInfo = (id: number | undefined) => {
+  console.log("id", id)
+  return useQuery({
+    queryKey: ["login-user", id],
+    queryFn: () => getLoginInfo(id),
+    enabled: !!id
+  })
+}
 
 export const useUpdateProfile = () => {
   return useMutation({

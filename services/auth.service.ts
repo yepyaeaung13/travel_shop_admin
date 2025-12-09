@@ -20,6 +20,11 @@ export const adminLogin = async (payload: {
   return data;
 };
 
+export const getLoginInfo = async (id: number | undefined) => {
+  const { data } = await axiosClient.get(`/v1/admin/${id}`)
+  return data;
+}
+
 export const updateProfile = async ({
   payload,
   id,
