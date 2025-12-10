@@ -1,0 +1,30 @@
+export default function IconOrder({
+  className,
+  fill,
+}: {
+  className?: string;
+  fill?: string;
+}) {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path
+        d="M17 4H7C5.89543 4 5 4.89543 5 6V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V6C19 4.89543 18.1046 4 17 4Z"
+        stroke={fill || "#3C3C3C"}
+        stroke-width="2"
+      />
+      <path
+        d="M9 9H15M9 13H15M9 17H13"
+        stroke={fill || "#3C3C3C"}
+        stroke-width="2"
+        stroke-linecap="round"
+      />
+    </svg>
+  );
+}
