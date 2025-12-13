@@ -1,39 +1,217 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
+@custom-variant dark (&:is(.dark *));
+
+/* =========================
+   BASE RESET
+========================= */
+@layer base {
+    html {
+        -moz-text-size-adjust: none;
+        -webkit-text-size-adjust: none;
+        text-size-adjust: none;
+    }
+
+    body,
+    h1,
+    h2,
+    h3,
+    h4,
+    p,
+    figure,
+    blockquote,
+    dl,
+    dd {
+        margin-block-end: 0;
+    }
+
+    body {
+        min-height: 100vh;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        text-wrap: balance;
+    }
+
+    a:not([class]) {
+        text-decoration-skip-ink: auto;
+        color: currentColor;
+    }
+
+    img,
+    picture {
+        max-width: 100%;
+        display: block;
+    }
+
+    textarea:not([rows]) {
+        min-height: 10em;
+    }
+
+    :target {
+        scroll-margin-block: 5ex;
+    }
+
+    button {
+        cursor: pointer;
+    }
+}
+
+/* =========================
+   COLOR TOKENS (PRIORITY)
+========================= */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --border: #3C3C3C80;
-  --primary: #616FF5;
-  --primary-text: #303030;
-  --primary-foreground: #3C3C3C;
+    /* ✅ Priority Colors */
+    --background: #ffffff;
+    --foreground: #171717;
+    --border: #3c3c3c80;
+    --primary: #616ff5;
+    --primary-text: #303030;
+    --primary-foreground: #3c3c3c;
+
+    /* Extended palette */
+    --custom-dark-gray: #303030;
+    --custom-gray-100: #3c3c3c;
+    --radius: 0.65rem;
+
+    --card: #ffffff;
+    --card-foreground: #171717;
+    --popover: #ffffff;
+    --popover-foreground: #171717;
+
+    --secondary: #f4f4f5;
+    --secondary-foreground: #3c3c3c;
+
+    --muted: #f4f4f5;
+    --muted-foreground: #6b7280;
+
+    --accent: #f4f4f5;
+    --accent-foreground: #3c3c3c;
+
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+
+    --input: #e5e7eb;
+    --ring: var(--primary);
+
+    /* Sidebar */
+    --sidebar: hsl(0 0% 98%);
+    --sidebar-foreground: hsl(240 5.3% 26.1%);
+    --sidebar-primary: hsl(240 5.9% 10%);
+    --sidebar-primary-foreground: hsl(0 0% 98%);
+    --sidebar-accent: hsl(240 4.8% 95.9%);
+    --sidebar-accent-foreground: hsl(240 5.9% 10%);
+    --sidebar-border: hsl(220 13% 91%);
+    --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --color-primary: var(--primary);
-  --color-border: var(--border);
-  --color-primary-text: var(--primary-text);
-  --color-primary-foreground: var(--primary-foreground);
-}
-
-/* @media (prefers-color-scheme: dark) {
-  :root {
+/* =========================
+   DARK MODE
+========================= */
+.dark {
     --background: #0a0a0a;
     --foreground: #ededed;
-  }
-} */
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+    --custom-dark-gray: #f7f7f7;
+    --custom-gray-100: #f9f9f9;
+
+    --card: #18181b;
+    --card-foreground: #ededed;
+
+    --popover: #18181b;
+    --popover-foreground: #ededed;
+
+    --secondary: #27272a;
+    --secondary-foreground: #ededed;
+
+    --muted: #27272a;
+    --muted-foreground: #a1a1aa;
+
+    --accent: #27272a;
+    --accent-foreground: #ededed;
+
+    --border: rgba(255, 255, 255, 0.1);
+    --input: rgba(255, 255, 255, 0.15);
+
+    --sidebar: hsl(240 5.9% 10%);
+    --sidebar-foreground: hsl(240 4.8% 95.9%);
+    --sidebar-primary: hsl(224.3 76.3% 48%);
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: hsl(240 3.7% 15.9%);
+    --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+    --sidebar-border: hsl(240 3.7% 15.9%);
+    --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
 
-button {
-  cursor: pointer;
+/* =========================
+   THEME TOKENS
+========================= */
+@theme inline {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-border: var(--border);
+    --color-primary: var(--primary);
+    --color-primary-text: var(--primary-text);
+    --color-primary-foreground: var(--primary-foreground);
+
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
 }
 
+/* =========================
+   BASE TAILWIND APPLY
+========================= */
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+    }
+}
+
+/* =========================
+   PLUGINS
+========================= */
+@plugin "tailwind-scrollbar" {
+    nocompatible: true;
+}
+
+/* =========================
+   QUILL EDITOR
+========================= */
+.ql-toolbar {
+    @apply rounded-tl-xl rounded-tr-xl border bg-[#F6F1F4];
+}
+
+.ql-container {
+    @apply rounded-b-3xl h-52;
+}
+
+.ql-editor.ql-blank::before {
+    @apply italic text-[#303030];
+}
+
+.dark .ql-editor.ql-blank::before {
+    @apply italic text-[#F6F1F4];
+}
+
+/* =========================
+   UTILITIES
+========================= */
+
+.hide-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    overflow: auto;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
