@@ -55,7 +55,7 @@ export const CustomerTableColumns = (
       accessorKey: "id",
       header: () => <h3>ID</h3>,
       cell: ({ row }) => (
-        <div className="font-medium">{row.getValue("id")}</div>
+        <div className="font-medium">#{Number(row.getValue("id")).toString().padStart(4, "0")}</div>
       ),
     },
     {

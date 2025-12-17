@@ -21,7 +21,7 @@ export default function CustomerList({ initialFilters }: CustomerListProps) {
   } = useCustomerList({ initialFilters });
 
   return (
-    <div className="w-full">
+    <div className="w-full pb-10">
       <CustomerListHeader />
 
       <CustomerListFilter
