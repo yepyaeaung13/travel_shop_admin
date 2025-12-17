@@ -8,7 +8,7 @@ const ChangePassword = () => {
       <div className="flex w-full flex-col">
         <div className="flex h-full w-full  flex-col gap-3 px-4 pt-4 md:flex-row md:gap-5 md:px-5 md:pt-8">
           <div className="flex w-full flex-col space-y-1 md:space-y-2.5">
-            <label className="text-lg font-medium text-[#303030] dark:text-white">
+            <label className="text-lg font-medium text-[#303030]">
               Old Password
             </label>
             <input
@@ -17,7 +17,7 @@ const ChangePassword = () => {
             />
           </div>
           <div className="flex w-full flex-col space-y-1 md:space-y-2.5">
-            <label className="text-lg font-medium text-[#303030] dark:text-white">
+            <label className="text-lg font-medium text-[#303030]">
               New Password
             </label>
             <input
@@ -26,7 +26,7 @@ const ChangePassword = () => {
             />
           </div>
           <div className="flex w-full flex-col space-y-1 md:space-y-2.5">
-            <label className="text-lg font-medium text-[#303030] dark:text-white">
+            <label className="text-lg font-medium text-[#303030]">
               Confirm Password
             </label>
             <input

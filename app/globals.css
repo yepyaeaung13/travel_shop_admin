@@ -37,3 +37,6 @@ button {
   cursor: pointer;
 }
 
+.scrollbar-none {
+  scrollbar-width: none;
+}
