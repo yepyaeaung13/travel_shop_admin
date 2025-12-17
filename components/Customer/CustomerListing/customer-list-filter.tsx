@@ -6,19 +6,11 @@ import { Search } from "lucide-react";
 interface CustomerListFiltersProps {
   searchQuery: string;
   onSearchChange: (value: string) => void;
-  statusFilter: string;
-  onStatusFilterChange: (value: string) => void;
-  categoryFilter: string;
-  onCategoryFilterChange: (value: string) => void;
 }
 
 const CustomerListFilters = ({
   searchQuery,
   onSearchChange,
-  statusFilter,
-  onStatusFilterChange,
-  categoryFilter,
-  onCategoryFilterChange,
 }: CustomerListFiltersProps) => {
   return (
     <div className="flex items-center justify-between rounded-t-[20px] bg-white p-5">

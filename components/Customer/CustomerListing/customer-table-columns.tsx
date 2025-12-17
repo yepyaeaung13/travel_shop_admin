@@ -2,11 +2,9 @@
 import { type ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Edit, BanIcon } from "lucide-react";
-import { User, UserSortOption } from "@/types/users.types";
+import { User } from "@/types/users.types";
 import { useRouter } from "next/navigation";
 // import { useDeleteUser } from "@/queries/users.queries";
-import { SortableHeader } from "./sortable-header";
 import { ActionIcon } from "@/assets/icons/customer/action";
 
 export const CustomerTableColumns = (

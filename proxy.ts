@@ -5,7 +5,7 @@ const publicRoutes = ["/login"];
 
 export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-    return NextResponse.next();
+    // return NextResponse.next();
 
   if (publicRoutes.includes(pathname) && pathname.startsWith("/login")) {
     return NextResponse.next();

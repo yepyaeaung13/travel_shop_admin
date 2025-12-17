@@ -27,10 +27,6 @@ export default function CustomerList({ initialFilters }: CustomerListProps) {
       <CustomerListFilter
         searchQuery={filters.searchQuery}
         onSearchChange={(value) => handleFilterChange('searchQuery', value)}
-        statusFilter={filters.statusFilter}
-        onStatusFilterChange={(value) => handleFilterChange('statusFilter', value)}
-        categoryFilter={filters.categoryFilter}
-        onCategoryFilterChange={(value) => handleFilterChange('categoryFilter', value)}
       />
 
       <CustomerTable
