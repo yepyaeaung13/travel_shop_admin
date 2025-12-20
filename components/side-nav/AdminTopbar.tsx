@@ -12,41 +12,41 @@ import { useNavStore } from "@/store/useNavStore";
 const header = (pathname: string) => {
   // Product
   if (
-    pathname.startsWith("/admin/products") ||
-    pathname.startsWith("/admin/products/new") ||
-    pathname.startsWith("/admin/products/edit")
+    pathname.startsWith("/products") ||
+    pathname.startsWith("/products/new") ||
+    pathname.startsWith("/products/edit")
   ) {
     return "Product Management";
   }
 
   // Category
   if (
-    pathname.startsWith("/admin/categories") ||
-    pathname.startsWith("/admin/categories/new") ||
-    pathname.startsWith("/admin/categories/edit")
+    pathname.startsWith("/categories") ||
+    pathname.startsWith("/categories/new") ||
+    pathname.startsWith("/categories/edit")
   ) {
     return "Category Management";
   }
 
-  // Inquiry
-  if (pathname.startsWith("/admin/inquiries")) {
-    return "Inquiry Management";
+  // customer
+  if (pathname.startsWith("/customers")) {
+    return "Customer Management";
   }
 
   // Blog
   if (
-    pathname.startsWith("/admin/blogs") ||
-    pathname.startsWith("/admin/blogs/new") ||
-    pathname.startsWith("/admin/blogs/edit")
+    pathname.startsWith("/blogs") ||
+    pathname.startsWith("/blogs/new") ||
+    pathname.startsWith("/blogs/edit")
   ) {
     return "Blog Management";
   }
 
   // Activity
   if (
-    pathname.startsWith("/admin/activities") ||
-    pathname.startsWith("/admin/activities/new") ||
-    pathname.startsWith("/admin/activities/edit")
+    pathname.startsWith("/activities") ||
+    pathname.startsWith("/activities/new") ||
+    pathname.startsWith("/activities/edit")
   ) {
     return "Activity management";
   }
