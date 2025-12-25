@@ -7,6 +7,7 @@
   --primary: #616FF5;
   --primary-text: #303030;
   --primary-foreground: #3C3C3C;
+  --muted-foreground: #3C3C3C80;
 }
 
 @theme inline {
@@ -18,6 +19,7 @@
   --color-border: var(--border);
   --color-primary-text: var(--primary-text);
   --color-primary-foreground: var(--primary-foreground);
+  --color-muted-foreground: var(--muted-foreground);
 }
 
 /* @media (prefers-color-scheme: dark) {

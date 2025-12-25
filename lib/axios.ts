@@ -2,8 +2,8 @@ import { refreshAccessToken } from "@/services/auth.service";
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const apiURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-// const apiURL = "http://localhost:3001";
+// const apiURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const apiURL = "http://localhost:3001";
 const axiosClient = axios.create({
   baseURL: `${apiURL}/api`,
   headers: {
