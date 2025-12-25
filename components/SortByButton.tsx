@@ -75,7 +75,6 @@ export default function SortByButton({
       }}
     >
       <SelectTrigger
-        disabledIcon
         className="flex h-8 items-center gap-2 rounded-full bg-[#E4E6FF] p-5 py-4 font-medium !text-black dark:!text-white"
       >
         <ArrowDownWideNarrowIcon className="size-4 translate-y-0.5 opacity-60" />

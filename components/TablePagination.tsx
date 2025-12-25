@@ -90,7 +90,6 @@ export default function TablePagination({
             size="sm"
             className="w-[70px] text-lg rounded-[10px] bg-primary *:data-[slot=select-value]:text-white focus-visible:ring-0 border-none"
             id="rows-per-page"
-            iconColor="text-white opacity-100"
           >
             <SelectValue placeholder={10} />
           </SelectTrigger>

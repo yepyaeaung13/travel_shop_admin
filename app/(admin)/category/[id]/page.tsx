@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 // Assuming these are all configured correctly
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,19 +9,15 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { ChevronLeft, PlusCircleIcon } from "lucide-react";
-import { toast } from "sonner";
 import { useParams, useRouter } from "next/navigation";
 
 // --- Component imports ---
 import { cn } from "@/lib/utils";
-import SubCategoryItem from "@/components/Category/SubCategoryItem";
 import FullLoading from "@/components/fullloading";
 import CategoryImageUpload from "@/components/Category/CategoryImageUpload";
-import { Category, UpdateCategory } from "@/types/category.types";
-import { uuid } from "zod/v4";
+import { UpdateCategory } from "@/types/category.types";
 import IconTrash from "@/assets/icons/Trash";
 import {
-  useCreateCategory,
   useDeleteCategory,
   useGetCategoryById,
   useUpdateCategory,
@@ -31,15 +27,15 @@ import { errorToast, successToast } from "@/components/toast";
 import UpdateSubCategoryItem from "@/components/Category/UpdateSubCategoryItem";
 import ConfirmDeleteDialog from "@/components/Category/ConfirmDeleteDialog";
 
-// --- TYPE UTILITIES ---
-type CreateCategoryArgs = {
-  parentCategory?: string | undefined;
-  name: string;
-  status: "published" | "unpublished";
-  isSubcategory: boolean;
-};
+export default function Page() {
+  return (
+    <Suspense fallback="">
+      <EditCategory />
+    </Suspense>
+  );
+}
 
-export default function CreateCategory() {
+function EditCategory() {
   const router = useRouter();
   const { id } = useParams();
 
@@ -62,7 +58,7 @@ export default function CreateCategory() {
     preview: string | null;
   }>({ file: null, preview: null });
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
-  const [ open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (subCategories.length === 0) {

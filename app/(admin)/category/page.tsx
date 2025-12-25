@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -37,7 +37,15 @@ type ListCategoryArgs = {
   sortBy: SortOptionValue;
 };
 
-export default function CategoryList() {
+export default function Page() {
+  return (
+    <Suspense fallback="">
+      <CategoryList />
+    </Suspense>
+  );
+}
+
+function CategoryList() {
   // --- State Initialization ---
   const [selectedCategory, setSelectedCategory] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
