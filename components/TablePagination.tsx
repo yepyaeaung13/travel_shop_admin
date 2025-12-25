@@ -88,14 +88,14 @@ export default function TablePagination({
         >
           <SelectTrigger
             size="sm"
-            className="w-[70px] text-lg rounded-[10px] bg-primary *:data-[slot=select-value]:text-white focus-visible:ring-0 border-none"
+            className="w-[70px] text-lg rounded-[10px] bg-primary *:data-[slot=select-value]:text-white focus-visible:ring-0 border-none [&_svg:not([class*='text-'])]:text-white"
             id="rows-per-page"
           >
             <SelectValue placeholder={10} />
           </SelectTrigger>
-          <SelectContent side="top" className="min-w-[60px]">
+          <SelectContent side="top" className="min-w-[60px] bg-white">
             {[10, 20, 30, 40, 50].map((pageSize) => (
-              <SelectItem key={pageSize} value={`${pageSize}`}>
+              <SelectItem key={pageSize} value={`${pageSize}`} className="cursor-pointer">
                 {pageSize}
               </SelectItem>
             ))}

@@ -10,10 +10,11 @@ import { UpdateCategory } from "@/types/category.types";
 import CameraUpIcon from "@/assets/icons/CameraUpIcon";
 
 type Props = {
+  indexNo: number;
   subCategory: UpdateCategory;
   removeSubCategory: (id: number) => void;
   updateSubCategory: (
-    id: number,
+    indexNo: number,
     name?: string,
     image?: string,
     file?: File,
@@ -22,6 +23,7 @@ type Props = {
 };
 
 export default function UpdateSubCategoryItem({
+  indexNo,
   subCategory,
   removeSubCategory,
   updateSubCategory,
@@ -35,20 +37,20 @@ export default function UpdateSubCategoryItem({
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateSubCategory(subCategory.id, e.target.value, subCategory.imageUrl);
+    updateSubCategory(indexNo, e.target.value, subCategory.imageUrl);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const imageUrl = URL.createObjectURL(file);
-    updateSubCategory(subCategory.id, subCategory.name, imageUrl, file);
+    updateSubCategory(indexNo, subCategory.name, imageUrl, file);
   };
 
   const handleAddVariant = () => {
     const updatedVariants = [...(subCategory.variations || []), { id: 0, name: ""}];
     updateSubCategory(
-      subCategory.id,
+      indexNo,
       subCategory.name,
       subCategory.image,
       subCategory.file,
@@ -62,7 +64,7 @@ export default function UpdateSubCategoryItem({
     updated[index].name = value;
 
     updateSubCategory(
-      subCategory.id,
+      indexNo,
       subCategory.name,
       subCategory.imageUrl,
       subCategory.file,
@@ -75,7 +77,7 @@ export default function UpdateSubCategoryItem({
     updated.splice(index, 1);
 
     updateSubCategory(
-      subCategory.id,
+      indexNo,
       subCategory.name,
       subCategory.imageUrl,
       subCategory.file,

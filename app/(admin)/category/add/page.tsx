@@ -60,11 +60,11 @@ export default function CreateCategory() {
       {
         id: 0,
         name: "",
-        parentId: 0,
+        parentId: null,
         image: "",
         description: "",
         variations: [],
-        status: "active"
+        status: "active",
       },
     ]);
   };
@@ -76,14 +76,14 @@ export default function CreateCategory() {
   };
 
   const updateSubCategory = (
-    id: number,
+    indexNo: number,
     name?: string,
     image?: string,
     file?: File,
     variants?: string[]
   ) => {
     const subCategoriesName = subCategories
-      .filter((sub) => sub.id !== id)
+      .filter((sub, index) => indexNo !== index)
       .map((sub) => sub.name);
     if (name && subCategoriesName.includes(name)) {
       setSameName(true);
@@ -91,8 +91,8 @@ export default function CreateCategory() {
       setSameName(false);
     }
     setSubCategories((prev) =>
-      prev.map((sub) =>
-        sub.id === id
+      prev.map((sub, index) =>
+        index === indexNo
           ? {
               ...sub,
               name: name ?? sub.name,
@@ -130,7 +130,7 @@ export default function CreateCategory() {
 
   // --- CREATE CATEGORY FORM ---
   const handleSubmitWithStatus = async (status: "active" | "inactive") => {
-    if(!image.file) return;
+    if (!image.file) return;
     // return
     setIsSaving(true);
     const uploadedImage = await uploadImage(image.file);
@@ -142,7 +142,7 @@ export default function CreateCategory() {
       parentId: null,
       image: uploadedImage.data.key,
       variations: currentVariants,
-      status
+      status,
     };
 
     createCategory(payload, {
@@ -159,23 +159,25 @@ export default function CreateCategory() {
                 image: uploadedImage.data.key,
                 parentId: parentId,
                 variations: subCategories[index]?.variations || [],
-                status
+                status,
               },
               {
                 onSuccess: () => {
-                  successToast("Success",
+                  successToast(
+                    "Success",
                     `Sub-category creating ${index + 1}/${
                       subCategories.length
                     }...`
                   );
                 },
                 onError: () => {
-                  errorToast("Failed",
+                  errorToast(
+                    "Failed",
                     `Sub-category creating ${index + 1}/${
                       subCategories.length
                     }...`
                   );
-                }
+                },
               }
             );
           }
@@ -185,7 +187,7 @@ export default function CreateCategory() {
       onError: () => {
         errorToast("Failed", "Create category unsuccefully, please try again.");
         setIsSaving(false);
-      }
+      },
     });
   };
 
@@ -209,13 +211,13 @@ export default function CreateCategory() {
         if (!sub.name || !sub.file) {
           return true;
         }
-         if (sub.variations.length > 0) {
+        if (sub.variations.length > 0) {
           return sub.variations.includes("") ? true : false;
         }
         return false;
       });
       return status.includes(true) ? true : false;
-    } else if(variants.length > 0) {
+    } else if (variants.length > 0) {
       return variants.includes("") ? true : false;
     } else {
       return false;
@@ -247,9 +249,9 @@ export default function CreateCategory() {
       {/* Form */}
       <form id="category-form">
         <div className="">
-          <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
             {/* Left Column - Category Details */}
-            <div className="space-y-2.5 lg:col-span-2">
+            <div className="order-2 md:order-1 space-y-2.5 lg:col-span-2">
               {/* Category Name */}
               <Card className="gap-2 rounded-[10px] p-5">
                 <CardContent className="space-y-4 px-0">
@@ -319,6 +321,7 @@ export default function CreateCategory() {
                         {subCategories.map((subCategory, index) => (
                           <SubCategoryItem
                             key={index}
+                            indexNo={index}
                             subCategory={subCategory}
                             updateSubCategory={updateSubCategory}
                             removeSubCategory={removeSubCategory}
@@ -439,7 +442,7 @@ export default function CreateCategory() {
               </Card>
             </div>
 
-            <div>
+            <div className="order-1 md:order-2">
               {/* Right Column - Image Upload  */}
               <CategoryImageUpload
                 categoryImage={image.file}
@@ -449,7 +452,7 @@ export default function CreateCategory() {
               />
             </div>
 
-            <div className="flex justify-between gap-2.5 py-5 md:justify-end lg:col-span-3">
+            <div className="order-3 flex justify-between gap-2.5 py-5 md:justify-end lg:col-span-3">
               {/* UNPUBLISH Button - calls the core logic explicitly */}
               <Button
                 type="button"

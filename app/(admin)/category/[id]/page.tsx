@@ -127,7 +127,7 @@ function EditCategory() {
   };
 
   const updateSubCategory = (
-    id: number,
+    indexNo: number,
     name?: string,
     image?: string,
     file?: File,
@@ -135,7 +135,7 @@ function EditCategory() {
     status?: "active" | "inactive"
   ) => {
     const subCategoriesName = subCategories
-      .filter((sub) => sub.id !== id)
+      .filter((sub, index) => index !== indexNo)
       .map((sub) => sub.name);
     if (name && subCategoriesName.includes(name)) {
       setSameName(true);
@@ -143,8 +143,8 @@ function EditCategory() {
       setSameName(false);
     }
     setSubCategories((prev) =>
-      prev.map((sub) =>
-        sub.id === id
+      prev.map((sub, index) =>
+        index === indexNo
           ? {
               ...sub,
               name: name ?? sub.name,
@@ -324,7 +324,15 @@ function EditCategory() {
           </h1>
         </button>
 
-        <div className="flex justify-between gap-2.5 md:justify-end lg:col-span-3">
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="md:hidden flex h-[30px] w-[30px] items-center justify-center rounded-full bg-[#ffffff50]"
+        >
+          <IconTrash />
+        </button>
+
+        <div className="md:flex justify-between gap-2.5 md:justify-end lg:col-span-3 hidden">
           {/* UNPUBLISH Button - calls the core logic explicitly */}
           <Button
             type="button"
@@ -368,9 +376,9 @@ function EditCategory() {
       {/* Form */}
       <form id="category-form">
         <div className="">
-          <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
             {/* Left Column - Category Details */}
-            <div className="space-y-2.5 lg:col-span-2">
+            <div className="order-2 md:order-1 space-y-2.5 lg:col-span-2">
               {/* Category Name */}
               <Card className="gap-2 rounded-[10px] p-5">
                 <CardContent className="space-y-4 px-0">
@@ -441,6 +449,7 @@ function EditCategory() {
                         {subCategories.map((subCategory, index) => (
                           <UpdateSubCategoryItem
                             key={index}
+                            indexNo={index}
                             subCategory={subCategory}
                             updateSubCategory={updateSubCategory}
                             removeSubCategory={removeSubCategory}
@@ -570,7 +579,7 @@ function EditCategory() {
               </Card>
             </div>
 
-            <div>
+            <div className="order-1 md:order-2">
               {/* Right Column - Image Upload  */}
               <CategoryImageUpload
                 categoryImage={image.file}
@@ -580,6 +589,34 @@ function EditCategory() {
                 existingImageUrl={imageUrl}
               />
             </div>
+          </div>
+
+          <div className="py-5 flex justify-between gap-2.5 md:justify-end lg:col-span-3 md:hidden">
+            {/* UNPUBLISH Button - calls the core logic explicitly */}
+            <Button
+              type="button"
+              onClick={() => router.back()}
+              disabled={isSaving || disabled}
+              className={cn(
+                "h-auto w-[169px] rounded-[10px] bg-[#A1A1A1] py-1.5 text-base font-medium text-white duration-300 hover:bg-[#444444] active:scale-95 md:w-[135px] md:text-lg",
+                disabled || (isSaving && "bg-[#444444]/50")
+              )}
+            >
+              Discard
+            </Button>
+
+            {/* PUBLISH Button - calls the core logic explicitly */}
+            <Button
+              type="button"
+              onClick={handleSubmit}
+              disabled={isSaving || disabled}
+              className={cn(
+                "bg-primary h-auto w-[169px] rounded-[10px] py-1.5 text-base font-medium text-white duration-300 active:scale-95 md:w-[135px] md:text-lg",
+                disabled && "bg-primary/50"
+              )}
+            >
+              {isSaving ? "Saving..." : "Save"}
+            </Button>
           </div>
         </div>
       </form>
