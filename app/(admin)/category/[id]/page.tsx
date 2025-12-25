@@ -283,8 +283,8 @@ function EditCategory() {
         successToast("Success!", `Category deleted successfully!`);
         router.back();
       },
-      onError(error, variables, context) {
-        errorToast("Failed", error?.message || "Failed to delete category.");
+      onError(error: any, variables, context) {
+        errorToast("Failed", error?.response?.data?.message || "Failed to delete category.");
       },
     });
   };
@@ -298,8 +298,8 @@ function EditCategory() {
         setSubOpen(false)
         successToast("Success!", `Category deleted successfully!`);
       },
-      onError(error, variables, context) {
-        errorToast("Failed", error?.message || "Failed to delete category.");
+      onError(error: any, variables, context) {
+        errorToast("Failed", error?.response?.data?.message || "Failed to delete category.");
       },
     });
   };

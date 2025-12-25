@@ -193,6 +193,13 @@ export default function CreateCategory() {
 
   const handleImageChange = (e: any) => {
     const file = e.target.files[0] as File;
+    const MAX_SIZE = 512 * 1024; 
+    if (file.size > MAX_SIZE) {
+      // show error toast / alert
+      errorToast("Image too large", "Image must be under 512 KB");
+      e.target.value = ""; // reset input
+      return;
+    }
     if (file) {
       const preview = URL.createObjectURL(file);
       setImage({ file, preview });

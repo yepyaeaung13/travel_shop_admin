@@ -133,11 +133,8 @@ function CategoryList() {
         setOpen(false);
         setDeleteCategoryIds([]);
       },
-      onError(error, variables, context) {
-        errorToast("Failed", error?.message || "Failed to delete category.");
-        setSelectedCategory([]); // Clear selection after deletion
-        setOpen(false);
-        setDeleteCategoryIds([]);
+      onError(error: any, variables, context) {
+        errorToast("Failed", error?.response?.data?.message || "Failed to delete category.");
       },
     });
   };
@@ -319,7 +316,7 @@ function CategoryList() {
       <ConfirmDeleteDialog
         open={open}
         setOpen={setOpen}
-        loading={loading}
+        loading={isPending}
         callback={handleDelete}
       />
       {/* Status Change Dialog */}

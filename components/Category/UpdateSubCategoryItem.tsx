@@ -8,6 +8,7 @@ import IconTrash from "@/assets/icons/Trash";
 import { useState } from "react";
 import { UpdateCategory } from "@/types/category.types";
 import CameraUpIcon from "@/assets/icons/CameraUpIcon";
+import { errorToast } from "../toast";
 
 type Props = {
   indexNo: number;
@@ -43,12 +44,22 @@ export default function UpdateSubCategoryItem({
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const MAX_SIZE = 512 * 1024;
+    if (file.size > MAX_SIZE) {
+      // show error toast / alert
+      errorToast("Image too large", "Image must be under 512 KB");
+      e.target.value = ""; // reset input
+      return;
+    }
     const imageUrl = URL.createObjectURL(file);
     updateSubCategory(indexNo, subCategory.name, imageUrl, file);
   };
 
   const handleAddVariant = () => {
-    const updatedVariants = [...(subCategory.variations || []), { id: 0, name: ""}];
+    const updatedVariants = [
+      ...(subCategory.variations || []),
+      { id: 0, name: "" },
+    ];
     updateSubCategory(
       indexNo,
       subCategory.name,
@@ -89,7 +100,7 @@ export default function UpdateSubCategoryItem({
     }
   };
 
-//   console.log("subcategories", subCategory)
+  //   console.log("subcategories", subCategory)
 
   return (
     <div className="border-b border-[#3C3C3C]/30">
