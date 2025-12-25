@@ -12,7 +12,7 @@ import CameraUpIcon from "@/assets/icons/CameraUpIcon";
 type Props = {
   indexNo: number;
   subCategory: Category;
-  removeSubCategory: (id: number) => void;
+  removeSubCategory: (indexNo: number) => void;
   updateSubCategory: (
     indexNo: number,
     name?: string,
@@ -129,7 +129,7 @@ export default function SubCategoryItem({
         <div className="flex items-center gap-4">
           <button
             type="button"
-            onClick={() => removeSubCategory(subCategory.id)}
+            onClick={() => removeSubCategory(indexNo)}
             className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-[#44444414]"
           >
             <IconTrash />

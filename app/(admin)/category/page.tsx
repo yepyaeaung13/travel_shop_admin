@@ -281,7 +281,7 @@ function CategoryList() {
             </div>
           )}
 
-          {showNoCategoryYet && (
+          {showNoCategoryYet && !isLoading && (
               <div className="flex w-full flex-col items-center justify-center gap-5 pb-16 pt-24">
                 <IconNoYet className="h-[149px] w-[200px] md:h-[225px] md:w-[300px]" />
                 <span className="text-xl font-medium text-[#444444]">
@@ -290,7 +290,7 @@ function CategoryList() {
               </div>
             )}
 
-          {showNoResult && (
+          {showNoResult && !isLoading && (
             <div className="flex w-full flex-col items-center justify-center gap-5 pb-16 pt-24">
               <IconNoFound className="h-[114px] w-[200px] md:h-[170px] md:w-[300px]" />
               <span className="text-xl font-medium text-[#444444]">

@@ -40,7 +40,7 @@ function EditCategory() {
   const { id } = useParams();
 
   const { mutate: updateCategory, isPending: isSaving } = useUpdateCategory();
-  const { data: categoryDetail, isLoading } = useGetCategoryById({
+  const { data: categoryDetail, isLoading, refetch } = useGetCategoryById({
     id: Number(id),
   });
   const { mutate: deleteMutation, isPending } = useDeleteCategory();
@@ -59,6 +59,8 @@ function EditCategory() {
   }>({ file: null, preview: null });
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
   const [open, setOpen] = useState(false);
+  const [subOpen, setSubOpen] = useState(false);
+  const [deleteSubCategoryId, setDeleteSubCategoryId] = useState<number | null>(null);
 
   useEffect(() => {
     if (subCategories.length === 0) {
@@ -120,10 +122,18 @@ function EditCategory() {
     ]);
   };
 
-  const removeSubCategory = (id: number) => {
-    setSubCategories((prev) => {
-      return prev.filter((sub) => sub.id !== id);
-    });
+  const removeSubCategory = (indexNo: number) => {
+    const removeCategory = subCategories.find(
+      (sub, index) => index !== indexNo
+    );
+    if (removeCategory && removeCategory.id !== 0) {
+      setDeleteSubCategoryId(removeCategory.id);
+      setSubOpen(true);
+    } else {
+      setSubCategories((prev) => {
+        return prev.filter((sub, index) => index !== indexNo);
+      });
+    }
   };
 
   const updateSubCategory = (
@@ -272,6 +282,21 @@ function EditCategory() {
       onSuccess: (res) => {
         successToast("Success!", `Category deleted successfully!`);
         router.back();
+      },
+      onError(error, variables, context) {
+        errorToast("Failed", error?.message || "Failed to delete category.");
+      },
+    });
+  };
+
+  const handleDeleteSubCategory = async () => {
+    if(!deleteSubCategoryId) return;
+
+    deleteMutation([deleteSubCategoryId], {
+      onSuccess: (res) => {
+        refetch();
+        setSubOpen(false)
+        successToast("Success!", `Category deleted successfully!`);
       },
       onError(error, variables, context) {
         errorToast("Failed", error?.message || "Failed to delete category.");
@@ -627,6 +652,14 @@ function EditCategory() {
         setOpen={setOpen}
         loading={isPending}
         callback={handleDelete}
+      />
+
+       {/* Delete Dialog */}
+      <ConfirmDeleteDialog
+        open={subOpen}
+        setOpen={setSubOpen}
+        loading={isPending}
+        callback={handleDeleteSubCategory}
       />
     </div>
   );

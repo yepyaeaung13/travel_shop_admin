@@ -69,9 +69,9 @@ export default function CreateCategory() {
     ]);
   };
 
-  const removeSubCategory = (id: number) => {
+  const removeSubCategory = (indexNo: number) => {
     setSubCategories((prev) => {
-      return prev.filter((sub) => sub.id !== id);
+      return prev.filter((sub, index) => index !== indexNo);
     });
   };
 
