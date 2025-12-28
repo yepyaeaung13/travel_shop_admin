@@ -11,6 +11,7 @@ import { useAdminLogin } from "@/queries/auth";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/useAuthStore";
+import { errorToast, successToast } from "@/components/toast";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -33,7 +34,7 @@ export default function LoginPage() {
           if (res?.success) {
             const userData = res?.data?.userInfo;
 
-            toast.success("Login successfully.");
+            successToast("Success","Login successfully.");
 
             setLoginInfo(userData);
 
@@ -47,18 +48,18 @@ export default function LoginPage() {
             });
             window.location.href = "/";
           } else {
-            toast.error(
-              res?.message || res?.error || "Login failed. Please try again."
+            errorToast("Failed",
+              res?.response?.data?.message || res?.error || "Login failed. Please try again."
             );
             setLoginError(
-              res?.message || res?.error || "Login failed. Please try again."
+              res?.response?.data?.message || res?.error || "Login failed. Please try again."
             );
           }
         },
-        onError: (error: Error) => {
+        onError: (error: any) => {
           console.log("Login Error: ", error);
-          toast.error(error.message || "Login failed. Please try again.");
-          setLoginError(error.message || "Login failed. Please try again.");
+          toast.error(error.response?.data?.message || "Login failed. Please try again.");
+          setLoginError(error.response?.data?.message || "Login failed. Please try again.");
         },
       }
     );
