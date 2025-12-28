@@ -1,0 +1,31 @@
+import {discountType, ProductRelationType, ProductStatus} from "@/types/product";
+
+export const productDefaultValues = {
+  name: "",
+  description: "",
+  brandId: null,
+  mainCategoryId: undefined,
+  subCategoryId: null,
+  subOneCategoryId: null,
+  status: ProductStatus.PUBLISHED,
+  scheduleDate: new Date(),
+  imageUrl: [],
+  purchasePrice: 0,
+  sellingPrice: 0,
+  sku: "",
+  quantity: 0,
+  weightUnit: "kg",
+  weightValue: 0,
+  sizeUnit: "cm",
+  sizeValue: "",
+  promoteInfo: {
+    promoteStatus: false,
+    discountType: discountType.AMOUNT,
+    discountValue: 0,
+    promoteAmount: 0,
+    promotePercent: 0,
+  },
+  variantValues: [],
+  variants: [],
+  productRelationType: ProductRelationType.TAG,
+};
