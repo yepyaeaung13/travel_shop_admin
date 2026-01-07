@@ -19,7 +19,7 @@ import { useNavStore } from "@/store/useNavStore";
 import { successToast } from "../toast";
 
 export const sidebarItems = [
-  { icon: IconProduct, label: "Product management", path: "/products" },
+  { icon: IconProduct, label: "Product management", path: "/product" },
   {
     icon: IconCategory,
     label: "Category management",
