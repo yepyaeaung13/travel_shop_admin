@@ -208,8 +208,8 @@ export default function CategoryTable({
                 </TableCell>
                 <TableCell>
                   <p className="text-center">
-                    {category.subCategories > 0
-                      ? category.subCategories
+                    {category.subCategories.length > 0
+                      ? category.subCategories.length
                       : "None"}
                   </p>
                 </TableCell>

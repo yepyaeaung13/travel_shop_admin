@@ -19,7 +19,7 @@ export default function RootLayout({
         <AdminSidebarExpanded />
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-[#F9F9F9] px-4 pb-24 pt-5 md:px-[30px]">
+        <main className="relative flex-1 overflow-y-auto overflow-x-hidden bg-[#F9F9F9] px-4 pb-24 pt-5 md:px-[30px]">
           {children}
         </main>
       </div>

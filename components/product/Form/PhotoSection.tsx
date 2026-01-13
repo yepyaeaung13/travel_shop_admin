@@ -59,7 +59,6 @@ export default function PhotoSection({ form }: PhotoSectionProps) {
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
-    console.log("file", file);
     if (file) {
       replaceMainImage(file);
     }

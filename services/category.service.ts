@@ -2,13 +2,13 @@ import {
   Category,
   CategoryGetResponse,
   CategoryListResponse,
-  UpdateCategory,
+  UpdateSubCategory,
 } from "@/types/category.types";
 import { SortOptionValue } from "@/components/Category/CategoryTable";
 import axiosClient from "@/lib/axios";
 
 export type CreateCategoryRequest = Omit<Category, "id">;
-export type UpdateCategoryRequest = UpdateCategory;
+export type UpdateCategoryRequest = UpdateSubCategory;
 
 export type CreateCategoryResponse = {
   success: true;
@@ -21,10 +21,6 @@ export type CreateCategoryResponse = {
     description: string;
     createdAt: string;
     updatedAt: string;
-    variations: {
-      id: number;
-      name: string;
-    }[];
   };
   meta: {};
 };
@@ -87,5 +83,10 @@ export const toggleStatus = async (
 
 export const deleteCategory = async (ids: number[]) => {
   const res = await axiosClient.delete(`/v1/categories`, { data: { ids } });
+  return res.data;
+};
+
+export const deleteSubCategory = async (id: number) => {
+  const res = await axiosClient.delete(`/v1/categories/subcategory/${id}`);
   return res.data;
 };

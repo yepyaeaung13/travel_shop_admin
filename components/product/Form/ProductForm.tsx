@@ -1,30 +1,31 @@
 "use client";
 
-import {Form} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import ProductInfoSection from "./product-info-section";
-import {Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import PhotoSection from "@/components/product/Form/PhotoSection";
 import PricingSection from "@/components/product/Form/pricing-section";
 import VariantSection from "@/components/product/Form/VariantSection";
 import ProductHeader from "@/components/product/Form/ProductHeader";
 import VisibilityInventorySection from "@/components/product/Form/VisibilityInventorySection";
-import {CategoryVariantGroup} from "@/types/categories";
-import {CreateProductPayload} from "@/types/product/product-form.schemas";
-import {UseFormReturn} from "react-hook-form";
+import { CategoryVariantGroup } from "@/types/categories";
+import { CreateProductPayload } from "@/types/product/product-form.schemas";
+import { UseFormReturn } from "react-hook-form";
 
 type Props = {
-  form:  UseFormReturn<CreateProductPayload>;
+  form: UseFormReturn<CreateProductPayload>;
   categories: any[];
   categoryVariantGroups: CategoryVariantGroup[];
   isEdit?: boolean;
   onSubmit: (data: any) => void;
   onDraft: () => void;
-  setSelectedCategoryId: (id:number|null) => void;
+  setSelectedCategory: (id: number | null) => void;
   discount: {
     enabled: boolean;
     type: string;
     isPercentage: boolean;
   };
+  selectedCategory: any;
 };
 
 export function ProductForm({
@@ -34,30 +35,32 @@ export function ProductForm({
   isEdit,
   onSubmit,
   onDraft,
-  setSelectedCategoryId,
-  discount
+  setSelectedCategory,
+  selectedCategory,
+  discount,
 }: Props) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <ProductHeader isEdit={isEdit}/>
+        <ProductHeader isEdit={isEdit} />
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2 space-y-6">
             <ProductInfoSection
               form={form}
               categories={categories}
-              setSelectedCategoryId={setSelectedCategoryId}
+              setSelectedCategory={setSelectedCategory}
+              selectedCategory={selectedCategory}
             />
-            <PhotoSection form={form}/>
+            <PhotoSection form={form} />
             <PricingSection form={form} discount={discount} />
-            <VariantSection
+            {/* <VariantSection
               form={form}
               categoryVariantGroups={categoryVariantGroups}
-            />
+            /> */}
           </div>
 
-          <VisibilityInventorySection form={form}/>
+          <VisibilityInventorySection form={form} />
         </div>
 
         <div className="flex justify-end gap-4">

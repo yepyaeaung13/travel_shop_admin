@@ -2,24 +2,21 @@
 
 import { cn } from "@/lib/utils";
 import { Input } from "../ui/input";
-import { ChevronDown, PlusCircleIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import IconTrash from "@/assets/icons/Trash";
-import { useState } from "react";
-import { Category } from "@/types/category.types";
+import { SubCategory } from "@/types/category.types";
 import CameraUpIcon from "@/assets/icons/CameraUpIcon";
 import { errorToast } from "../toast";
 
 type Props = {
   indexNo: number;
-  subCategory: Category;
+  subCategory: SubCategory;
   removeSubCategory: (indexNo: number) => void;
   updateSubCategory: (
     indexNo: number,
     name?: string,
     image?: string,
     file?: File,
-    variants?: string[]
   ) => void;
 };
 
@@ -29,13 +26,8 @@ export default function SubCategoryItem({
   removeSubCategory,
   updateSubCategory,
 }: Props) {
-  const [openVariantBox, setOpenVariantBox] = useState(false);
 
   if (!subCategory) return null;
-
-  const handleToggleVariantBox = () => {
-    setOpenVariantBox((prev) => !prev);
-  };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     updateSubCategory(indexNo, e.target.value, subCategory.image);
@@ -55,49 +47,6 @@ export default function SubCategoryItem({
     updateSubCategory(indexNo, subCategory.name, imageUrl, file);
   };
 
-  const handleAddVariant = () => {
-    const updatedVariants = [...(subCategory.variations || []), ""];
-    updateSubCategory(
-      indexNo,
-      subCategory.name,
-      subCategory.image,
-      subCategory.file,
-      updatedVariants
-    );
-    setOpenVariantBox(true);
-  };
-
-  const handleUpdateVariant = (index: number, value: string) => {
-    const updated = [...(subCategory.variations || [])];
-    updated[index] = value;
-
-    updateSubCategory(
-      indexNo,
-      subCategory.name,
-      subCategory.image,
-      subCategory.file,
-      updated
-    );
-  };
-
-  const handleRemoveVariant = (index: number) => {
-    const updated = [...(subCategory.variations || [])];
-    updated.splice(index, 1);
-
-    updateSubCategory(
-      indexNo,
-      subCategory.name,
-      subCategory.image,
-      subCategory.file,
-      updated
-    );
-
-    console.log(subCategory?.variations?.length);
-
-    if (index === 0) {
-      setOpenVariantBox(false);
-    }
-  };
 
   return (
     <div className="border-b border-[#3C3C3C]/30">
@@ -142,72 +91,8 @@ export default function SubCategoryItem({
           >
             <IconTrash />
           </button>
-
-          {subCategory.variations?.length ? (
-            <button
-              type="button"
-              onClick={handleToggleVariantBox}
-              className={cn(
-                "flex h-[30px] w-[30px] items-center justify-center rounded-full bg-[#44444414] transition-transform",
-                openVariantBox && "rotate-180"
-              )}
-            >
-              <ChevronDown />
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleAddVariant}
-              className="text-primary flex items-center gap-2"
-            >
-              <PlusCircleIcon className="text-primary size-5" />
-              <span className="max-md:hidden">Add variant</span>
-            </button>
-          )}
         </div>
       </div>
-
-      {/* Variants UI */}
-      {openVariantBox && (
-        <div className="flex w-full flex-col space-y-2.5 pb-4">
-          <p className="text-lg">Variants</p>
-          <p className="text-base font-normal text-[#3C3C3C]">Option title</p>
-          <div className="space-y-2.5">
-            {subCategory.variations?.map((variant, index) => (
-              <div key={index} className="flex items-center gap-4">
-                <div className="flex-1">
-                  <Input
-                    placeholder="Variant name"
-                    value={variant}
-                    onChange={(e) => handleUpdateVariant(index, e.target.value)}
-                    className={cn(
-                      "h-10 w-full rounded-[10px] text-sm md:h-10 md:max-w-[344px] md:text-base border-[#3C3C3C4D]"
-                    )}
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => handleRemoveVariant(index)}
-                  className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-[#44444414]"
-                >
-                  <IconTrash />
-                </button>
-              </div>
-            ))}
-
-            {/* Add more variant */}
-            <button
-              type="button"
-              onClick={handleAddVariant}
-              className="text-primary flex items-center gap-2"
-            >
-              <PlusCircleIcon className="text-primary size-5" />
-              <span>Add variant</span>
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

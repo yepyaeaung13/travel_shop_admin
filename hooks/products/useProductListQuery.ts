@@ -60,7 +60,7 @@ export function useProductListQuery(defaultSort = ProductSortOption.NEWEST) {
     // #endregion
 
     return {
-        data: data?.data || [],
+        data: data?.data.products || [],
         isLoading,
         refetch,
         pagination: updatedPagination,

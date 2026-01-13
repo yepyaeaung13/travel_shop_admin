@@ -52,7 +52,7 @@ export const ProductTableColumns = (
     },
     {
         accessorKey: "category",
-        accessorFn: (row) => row.mainCategory?.name ?? "-",
+        accessorFn: (row) => row.category?.name ?? "-",
         header: () => (
             <SortableHeader
                 title="Category"
@@ -66,6 +66,7 @@ export const ProductTableColumns = (
     },
     {
         accessorKey: "sellingPrice",
+        accessorFn: (row) => row.sellingPriceMMK ?? "-",
         header: () => (
             <SortableHeader
                 title="Selling price"
@@ -87,6 +88,7 @@ export const ProductTableColumns = (
     },
     {
         accessorKey: "quantity",
+         accessorFn: (row) => row.stock ?? "0",
         header: () => (
             <SortableHeader
                 title="Stock"
@@ -106,6 +108,7 @@ export const ProductTableColumns = (
     },
     {
         accessorKey: "status",
+         accessorFn: (row) => row.status ?? "-",
         header: () => (
             <SortableHeader
                 title="Status"
@@ -123,13 +126,13 @@ export const ProductTableColumns = (
                             "w-fit rounded-full bg-[#FFFAA3] px-4 py-1 text-sm text-[#827C00]",
                             {
                                 "bg-[#E4FFDF] text-[#126D00]":
-                                    row.getValue("status") === "PUBLISH",
+                                    row.getValue("status") === "active",
                             },
                         )}
                     >
-                        {row.getValue("status") === "PUBLISH"
+                        {row.getValue("status") === "active"
                             ? "Published"
-                            : row.getValue("status") === "DRAFT"
+                            : row.getValue("status") === "inactive"
                                 ? "Draft"
                                 : row.getValue("status")}
                     </h2>
@@ -151,7 +154,7 @@ export const ProductTableColumns = (
                         asChild
                         className="!bg-muted-foreground/10 hover:!bg-muted-forground size-7 cursor-pointer rounded-full p-1.5 text-[#616FF5] hover:text-[#616FF5]"
                     >
-                        <Link href={`/products/edit/${product.id}`}>
+                        <Link href={`/product/${product.id}`}>
                             <Edit />
                         </Link>
                     </Button>

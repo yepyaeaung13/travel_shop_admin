@@ -58,7 +58,7 @@ export default function VisibilityInventorySection({
                     onChange={(e) =>
                       field.onChange(Number(handleInputAmountChange(e)))
                     }
-                    value={field.value === 0 ? "" : field.value}
+                    value={field.value}
                     className="h-12 rounded-[10px] p-4"
                   />
                 </FormControl>

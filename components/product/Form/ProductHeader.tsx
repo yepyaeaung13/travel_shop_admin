@@ -15,7 +15,7 @@ export default function ProductHeader({
     <div className="flex items-center justify-between">
       <div>
         <Button asChild variant="ghost" className="flex items-center">
-          <a href="/products" className="flex items-center text-xl font-medium">
+          <a href="/product" className="flex items-center text-xl font-medium">
             <ChevronLeft className="size-6" /> {title}
           </a>
         </Button>

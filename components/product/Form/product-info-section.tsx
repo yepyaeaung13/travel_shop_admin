@@ -19,20 +19,22 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Editor } from "./rich-editor";
 import { SelectGroup } from "@radix-ui/react-select";
-import {CreateProductPayload} from "@/types/product/product-form.schemas";
+import { CreateProductPayload } from "@/types/product/product-form.schemas";
+import { cn } from "@/lib/utils";
 
 interface ProductInfoSectionProps {
   form: UseFormReturn<CreateProductPayload>;
-  categories: { value: number | undefined; label: string }[];
-  setSelectedCategoryId: (value: number) => void;
+  categories: any[];
+  setSelectedCategory: (value: number) => void;
+  selectedCategory: any;
 }
 
 export default function ProductInfoSection({
   form,
   categories,
-  setSelectedCategoryId,
+  setSelectedCategory,
+  selectedCategory,
 }: ProductInfoSectionProps) {
-
   return (
     <Card id="product-info">
       <CardHeader>
@@ -103,7 +105,7 @@ export default function ProductInfoSection({
                   if (value === "") return;
                   const n = Number(value);
                   field.onChange(n);
-                  setSelectedCategoryId(n);
+                  setSelectedCategory(categories.find((c) => c.id === n));
                 }}
               >
                 <SelectTrigger className="!h-12 w-full cursor-pointer rounded-2xl">
@@ -112,15 +114,65 @@ export default function ProductInfoSection({
 
                 <SelectContent position={"popper"}>
                   <SelectGroup>
-                    {categories.map((cat) => (
+                    {categories.map((cat, index) => (
                       <SelectItem
-                        key={cat.value}
-                        value={cat?.value?.toString() ?? ""}
+                        key={index}
+                        value={cat?.id?.toString() ?? ""}
                         className="cursor-pointer"
                       >
-                        {cat.label}
+                        {cat.name}
                       </SelectItem>
                     ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="subCategoryId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Sub Category <span className="text-red-500">*</span>
+              </FormLabel>
+              <Select
+                value={field.value?.toString() ?? ""}
+                onValueChange={(value) => {
+                  if (value === "") return;
+                  const n = Number(value);
+                  field.onChange(n);
+                  setSelectedCategory(n);
+                }}
+              >
+                <SelectTrigger
+                  className={cn(
+                    "!h-12 w-full cursor-pointer rounded-2xl",
+                    selectedCategory &&
+                      selectedCategory?.subCategories.length > 0
+                      ? ""
+                      : "cursor-not-allowed pointer-events-none"
+                  )}
+                >
+                  <SelectValue placeholder="Sub category" />
+                </SelectTrigger>
+
+                <SelectContent position={"popper"}>
+                  <SelectGroup>
+                    {selectedCategory?.subCategories &&
+                      selectedCategory?.subCategories.map((sub: any) => (
+                        <SelectItem
+                          key={sub.id}
+                          value={sub?.id?.toString() ?? ""}
+                          className="cursor-pointer"
+                        >
+                          {sub.name}
+                        </SelectItem>
+                      ))}
                   </SelectGroup>
                 </SelectContent>
               </Select>

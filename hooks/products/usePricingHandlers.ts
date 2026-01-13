@@ -11,7 +11,7 @@ export function usePricingHandlers() {
 
   // Watch promoteType for discount logic
   const promoteType = useWatch({ control, name: "promoteType" });
-  const isPercentage = (promoteType ?? "PERCENTAGE") === "PERCENTAGE";
+  const isPercentage = (promoteType ?? "PERCENT") === "PERCENT";
 
   // MMK Handlers
   const handleBuyingPriceMMKChange = useCallback((value: number) => {
@@ -41,7 +41,7 @@ export function usePricingHandlers() {
 
   const handleDiscountToggle = useCallback((enabled: boolean) => {
     if (enabled) {
-      setValue("promoteType", "PERCENTAGE" as discountType);
+      setValue("promoteType", "PERCENT" as discountType);
       setValue("promoteValue", 0);
     } else {
       setValue("promoteType", undefined);

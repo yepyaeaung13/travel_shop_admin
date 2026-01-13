@@ -2,6 +2,7 @@
 export type ProductImage = {
   url: string;
   isMain: boolean;
+  file: File;
 };
 
 interface UseProductImagesParams {
@@ -35,6 +36,7 @@ export function useProductImages({
       url: URL.createObjectURL(file),
       // First image ever becomes primary
       isMain: !hasPrimary && index === 0,
+      file: file,
     }));
 
     onChange([...images, ...nextImages]);

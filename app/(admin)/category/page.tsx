@@ -226,11 +226,11 @@ function CategoryList() {
       <Card className="min-h-full bg-white gap-4 border-none py-5">
         <CardHeader className="max-sm:px-4">
           <div className="flex items-center justify-between gap-2">
-            {selectedCategory.length === 0 ? (
+            {/* {selectedCategory.length === 0 ? ( */}
               <CardTitle className="text-nowrap flex gap-5 font-medium md:text-xl">
                 All Category ({totalItems})
               </CardTitle>
-            ) : (
+            {/* ) : (
               <CardTitle className="text-nowrap flex items-center gap-2 font-medium max-sm:w-full max-sm:justify-between md:gap-5 md:text-xl">
                 {selectedCategory.length} selected
                 <button
@@ -241,7 +241,7 @@ function CategoryList() {
                   Delete <IconTrash />
                 </button>
               </CardTitle>
-            )}
+            )} */}
             <div
               className={cn(
                 "relative",

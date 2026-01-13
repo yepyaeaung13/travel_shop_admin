@@ -6,13 +6,6 @@ import { handleInputAmountChange } from "@/utils/numberFormat";
 
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -100,12 +93,6 @@ export default function VariantEditDialog({
   const wvRef = useRef<HTMLInputElement>(null);
   const svRef = useRef<HTMLInputElement>(null);
 
-  // --- STATE ---
-  const [mode, setMode] = useState<"Weight" | "Size">(
-    fresh.weightValue != null ? "Weight" : "Size"
-  );
-  const [weightUnit, setWeightUnit] = useState(fresh.weightUnit ?? "kg");
-  const [sizeUnit, setSizeUnit] = useState(fresh.sizeUnit ?? "cm");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Track previous ID for synchronous sync (Fixes ESLint setState error)
@@ -113,23 +100,15 @@ export default function VariantEditDialog({
 
   if (fresh.id !== prevId) {
     setPrevId(fresh.id);
-    setMode(fresh.weightValue != null ? "Weight" : "Size");
-    setWeightUnit(fresh.weightUnit ?? "kg");
-    setSizeUnit(fresh.sizeUnit ?? "cm");
     setErrors({});
   }
 
   const handleSave = () => {
     const raw = {
-      mode,
       sku: skuRef.current?.value.trim() ?? "",
       purchasePrice: Number(bpRef.current?.value) || 0,
       sellingPrice: Number(spRef.current?.value) || 0,
       quantity: Number(stRef.current?.value) || 0,
-      weightValue: mode === "Weight" ? Number(wvRef.current?.value) || undefined : undefined,
-      weightUnit: mode === "Weight" ? weightUnit : undefined,
-      sizeValue: mode === "Size" ? svRef.current?.value.trim() : undefined,
-      sizeUnit: mode === "Size" ? sizeUnit : undefined,
     };
 
     const result = VariantEditSchema.safeParse(raw);

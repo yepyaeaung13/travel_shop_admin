@@ -9,6 +9,7 @@ import {
   toggleStatus,
   getCategoryById,
   UpdateCategoryRequest,
+  deleteSubCategory,
 } from "@/services/category.service";
 import {
   CategoryGetResponse,
@@ -81,6 +82,17 @@ export const useDeleteCategory = () => {
   return useMutation<CreateCategoryResponse, Error, number[]>({
     mutationKey: ["Delete-Category"],
     mutationFn: (ids: number[]) => deleteCategory(ids),
+    onSuccess() {
+      qr.invalidateQueries({ queryKey: ["Categories"] });
+    },
+  });
+};
+
+export const useDeleteSubCategory = () => {
+  const qr = useQueryClient();
+  return useMutation<CreateCategoryResponse, Error, number>({
+    mutationKey: ["Delete-Sub-Category"],
+    mutationFn: (id: number) => deleteSubCategory(id),
     onSuccess() {
       qr.invalidateQueries({ queryKey: ["Categories"] });
     },

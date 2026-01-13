@@ -64,7 +64,7 @@ export interface TaxInfo {
 
 export interface PromoteInfo {
   promoteStatus: boolean;
-  discountType?: "PERCENTAGE" | "AMOUNT";
+  discountType?: "PERCENT" | "AMOUNT";
   discountValue?: number;
   promotePercent?: number;
   promoteAmount?: number;
@@ -177,8 +177,6 @@ export interface VariantCombination {
   sellingPrice: number;
   quantity: number;
   combination?: { [key: string]: string };
-  weightValue?: number;
-  weightUnit?: string;
   sizeValue?: string;
   sizeUnit?: string;
 }

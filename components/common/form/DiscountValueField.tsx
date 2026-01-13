@@ -32,9 +32,11 @@ export function DiscountValueField({
           <FormControl>
             <div className="relative">
               <Input
-                type="text"
+                type="number"
                 placeholder={discount.isPercentage ? "Enter percentage" : "Enter amount"}
-                {...field}
+                onChange={e => {
+                  field.onChange(Number(e.target.value))
+                }}
                 className="h-12 rounded-[10px] p-4 pr-12"
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-500 text-sm font-medium">

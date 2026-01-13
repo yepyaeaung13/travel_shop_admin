@@ -30,7 +30,7 @@ export function useVariantsLogic({ form, categoryVariantGroups }: Props) {
   const [prevOptions, setPrevOptions] = useState(localOptions);
 
   // --- 2. SYNCHRONOUS SYNC (Avoids ESLint Error) ---
-
+console.log("categoryVariantGroups", categoryVariantGroups)
   // Sync if Category Groups change (Reset everything)
   if (categoryVariantGroups !== prevGroups) {
     setPrevGroups(categoryVariantGroups);
@@ -55,7 +55,7 @@ export function useVariantsLogic({ form, categoryVariantGroups }: Props) {
 
   const watchedVariants = useWatch({ control, name: "variants" });
   const variants = useMemo(
-    () => (watchedVariants || []) as VariantCombination[],
+    () => (watchedVariants || []) as VariantCombination[] | [],
     [watchedVariants]
   );
 
@@ -101,7 +101,7 @@ export function useVariantsLogic({ form, categoryVariantGroups }: Props) {
     const timeoutId = setTimeout(() => {
       if (hasValues) {
         const generated = generateVariants(localOptions, getValues);
-        setValue("variants", generated, { shouldValidate: true });
+        setValue("variants", generated as any, { shouldValidate: true });
       } else {
         setValue("variants", []);
       }
@@ -158,7 +158,7 @@ export function useVariantsLogic({ form, categoryVariantGroups }: Props) {
     const remaining = variants.filter(
       (v) => !selectedVariants.includes(v.id as number)
     );
-    setValue("variants", remaining, { shouldValidate: true });
+    setValue("variants", remaining as any, { shouldValidate: true });
     if(remaining.length <= 0) {
       setLocalOptions((prev) => prev.map((opt) => ({...opt, values: [] })))
     }
@@ -199,8 +199,8 @@ function generateVariants(
   build(0, {});
 
   const baseSku = getValues("sku") || "SKU";
-  const purchasePrice = Number(getValues("purchasePrice")) || 0;
-  const sellingPrice = Number(getValues("sellingPrice")) || 0;
+  const purchasePrice = Number(getValues("buyingPriceMMK")) || 0;
+  const sellingPrice = Number(getValues("sellingPriceUSD")) || 0;
 
   return combos.map((c, i) => {
     const variantName = Object.values(c).join("-");

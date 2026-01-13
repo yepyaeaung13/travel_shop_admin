@@ -113,12 +113,12 @@ export default function PricingSection({ form, discount }: PricingSectionProps) 
                     <FormControl>
                       <RadioGroup
                         onValueChange={handlers.handleDiscountTypeChange}
-                        value={field.value ?? "PERCENTAGE"}
+                        value={field.value ?? "PERCENT"}
                         className="flex space-x-6"
                       >
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem
-                            value="PERCENTAGE"
+                            value="PERCENT"
                             id="discount-percentage"
                           />
                           <Label htmlFor="discount-percentage" className="cursor-pointer">
