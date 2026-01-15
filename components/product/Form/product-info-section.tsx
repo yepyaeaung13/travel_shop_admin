@@ -1,13 +1,5 @@
 "use client";
 
-import { Controller, type UseFormReturn } from "react-hook-form";
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -19,22 +11,34 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Editor } from "./rich-editor";
 import { SelectGroup } from "@radix-ui/react-select";
-import { CreateProductPayload } from "@/types/product/product-form.schemas";
 import { cn } from "@/lib/utils";
+import { CreateProductState } from "@/store/useProductStore";
 
 interface ProductInfoSectionProps {
-  form: UseFormReturn<CreateProductPayload>;
+  name: string;
+  description: string | null;
   categories: any[];
   setSelectedCategory: (value: number) => void;
   selectedCategory: any;
+  setSelectedSubCategory: (value: number) => void;
+  selectedSubCategory: any;
+  setField: <K extends keyof CreateProductState>(
+    key: K,
+    value: CreateProductState[K]
+  ) => void;
 }
 
 export default function ProductInfoSection({
-  form,
+  name,
+  description,
   categories,
   setSelectedCategory,
   selectedCategory,
+  setSelectedSubCategory,
+  selectedSubCategory,
+  setField
 }: ProductInfoSectionProps) {
+  console.log("select", selectedCategory)
   return (
     <Card id="product-info">
       <CardHeader>
@@ -42,145 +46,101 @@ export default function ProductInfoSection({
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Product Name */}
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Product name <span className="text-red-500">*</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Product name"
-                  {...field}
-                  className="h-12 rounded-[10px] p-4"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div>
+          <label>
+            Product name <span className="text-red-500">*</span>
+          </label>
+          <Input
+            placeholder="Product name"
+            value={name}
+            onChange={(e) => setField("name", e.target.value)}
+            className="h-12 rounded-[10px] p-4"
+          />
+        </div>
 
         {/* Description */}
-        <FormField
-          control={form.control}
-          name="description"
-          render={() => {
-            return (
-              <FormItem>
-                <FormLabel>
-                  Description <span className="text-red-500">*</span>
-                </FormLabel>
-                <FormControl>
-                  <Controller
-                    name="description"
-                    control={form.control}
-                    render={({ field }) => (
-                      <Editor
-                        value={field.value}
-                        onChange={field.onChange}
-                        placeholder="Enter product description..."
-                      />
-                    )}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
-        />
+        <div>
+          <label>
+            Description <span className="text-red-500">*</span>
+          </label>
+          <Editor
+            value={description || ""}
+            onChange={(value) => setField("description", value)}
+            placeholder="Enter product description..."
+          />
+        </div>
 
-        <FormField
-          control={form.control}
-          name="categoryId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Category <span className="text-red-500">*</span>
-              </FormLabel>
-              <Select
-                value={field.value?.toString() ?? ""}
-                onValueChange={(value) => {
-                  if (value === "") return;
-                  const n = Number(value);
-                  field.onChange(n);
-                  setSelectedCategory(categories.find((c) => c.id === n));
-                }}
-              >
-                <SelectTrigger className="!h-12 w-full cursor-pointer rounded-2xl">
-                  <SelectValue placeholder="Main category" />
-                </SelectTrigger>
+        <div>
+          <label>
+            Category <span className="text-red-500">*</span>
+          </label>
+          <Select
+            value={selectedCategory?.id?.toString()}
+            onValueChange={(value) => {
+              if (value === "") return;
+              const n = Number(value);
+              setSelectedCategory(categories.find((c) => c.id === n));
+            }}
+          >
+            <SelectTrigger className="!h-12 w-full cursor-pointer rounded-2xl text-black">
+              <SelectValue placeholder="Main category" />
+            </SelectTrigger>
 
-                <SelectContent position={"popper"}>
-                  <SelectGroup>
-                    {categories.map((cat, index) => (
-                      <SelectItem
-                        key={index}
-                        value={cat?.id?.toString() ?? ""}
-                        className="cursor-pointer"
-                      >
-                        {cat.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+            <SelectContent position={"popper"}>
+              <SelectGroup>
+                {categories.map((cat, index) => (
+                  <SelectItem
+                    key={index}
+                    value={cat?.id?.toString() ?? ""}
+                    className="cursor-pointer text-black"
+                  >
+                    {cat.name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div>
+          <label>
+            Sub Category <span className="text-red-500">*</span>
+          </label>
+          <Select
+            value={selectedSubCategory?.id?.toString()}
+            onValueChange={(value) => {
+              if (value === "") return;
+              const n = Number(value);
+              setSelectedSubCategory(selectedCategory.subCategories.find((c: any) => c.id === n));
+            }}
+          >
+            <SelectTrigger
+              className={cn(
+                "!h-12 w-full cursor-pointer rounded-2xl",
+                selectedCategory && selectedCategory?.subCategories.length > 0
+                  ? ""
+                  : "cursor-not-allowed pointer-events-none"
+              )}
+            >
+              <SelectValue placeholder="Sub category" />
+            </SelectTrigger>
 
-        <FormField
-          control={form.control}
-          name="subCategoryId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Sub Category <span className="text-red-500">*</span>
-              </FormLabel>
-              <Select
-                value={field.value?.toString() ?? ""}
-                onValueChange={(value) => {
-                  if (value === "") return;
-                  const n = Number(value);
-                  field.onChange(n);
-                  setSelectedCategory(n);
-                }}
-              >
-                <SelectTrigger
-                  className={cn(
-                    "!h-12 w-full cursor-pointer rounded-2xl",
-                    selectedCategory &&
-                      selectedCategory?.subCategories.length > 0
-                      ? ""
-                      : "cursor-not-allowed pointer-events-none"
-                  )}
-                >
-                  <SelectValue placeholder="Sub category" />
-                </SelectTrigger>
-
-                <SelectContent position={"popper"}>
-                  <SelectGroup>
-                    {selectedCategory?.subCategories &&
-                      selectedCategory?.subCategories.map((sub: any) => (
-                        <SelectItem
-                          key={sub.id}
-                          value={sub?.id?.toString() ?? ""}
-                          className="cursor-pointer"
-                        >
-                          {sub.name}
-                        </SelectItem>
-                      ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <SelectContent position={"popper"}>
+              <SelectGroup>
+                {selectedCategory?.subCategories &&
+                  selectedCategory?.subCategories.map((sub: any) => (
+                    <SelectItem
+                      key={sub.id}
+                      value={sub?.id?.toString() ?? ""}
+                      className="cursor-pointer"
+                    >
+                      {sub.name}
+                    </SelectItem>
+                  ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
       </CardContent>
     </Card>
   );

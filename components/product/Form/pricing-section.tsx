@@ -1,38 +1,35 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import {
-  FormField,
-  FormItem,
-  FormControl,
-  FormLabel,
-} from "@/components/ui/form";
-import {usePricingHandlers} from "@/hooks/products/usePricingHandlers";
-import {PriceField} from "@/components/common/form/PriceField";
-import {DiscountValueField} from "@/components/common/form/DiscountValueField";
-import type {UseFormReturn} from "react-hook-form";
-import {CreateProductPayload} from "@/types/product/product-form.schemas";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { CreateProductState, PromoteType } from "@/store/useProductStore";
 
 interface PricingSectionProps {
-  form: UseFormReturn<CreateProductPayload>;
-  discount: {
-    enabled: boolean;
-    type: string;
-    isPercentage: boolean;
-  };
+  promoteType: PromoteType;
+  promoteValue: number;
+  isPromote: boolean;
+  setField: <K extends keyof CreateProductState>(
+    key: K,
+    value: CreateProductState[K]
+  ) => void;
+  sellingPriceMMK: number;
+  sellingPriceUSD: number;
+  sellingPriceCNY: number;
 }
 
-export default function PricingSection({ form, discount }: PricingSectionProps) {
-  const { handlers } = usePricingHandlers();
-
+export default function PricingSection({
+  promoteType,
+  promoteValue,
+  isPromote,
+  setField,
+  sellingPriceMMK,
+  sellingPriceUSD,
+  sellingPriceCNY,
+}: PricingSectionProps) {
   return (
     <Card>
       <CardHeader>
@@ -41,109 +38,155 @@ export default function PricingSection({ form, discount }: PricingSectionProps) 
       <CardContent className="space-y-6">
         <div className="grid grid-cols-2 gap-4">
           <PriceField
-            form={form}
-            name="buyingPriceMMK"
-            label="Buying Price"
-            placeholder="Buying price"
-            unit="Ks"
-            isRequired
-            onChange={handlers.handleBuyingPriceMMKChange}
-          />
-          <PriceField
-            form={form}
             name="sellingPriceMMK"
             label="Selling Price"
             placeholder="Selling price"
             unit="Ks"
-            isRequired
-            onChange={handlers.handleSellingPriceMMKChange}
+            isRequired={true}
+            value={sellingPriceMMK.toString()}
+            onChangeValue={(value: number) => setField("sellingPriceMMK", value)}
           />
           <PriceField
-            form={form}
             name="sellingPriceUSD"
             label="Selling Price (USD)"
             placeholder="Selling Price in Dollar"
             unit="$"
-            onChange={handlers.handleSellingPriceUSDChange}
+            isRequired={false}
+            value={sellingPriceUSD.toString()}
+            onChangeValue={(value: number) =>
+              setField("sellingPriceUSD", value)
+            }
           />
           <PriceField
-            form={form}
             name="sellingPriceCNY"
             label="Selling Price (CNY)"
             placeholder="Selling Price in Yuan"
             unit="¥"
-            onChange={handlers.handleSellingPriceCNYChange}
+            isRequired={false}
+            value={sellingPriceCNY.toString()}
+            onChangeValue={(value: number) =>
+              setField("sellingPriceCNY", value)
+            }
           />
         </div>
 
-
         <div className="space-y-4">
-          <FormField
-            control={form.control}
-            name="promoteType"
-            render={({ field }) => (
-              <FormItem className="flex items-center space-x-2">
-                <FormControl>
-                  <Switch
-                    checked={!!field.value}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        // Enable discount with default type
-                        handlers.handleDiscountToggle(true);
-                      } else {
-                        // Disable discount by clearing promoteType
-                        form.setValue("promoteType", undefined);
-                        form.setValue("promoteValue", 0);
-                      }
-                    }}
-                  />
-                </FormControl>
-                <FormLabel>Discount</FormLabel>
-              </FormItem>
-            )}
-          />
+          <div className="flex items-center space-x-2">
+            <Switch
+              checked={isPromote}
+              onCheckedChange={(checked) => {
+                setField("isPromote", checked);
+                if (!checked) {
+                  // Disable discount by clearing promoteType
+                  setField("promoteType", PromoteType.PERCENT);
+                  setField("promoteValue", 0);
+                }
+              }}
+            />
+            <label>Discount</label>
+          </div>
 
-          {discount.enabled && (
-            <div className="space-y-4 pl-4">
-              <FormField
-                control={form.control}
-                name="promoteType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={handlers.handleDiscountTypeChange}
-                        value={field.value ?? "PERCENT"}
-                        className="flex space-x-6"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem
-                            value="PERCENT"
-                            id="discount-percentage"
-                          />
-                          <Label htmlFor="discount-percentage" className="cursor-pointer">
-                            Percentage
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="AMOUNT" id="discount-amount" />
-                          <Label htmlFor="discount-amount" className="cursor-pointer">
-                            Amount
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <DiscountValueField
-                form={form}
-                discount={discount}
-              />
+          <div className={cn("space-y-4 pl-4", !isPromote && "pointer-events-none opacity-50")}>
+            <div>
+              <RadioGroup
+                onValueChange={(value) =>
+                  setField("promoteType", value as PromoteType)
+                }
+                value={promoteType}
+                className="flex space-x-6"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="PERCENT" id="discount-percentage" />
+                  <Label
+                    htmlFor="discount-percentage"
+                    className="cursor-pointer"
+                  >
+                    Percentage
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="AMOUNT" id="discount-amount" />
+                  <Label htmlFor="discount-amount" className="cursor-pointer">
+                    Amount
+                  </Label>
+                </div>
+              </RadioGroup>
             </div>
-          )}
+
+            <div className="relative">
+              <Input
+                type="number"
+                placeholder={
+                  promoteType === PromoteType.PERCENT
+                    ? "Enter percentage"
+                    : "Enter amount"
+                }
+                value={promoteValue.toString()}
+                onChange={(e) => {
+                  setField("promoteValue", Number(e.target.value));
+                }}
+                className="h-12 rounded-[10px] p-4 pr-12"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-500 text-sm font-medium">
+                {promoteType === PromoteType.PERCENT ? "%" : "Ks"}
+              </span>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function PriceField({
+  name,
+  label,
+  isRequired,
+  placeholder,
+  unit,
+  value,
+  onChangeValue,
+}: {
+  name: string;
+  label: string;
+  isRequired: boolean;
+  placeholder: string;
+  unit: string;
+  value: string;
+  onChangeValue: (value: number) => void;
+}) {
+  return (
+    <>
+      <label>
+        {label} {isRequired && <span className="text-red-500">*</span>}
+      </label>
+      <div className="relative">
+        <Input
+          type="number"
+          inputMode="decimal"
+          pattern="[0-9]*"
+          placeholder={placeholder}
+          name={name}
+          className="h-12 rounded-[10px] p-4 pr-12"
+          value={value}
+          onChange={(e) => {
+            // ✅ Numbers only!
+            const rawValue = e.target.value;
+            const numericValue = rawValue.replace(/[^0-9.]/g, "");
+
+            // add logic
+            onChangeValue(Number(numericValue));
+          }}
+        />
+        <span
+          className={cn([
+            "absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-500 text-sm font-medium",
+            { "text-primary text-lg": unit !== "Ks" },
+          ])}
+        >
+          {unit}
+        </span>
+      </div>
+    </>
   );
 }

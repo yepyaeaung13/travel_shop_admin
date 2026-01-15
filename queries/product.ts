@@ -34,7 +34,7 @@ export const useGetProductById = (id: number): UseQueryResult<any, Error> =>
 
 export const useCreateProduct = () => {
     const queryClient = useQueryClient();
-    return useMutation<Product, Error, CreateProductPayload>({
+    return useMutation<Product, Error, any>({
         mutationFn: (payload) => createProduct(payload),
         onSuccess: () => {
             void queryClient.invalidateQueries({
