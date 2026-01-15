@@ -38,7 +38,13 @@ export default function ProductCreatePage() {
     stock,
     sku,
     variants,
+    addVariant,
+    removeVariantItem,
+    updateVariantItem,
     productVarints,
+    addProductVariant,
+    removeProductVariant,
+    updateProductVariant,
     setField,
     images,
     addImage,
@@ -147,7 +153,13 @@ export default function ProductCreatePage() {
             />
             <VariantSection
               variants={variants}
+              addVariant={addVariant}
+              removeVariantItem={removeVariantItem}
+              updateVariantItem={updateVariantItem}
               productVarints={productVarints}
+              addProductVariant={addProductVariant}
+              updateProductVariant={updateProductVariant}
+              removeProductVariant={removeProductVariant}
               categoryVariantGroups={categoryVariantGroups}
             />
           </div>

@@ -16,7 +16,7 @@ export type ProductImage = {
   isMain: boolean;
 };
 
-export type Variant = {
+export type VariantItem = {
   name: string;
   buyingPrice: number;
   sellingPrice: number;
@@ -27,6 +27,11 @@ export type Variant = {
 export type ProductVariant = {
   name: string;
   values: string[];
+};
+
+export type GroupedVariant = {
+  name: string; // "Small"
+  variantItems: VariantItem[];
 };
 
 export type CreateProductState = {
@@ -51,7 +56,7 @@ export type CreateProductState = {
   subCategoryId: number | null;
 
   images: ProductImage[];
-  variants: Variant[];
+  variants: GroupedVariant[];
   productVarints: ProductVariant[];
 
   // actions
@@ -63,10 +68,12 @@ export type CreateProductState = {
   addImage: (image: ProductImage) => void;
   removeImage: (index: number) => void;
 
-  addVariant: (variant: Variant) => void;
-  removeVariant: (index: number) => void;
+  addVariant: (variant: GroupedVariant[]) => void;
+  removeVariantItem: (parentIndexNo: number, index: number) => void;
+  updateVariantItem: (parentIndexNo: number, index: number, variant: VariantItem) => void;
 
   addProductVariant: (variant: ProductVariant) => void;
+  updateProductVariant: (indexNo: number, variant: ProductVariant) => void;
   removeProductVariant: (index: number) => void;
 
   reset: () => void;
@@ -115,19 +122,53 @@ export const useCreateProductStore = create<CreateProductState>((set) => ({
       images: state.images.filter((_, i) => i !== index),
     })),
 
-  addVariant: (variant) =>
+  addVariant: (variants) =>
     set((state) => ({
-      variants: [...state.variants, variant],
+      variants,
     })),
 
-  removeVariant: (index) =>
+  removeVariantItem: (parentIndex: number, itemIndex: number) =>
+  set((state) => ({
+    variants: state.variants.map((group, gIndex) =>
+      gIndex !== parentIndex
+        ? group
+        : {
+            ...group,
+            variantItems: group.variantItems.filter(
+              (_, i) => i !== itemIndex
+            ),
+          }
+    ),
+  })),
+
+  updateVariantItem: (
+    parentIndexNo: number,
+    indexNo: number,
+    variant: VariantItem
+  ) =>
     set((state) => ({
-      variants: state.variants.filter((_, i) => i !== index),
+      variants: state.variants.map((group, groupIndex) => {
+        if (groupIndex !== parentIndexNo) return group;
+
+        return {
+          ...group,
+          variantItems: group.variantItems.map((item, itemIndex) =>
+            itemIndex === indexNo ? variant : item
+          ),
+        };
+      }),
     })),
 
   addProductVariant: (variant) =>
     set((state) => ({
       productVarints: [...state.productVarints, variant],
+    })),
+
+  updateProductVariant: (indexNo: number, variant: ProductVariant) =>
+    set((state) => ({
+      productVarints: state.productVarints.map((v, idx) =>
+        idx === indexNo ? variant : v
+      ),
     })),
 
   removeProductVariant: (index) =>

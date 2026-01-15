@@ -2,7 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { CreateProductState, Variant } from "@/store/useProductStore";
+import { CreateProductState, GroupedVariant, VariantItem } from "@/store/useProductStore";
 import { useEffect } from "react";
 
 type Props = {
@@ -12,7 +12,7 @@ type Props = {
     key: K,
     value: CreateProductState[K]
   ) => void;
-  variants: Variant[];
+  variants: GroupedVariant[];
 };
 
 export default function VisibilityInventorySection({
@@ -23,12 +23,14 @@ export default function VisibilityInventorySection({
 }: Props) {
   const isDisabled = variants.length > 0;
 
+  console.log("v", variants)
+
   useEffect(() => {
     if (variants.length > 0) {
       setField("stock", 0);
       setField("sku", "");
     }
-  }, variants);
+  }, [variants]);
 
   return (
     <div className={cn("space-y-6", isDisabled && "relative")}>
