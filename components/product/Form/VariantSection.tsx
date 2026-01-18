@@ -71,9 +71,6 @@ export default function VariantSection({
   categoryVariantGroups,
   isDuplicate = false,
 }: Props) {
-  const [deleteItemIds, setDeleteItemIds] = useState<
-    { parentIndexNo: number; indexNo: number }[]
-  >([]);
   const [tempProductVarint, setTempProductVarint] = useState<ProductVariant>({
     name: "",
     values: [],
@@ -166,16 +163,6 @@ export default function VariantSection({
     }));
   };
 
-  const deleteSelectedItems = () => {
-    deleteItemIds
-      .sort((a, b) => b.indexNo - a.indexNo) // important
-      .forEach(({ parentIndexNo, indexNo }) => {
-        removeVariantItem(parentIndexNo, indexNo);
-      });
-
-    setDeleteItemIds([]);
-  };
-
   const getMinMaxPrice = (items: { sellingPrice: number }[]) => {
     if (!items.length) return { min: 0, max: 0 };
 
@@ -207,13 +194,13 @@ export default function VariantSection({
   };
 
   useEffect(() => {
-    if (isEdit && variantItems) {
-      const result = generateGroupedVariantsUpdate(
-        productVarints,
-        variantItems!,
-      );
-      addVariant(result);
-    } else {
+    // if (isEdit && variantItems) {
+    //   const result = generateGroupedVariantsUpdate(
+    //     productVarints,
+    //     variantItems!,
+    //   );
+    //   addVariant(result);
+    // } else {
       // const result = generateGroupedVariants(productVarints);
       const localVariantItems = variants.flatMap((v) => v.variantItems);
       const result = generateGroupedVariantsUpdate(
@@ -221,7 +208,7 @@ export default function VariantSection({
         localVariantItems!,
       );
       addVariant(result);
-    }
+    // }
   }, [productVarints]);
 
   return (
