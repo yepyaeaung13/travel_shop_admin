@@ -196,8 +196,8 @@ function CategoryList() {
   };
 
   // --- RENDER LOGIC ---
-  const showNoCategoryYet = totalItems === 0 && !debouncedSearch;
-  const showNoResult = totalItems === 0 && debouncedSearch;
+  const showNoCategoryYet = totalItems === 1 && !debouncedSearch;
+  const showNoResult = totalItems === 1 && debouncedSearch;
   const defaultCategory = categories.find((cat) => cat.id === 1);
 
   // ------------------------------------
@@ -306,7 +306,7 @@ function CategoryList() {
       </Card>
 
       {/* {totalItems > 0 && ( */}
-      {totalItems > 0 && (
+      {totalItems > 1 && (
         <div className="pt-3 md:pb-5">
           <TablePagination
             currentPage={currentPage}
