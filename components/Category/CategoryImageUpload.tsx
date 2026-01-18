@@ -54,7 +54,7 @@ export default function CategoryImageUpload({
           </div>
         ) : (
           <div className="bg-[#616FF514]">
-            <Label htmlFor="category-image" className="cursor-pointer">
+            <Label htmlFor={title} className="cursor-pointer">
               <div
                 className={cn(
                   "rounded-lg w-full flex flex-col space-y-3 items-center justify-center bg-primary/5 hover:bg-primary/10 transition-colors border border-primary",
@@ -74,7 +74,7 @@ export default function CategoryImageUpload({
               </div>
             </Label>
             <Input
-              id="category-image"
+              id={title}
               type="file"
               accept="image/*"
               onChange={onImageChange}

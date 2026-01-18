@@ -35,13 +35,41 @@ export default function PricingSection({
   sellingPriceUSD,
   sellingPriceCNY,
 }: PricingSectionProps) {
-  const { productVarints } = useCreateProductStore.getState();
+  const { variants } = useCreateProductStore.getState();
+
+  const variantItems = variants.flatMap((v) => v.variantItems);
+
+  const minVariantPriceMMK =
+    variantItems.length > 0
+      ? Math.min(
+          ...variantItems.map((v) => v.sellingPrice ?? 0).filter((p) => p > 0),
+        )
+      : 0;
 
   useEffect(() => {
-    if (productVarints.length > 0) {
+    if (variants.length > 0) {
       setField("sellingPriceMMK", 0);
     }
-  }, [productVarints]);
+  }, [variants]);
+
+  const clampDiscountValue = (
+    value: number,
+    promoteType: PromoteType,
+    sellingPriceMMK: number,
+  ) => {
+    if (value < 0) return 0;
+
+    if (promoteType === PromoteType.PERCENT) {
+      return Math.min(value, 100);
+    }
+
+    if (variantItems.length > 0) {
+      return Math.min(value, minVariantPriceMMK);
+    }
+
+    // AMOUNT
+    return Math.min(value, sellingPriceMMK);
+  };
 
   return (
     <Card className="gap-2">
@@ -49,14 +77,10 @@ export default function PricingSection({
         <CardTitle>Pricing</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6 grid grid-cols-2 gap-5">
-        <div
-          className={cn(
-            "space-y-6"
-          )}
-        >
+        <div className={cn("space-y-6")}>
           <div
             className={cn(
-              productVarints.length > 0 && "pointer-events-none opacity-50",
+              variants.length > 0 && "pointer-events-none opacity-50",
             )}
           >
             <PriceField
@@ -126,8 +150,19 @@ export default function PricingSection({
                     : "Enter amount"
                 }
                 value={promoteValue.toString()}
+                onWheel={(e) => e.currentTarget.blur()}
                 onChange={(e) => {
-                  setField("promoteValue", Number(e.target.value));
+                  const raw = Number(e.target.value);
+
+                  const safeValue = clampDiscountValue(
+                    raw,
+                    promoteType,
+                    sellingPriceMMK,
+                  );
+
+                  console.log("safe", safeValue);
+
+                  setField("promoteValue", safeValue);
                 }}
                 className="h-12 rounded-[10px] p-4 pr-12"
               />
@@ -137,9 +172,10 @@ export default function PricingSection({
             </div>
             <div>
               <RadioGroup
-                onValueChange={(value) =>
-                  setField("promoteType", value as PromoteType)
-                }
+                onValueChange={(value) => {
+                  setField("promoteType", value as PromoteType);
+                  setField("promoteValue", 0);
+                }}
                 value={promoteType}
                 className="flex space-x-6"
               >

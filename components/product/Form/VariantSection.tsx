@@ -201,13 +201,13 @@ export default function VariantSection({
     //   );
     //   addVariant(result);
     // } else {
-      // const result = generateGroupedVariants(productVarints);
-      const localVariantItems = variants.flatMap((v) => v.variantItems);
-      const result = generateGroupedVariantsUpdate(
-        productVarints,
-        localVariantItems!,
-      );
-      addVariant(result);
+    // const result = generateGroupedVariants(productVarints);
+    const localVariantItems = variants.flatMap((v) => v.variantItems);
+    const result = generateGroupedVariantsUpdate(
+      productVarints,
+      localVariantItems!,
+    );
+    addVariant(result);
     // }
   }, [productVarints]);
 
@@ -465,27 +465,37 @@ export default function VariantSection({
 
                           <TableCell>
                             <Input
-                              value={item.sellingPrice}
+                              value={item.sellingPrice.toString()}
                               className="h-8 w-24"
-                              onChange={(e) =>
+                              onChange={(e) => {
+                                const rawValue = e.target.value;
+                                const numericValue = rawValue.replace(
+                                  /[^0-9.]/g,
+                                  "",
+                                );
                                 updateVariantItem(groupIndex, itemIndex, {
                                   ...item,
-                                  sellingPrice: Number(e.target.value),
-                                })
-                              }
+                                  sellingPrice: Number(numericValue),
+                                });
+                              }}
                             />
                           </TableCell>
 
                           <TableCell>
                             <Input
-                              value={item.stock}
+                              value={item.stock.toString()}
                               className="h-8 w-20"
-                              onChange={(e) =>
+                              onChange={(e) => {
+                                const rawValue = e.target.value;
+                                const numericValue = rawValue.replace(
+                                  /[^0-9.]/g,
+                                  "",
+                                );
                                 updateVariantItem(groupIndex, itemIndex, {
                                   ...item,
-                                  stock: Number(e.target.value),
-                                })
-                              }
+                                  stock: Number(numericValue),
+                                });
+                              }}
                             />
                           </TableCell>
                           <TableCell>
@@ -536,12 +546,17 @@ export default function VariantSection({
                               placeholder={
                                 min === max ? undefined : `${min} – ${max}`
                               }
-                              onChange={(e) =>
+                              onChange={(e) => {
+                                const rawValue = e.target.value;
+                                const numericValue = rawValue.replace(
+                                  /[^0-9.]/g,
+                                  "",
+                                );
                                 updateGroupSellingPrice(
                                   groupIndex,
-                                  Number(e.target.value),
-                                )
-                              }
+                                  Number(numericValue),
+                                );
+                              }}
                             />
                           </TableCell>
                           <TableCell
@@ -600,14 +615,19 @@ export default function VariantSection({
 
                               <TableCell>
                                 <Input
-                                  value={item.sellingPrice}
+                                  value={item.sellingPrice.toString()}
                                   className="h-8 w-24"
-                                  onChange={(e) =>
+                                  onChange={(e) => {
+                                    const rawValue = e.target.value;
+                                    const numericValue = rawValue.replace(
+                                      /[^0-9.]/g,
+                                      "",
+                                    );
                                     updateVariantItem(groupIndex, itemIndex, {
                                       ...item,
-                                      sellingPrice: Number(e.target.value),
-                                    })
-                                  }
+                                      sellingPrice: Number(numericValue),
+                                    });
+                                  }}
                                 />
                               </TableCell>
 
@@ -615,12 +635,17 @@ export default function VariantSection({
                                 <Input
                                   value={item.stock}
                                   className="h-8 w-20"
-                                  onChange={(e) =>
+                                  onChange={(e) => {
+                                    const rawValue = e.target.value;
+                                    const numericValue = rawValue.replace(
+                                      /[^0-9.]/g,
+                                      "",
+                                    );
                                     updateVariantItem(groupIndex, itemIndex, {
                                       ...item,
-                                      stock: Number(e.target.value),
-                                    })
-                                  }
+                                      stock: Number(numericValue),
+                                    });
+                                  }}
                                 />
                               </TableCell>
 
@@ -662,34 +687,38 @@ export default function VariantSection({
             <div className="w-full flex flex-col gap-2">
               <label>Price (MMK)</label>
               <Input
-                value={selectedVariant?.variantItem?.sellingPrice}
+                value={selectedVariant?.variantItem?.sellingPrice.toString()}
                 className="h-10"
-                onChange={(e) =>
+                onChange={(e) => {
+                  const rawValue = e.target.value;
+                  const numericValue = rawValue.replace(/[^0-9.]/g, "");
                   setSelectedVariant({
                     ...selectedVariant,
                     variantItem: {
                       ...selectedVariant?.variantItem,
-                      sellingPrice: Number(e.target.value),
+                      sellingPrice: Number(numericValue),
                     },
-                  } as any)
-                }
+                  } as any);
+                }}
               />
             </div>
 
             <div className="flex flex-col gap-2">
               <label>Stock</label>
               <Input
-                value={selectedVariant?.variantItem?.stock}
+                value={selectedVariant?.variantItem?.stock.toString()}
                 className="h-10"
-                onChange={(e) =>
+                onChange={(e) => {
+                  const rawValue = e.target.value;
+                  const numericValue = rawValue.replace(/[^0-9.]/g, "");
                   setSelectedVariant({
                     ...selectedVariant,
                     variantItem: {
                       ...selectedVariant?.variantItem,
-                      stock: Number(e.target.value),
+                      stock: Number(numericValue),
                     },
-                  } as any)
-                }
+                  } as any);
+                }}
               />
             </div>
 
