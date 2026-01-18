@@ -24,6 +24,8 @@ export type VariantItem = {
   sellingPrice: number;
   stock: number;
   sku: string;
+  showSKU: string;
+  status: "active" | "inactive"
 };
 
 export type ProductVariant = {

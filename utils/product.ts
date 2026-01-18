@@ -70,6 +70,8 @@ export function generateGroupedVariants(
           buyingPrice: 0,
           sellingPrice: 0,
           stock: 0,
+          showSKU: "",
+          status: "active",
         },
       ],
     }));
@@ -91,6 +93,8 @@ export function generateGroupedVariants(
         buyingPrice: 0,
         sellingPrice: 0,
         stock: 0,
+        showSKU: "",
+        status: "active",
       };
     }),
   }));
@@ -100,36 +104,40 @@ export function generateGroupedVariantsUpdate(
   variants: ProductVariant[],
   variantItems: VariantItem[],
 ): GroupedVariant[] {
-  console.log(variants);
   if (variants.length === 0) return [];
 
   const [baseVariant, ...otherVariants] = variants;
-
   // If only 1 variant (e.g. only Size)
   if (otherVariants.length === 0) {
-    return baseVariant.values
-      .map((base) => {
-        const sku = base.toUpperCase().replace(/\s+/g, "-");
-        const variant = variantItems.find((v) => v.sku === sku);
+    return baseVariant.values.map((base) => {
+      const sku = base.toUpperCase().replace(/\s+/g, "-");
+      const variant = variantItems.find((v) => v.sku === sku);
 
-        // ❗ If variant was deleted → do NOT recreate it
-        if (!variant) return null;
-
-        return {
-          name: base,
-          variantItems: [
-            {
-              id: variant.id,
-              name: variant.name,
-              sku: variant.sku,
-              buyingPrice: Number(variant.buyingPrice),
-              sellingPrice: Number(variant.sellingPrice),
-              stock: variant.stock,
-            },
-          ],
+      // ❗ If variant was deleted → do NOT recreate it
+      let genVariant;
+      if (variant) {
+        genVariant = {
+          ...variant,
+          buyingPrice: Number(variant.buyingPrice),
+          sellingPrice: Number(variant.sellingPrice),
         };
-      })
-      .filter(Boolean) as GroupedVariant[];
+      } else {
+        genVariant = {
+          name: base,
+          sku: base.toUpperCase(),
+          buyingPrice: 0,
+          sellingPrice: 0,
+          stock: 0,
+          showSKU: "",
+          status: "active",
+        };
+      }
+
+      return {
+        name: base,
+        variantItems: [genVariant],
+      };
+    }) as GroupedVariant[];
   }
 
   const otherValueSets = otherVariants.map((v) => v.values);
@@ -137,25 +145,35 @@ export function generateGroupedVariantsUpdate(
 
   return baseVariant.values.map((baseValue) => ({
     name: baseValue,
-    variantItems: combinations
-      .map((combo) => {
-        const fullValues = [baseValue, ...combo];
-        const sku = fullValues
-          .map((v) => v.toUpperCase().replace(/\s+/g, "-"))
-          .join("-");
+    variantItems: combinations.map((combo) => {
+      const fullValues = [baseValue, ...combo];
+      const sku = fullValues
+        .map((v) => v.toUpperCase().replace(/\s+/g, "-"))
+        .join("-");
 
-        const variant = variantItems.find((v) => v.sku === sku);
-        if (!variant) return null;
-
-        return {
-          id: variant.id,
-          name: variant.name,
-          sku: variant.sku,
+      const variant = variantItems.find((v) => v.sku === sku);
+      let genVariant;
+      if (variant) {
+        genVariant = {
+          ...variant,
           buyingPrice: Number(variant.buyingPrice),
           sellingPrice: Number(variant.sellingPrice),
-          stock: variant.stock,
         };
-      })
-      .filter(Boolean) as VariantItem[],
-  }));
+      } else {
+        genVariant = {
+          name: combo.join(" / "),
+          sku: fullValues
+            .map((v) => v.toUpperCase().replace(/\s+/g, "-"))
+            .join("-"),
+          buyingPrice: 0,
+          sellingPrice: 0,
+          stock: 0,
+          showSKU: "",
+          status: "active",
+        };
+      }
+
+      return genVariant;
+    }),
+  })) as GroupedVariant[];
 }

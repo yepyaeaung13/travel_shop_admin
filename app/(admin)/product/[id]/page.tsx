@@ -172,6 +172,10 @@ function ProductCreatePage() {
     setInitialData(updateData);
   }, [product?.data, setInitialData]);
 
+  useEffect(() => {
+    return () => reset();
+  }, []);
+
   const disabled = useMemo(() => {
     if (images.length === 0) return true;
   }, [images]);

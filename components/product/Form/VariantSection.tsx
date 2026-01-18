@@ -18,6 +18,8 @@ import {
   ChevronUp,
   CircleChevronRight,
   PlusCircle,
+  ToggleLeft,
+  ToggleRight,
   Trash2,
 } from "lucide-react";
 import { CategoryVariantGroup } from "@/types/categories";
@@ -69,8 +71,6 @@ export default function VariantSection({
   categoryVariantGroups,
   isDuplicate = false,
 }: Props) {
-  const [dialogSelectedVariant, setDialogSelectedVariant] =
-    useState<VariantItem | null>(null);
   const [deleteItemIds, setDeleteItemIds] = useState<
     { parentIndexNo: number; indexNo: number }[]
   >([]);
@@ -85,7 +85,7 @@ export default function VariantSection({
       indexNo: 0,
     },
   );
-
+  const [showError, setShowError] = useState("");
   const [showEdit, setShowEdit] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [newValue, setNewValue] = useState("");
@@ -121,27 +121,39 @@ export default function VariantSection({
 
   const handleDeleteTemp = () => {
     setTempProductVarint({ name: "", values: [] });
+    setNewValue("");
     setShowNew(false);
   };
 
   const handleDeleteItem = () => {
     removeProductVariant(editProductVarint.indexNo);
     setEditProductVarint({ name: "", values: [], indexNo: 0 });
+    setNewEditValue("");
     setShowEdit(false);
   };
 
   const handleAddNew = () => {
+    if (newValue !== "") {
+      setShowError("Please press Enter for new value.");
+      return;
+    }
     addProductVariant(tempProductVarint);
     setTempProductVarint({ name: "", values: [] });
+    setNewValue("");
     setShowNew(false);
   };
 
   const handleUpdate = () => {
+    if (newEditValue !== "") {
+      setShowError("Please press Enter for new value.");
+      return;
+    }
     updateProductVariant(editProductVarint.indexNo, {
       name: editProductVarint.name,
       values: editProductVarint.values,
     });
     setEditProductVarint({ name: "", values: [], indexNo: 0 });
+    setNewEditValue("");
     setShowEdit(false);
   };
 
@@ -153,29 +165,6 @@ export default function VariantSection({
       [name]: !prev[name],
     }));
   };
-
-  const toggleDeleteItem = (parentIndexNo: number, indexNo: number) => {
-    setDeleteItemIds((prev) => {
-      const exists = prev.some(
-        (i) => i.parentIndexNo === parentIndexNo && i.indexNo === indexNo,
-      );
-
-      if (exists) {
-        // unselect
-        return prev.filter(
-          (i) => !(i.parentIndexNo === parentIndexNo && i.indexNo === indexNo),
-        );
-      }
-
-      // select
-      return [...prev, { parentIndexNo, indexNo }];
-    });
-  };
-
-  const isItemSelected = (parentIndexNo: number, indexNo: number) =>
-    deleteItemIds.some(
-      (i) => i.parentIndexNo === parentIndexNo && i.indexNo === indexNo,
-    );
 
   const deleteSelectedItems = () => {
     deleteItemIds
@@ -225,7 +214,12 @@ export default function VariantSection({
       );
       addVariant(result);
     } else {
-      const result = generateGroupedVariants(productVarints);
+      // const result = generateGroupedVariants(productVarints);
+      const localVariantItems = variants.flatMap((v) => v.variantItems);
+      const result = generateGroupedVariantsUpdate(
+        productVarints,
+        localVariantItems!,
+      );
       addVariant(result);
     }
   }, [productVarints]);
@@ -245,6 +239,8 @@ export default function VariantSection({
                 key={index}
                 onClick={() => {
                   setEditProductVarint({ ...pv, indexNo: index });
+                  setShowError("");
+                  setNewEditValue("");
                   setShowEdit(true);
                 }}
                 className="hover:bg-gray-100 cursor-pointer border rounded-[10px] border-[#EEEEEE] p-5 flex flex-col gap-2.5"
@@ -317,6 +313,10 @@ export default function VariantSection({
                   }}
                 />
 
+                {showError && (
+                  <p className="text-sm text-red-500">{showError}</p>
+                )}
+
                 <div className="w-full flex justify-between items-center">
                   <button
                     type="button"
@@ -336,7 +336,12 @@ export default function VariantSection({
               </div>
             )}
 
-            <Dialog open={showEdit} onOpenChange={setShowEdit}>
+            <Dialog
+              open={showEdit}
+              onOpenChange={() => {
+                setShowEdit(false);
+              }}
+            >
               <DialogContent className="max-w-[600px] flex flex-col items-center justify-center gap-7 rounded-[10px]">
                 <div className="w-full max-h-[500px] p-5 flex flex-col gap-2.5 overflow-y-auto scrollbar-none">
                   <label htmlFor="">Option name</label>
@@ -387,6 +392,10 @@ export default function VariantSection({
                     }}
                   />
 
+                  {showError && (
+                    <p className="text-sm text-red-500">{showError}</p>
+                  )}
+
                   <div className="w-full flex justify-between items-center">
                     <button
                       type="button"
@@ -407,9 +416,17 @@ export default function VariantSection({
               </DialogContent>
             </Dialog>
             <button
-              className="text-primary flex gap-2"
+              className={cn(
+                "text-primary flex gap-2",
+                showNew && "opacity-50 cursor-not-allowed",
+              )}
               type="button"
-              onClick={() => setShowNew(true)}
+              onClick={() => {
+                setShowError("");
+                setNewValue("");
+                setShowNew(true);
+              }}
+              disabled={showNew}
             >
               <PlusCircle />
               Add option
@@ -419,22 +436,6 @@ export default function VariantSection({
           {/* Table Section */}
           {variants.length > 0 && (
             <div className="relative min-h-[200px]">
-              <div className="flex items-center justify-end py-4 space-x-5 px-2">
-                <Button
-                  size="sm"
-                  type="button"
-                  variant="destructive"
-                  onClick={deleteSelectedItems}
-                  className={cn([
-                    "w-fit cursor-pointer bg-destructive/10 rounded-lg hover:bg-destructive/15",
-                    { hidden: deleteItemIds.length <= 0 },
-                  ])}
-                >
-                  Delete
-                  <Trash2 className="mr-1 h-4 w-4" />
-                </Button>
-              </div>
-
               <Table>
                 <TableHeader>
                   <TableRow className="bg-[#EEEEEE]">
@@ -454,12 +455,24 @@ export default function VariantSection({
                       return group.variantItems.map((item, itemIndex) => (
                         <TableRow key={item.sku}>
                           <TableCell className="pl-5 flex gap-4">
-                            <Checkbox
-                              checked={isItemSelected(groupIndex, itemIndex)}
-                              onCheckedChange={() =>
-                                toggleDeleteItem(groupIndex, itemIndex)
-                              }
-                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                updateVariantItem(groupIndex, itemIndex, {
+                                  ...item,
+                                  status:
+                                    item.status === "active"
+                                      ? "inactive"
+                                      : "active",
+                                });
+                              }}
+                            >
+                              {item.status === "active" ? (
+                                <ToggleRight className="text-primary" />
+                              ) : (
+                                <ToggleLeft />
+                              )}
+                            </button>
                             {item.name}
                           </TableCell>
 
@@ -564,15 +577,24 @@ export default function VariantSection({
                           group.variantItems.map((item, itemIndex) => (
                             <TableRow key={item.sku}>
                               <TableCell className="pl-5 flex gap-4">
-                                <Checkbox
-                                  checked={isItemSelected(
-                                    groupIndex,
-                                    itemIndex,
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    updateVariantItem(groupIndex, itemIndex, {
+                                      ...item,
+                                      status:
+                                        item.status === "active"
+                                          ? "inactive"
+                                          : "active",
+                                    });
+                                  }}
+                                >
+                                  {item.status === "active" ? (
+                                    <ToggleRight className="text-primary" />
+                                  ) : (
+                                    <ToggleLeft />
                                   )}
-                                  onCheckedChange={() =>
-                                    toggleDeleteItem(groupIndex, itemIndex)
-                                  }
-                                />
+                                </button>
                                 {item.name}
                               </TableCell>
 
@@ -687,9 +709,19 @@ export default function VariantSection({
             <div className="flex flex-col gap-2">
               <label>SKU</label>
               <Input
-                readOnly
-                defaultValue={selectedVariant?.variantItem?.sku}
-                className="h-10 opacity-50 cursor-not-allowed"
+                type="text"
+                value={selectedVariant?.variantItem?.showSKU}
+                className="h-10"
+                placeholder="enter sku"
+                onChange={(e) =>
+                  setSelectedVariant({
+                    ...selectedVariant,
+                    variantItem: {
+                      ...selectedVariant?.variantItem,
+                      showSKU: e.target.value,
+                    },
+                  } as any)
+                }
               />
             </div>
           </div>

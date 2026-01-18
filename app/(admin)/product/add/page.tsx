@@ -13,7 +13,7 @@ import { useCreateProductStore } from "@/store/useProductStore";
 import { useRouter } from "next/navigation";
 import { useCreateProduct } from "@/queries/product";
 import { uploadImage } from "@/services/common.service";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export default function ProductCreatePage() {
   const router = useRouter();
@@ -140,6 +140,10 @@ export default function ProductCreatePage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    return () => reset();
+  }, []);
 
   const disabled = useMemo(() => {
     if (images.length === 0) return true;
