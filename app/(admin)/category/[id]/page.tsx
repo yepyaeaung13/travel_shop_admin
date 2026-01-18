@@ -139,13 +139,14 @@ function EditCategory() {
     } else {
       setSameName(false);
     }
+
     setSubCategories((prev) =>
       prev.map((sub, index) =>
         index === indexNo
           ? {
               ...sub,
               name: name ?? sub.name,
-              image: sub.image,
+              image: image ?? sub.image,
               file: file ?? sub.file,
             }
           : sub
@@ -294,7 +295,7 @@ function EditCategory() {
       return true;
     } else if (subCategories.length > 0) {
       const status = subCategories.map((sub) => {
-        if (!sub.name || (!sub.file)) {
+        if (!sub.name || (!sub.image && !sub.file)) {
           return true;
         }
         return false;

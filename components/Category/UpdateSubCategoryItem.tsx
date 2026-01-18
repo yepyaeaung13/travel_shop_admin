@@ -71,6 +71,7 @@ export default function UpdateSubCategoryItem({
             accept="image/png, image/jpeg"
             hidden
             onChange={handleImageChange}
+            required
           />
         </label>
 
@@ -83,6 +84,7 @@ export default function UpdateSubCategoryItem({
             className={cn(
               "h-12 w-full rounded-[10px] text-sm md:h-14 md:max-w-[344px] md:text-base border-[#3C3C3C4D]"
             )}
+            required
           />
         </div>
 
