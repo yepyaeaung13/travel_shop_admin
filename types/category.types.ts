@@ -17,7 +17,6 @@ export type UpdateSubCategory = {
   id?: number;
   name: string;
   image: string;
-  imageUrl?: string;
   file?: File;
 };
 
@@ -25,12 +24,11 @@ export type CategoryResponse = {
   id: number;
   name: string;
   bannerImage: string;
-  bannerImageUrl: string;
   image: string;
-  imageUrl: string;
   createdAt?: string;
   updatedAt?: string;
   subCategories?: Omit<CategoryResponse, "subCategories">[];
+  products: any[];
   status: "active" | "inactive";
 };
 

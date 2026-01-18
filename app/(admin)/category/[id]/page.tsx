@@ -26,7 +26,7 @@ import {
 import { uploadImage } from "@/services/common.service";
 import { errorToast, successToast } from "@/components/toast";
 import UpdateSubCategoryItem from "@/components/Category/UpdateSubCategoryItem";
-import ConfirmDeleteDialog from "@/components/Category/ConfirmDeleteDialog";
+import ConfirmDeleteDialog from "@/components/common/ConfirmDeleteDialog";
 
 export default function Page() {
   return (
@@ -81,16 +81,15 @@ function EditCategory() {
 
     // main
     setCategoryName(category.name || "");
-    setImageUrl(category.imageUrl);
-    setBannerImageUrl(category.bannerImageUrl);
+    setImageUrl(category.image);
+    setBannerImageUrl(category.bannerImage);
 
     // sub categories from API
     const apiSubCategories =
       category.subCategories?.map((sub) => ({
         id: sub.id,
         name: sub.name || "",
-        image: sub.image || "",
-        imageUrl: sub.imageUrl,
+        image: `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${sub.image}` || ""
       })) ?? [];
 
     setSubCategories(apiSubCategories);
@@ -114,7 +113,7 @@ function EditCategory() {
 
   const removeSubCategory = (indexNo: number) => {
     const removeCategory = subCategories.find(
-      (sub, index) => index !== indexNo
+      (sub, index) => index === indexNo
     );
     if (removeCategory && removeCategory.id) {
       setDeleteSubCategoryId(removeCategory.id);
@@ -147,7 +146,6 @@ function EditCategory() {
               ...sub,
               name: name ?? sub.name,
               image: sub.image,
-              imageUrl: image ?? sub.imageUrl,
               file: file ?? sub.file,
             }
           : sub
@@ -182,7 +180,7 @@ function EditCategory() {
 
           return {
             ...cat,
-            image: uploadedImage?.data?.key || cat.image,
+            image: uploadedImage?.data?.cid || cat.image,
           };
         })
       );
@@ -193,8 +191,8 @@ function EditCategory() {
       id: categoryDetail?.data.id!,
       name: categoryName,
       bannerImage:
-        uploaddedBanner?.data?.key || categoryDetail?.data.bannerImage!,
-      image: uploadedImage?.data?.key || categoryDetail?.data.image!,
+        uploaddedBanner?.data?.cid || categoryDetail?.data.bannerImage!,
+      image: uploadedImage?.data?.cid || categoryDetail?.data.image!,
       subCategories: subCategoriesData,
       status: categoryDetail?.data.status!,
     };
@@ -296,7 +294,7 @@ function EditCategory() {
       return true;
     } else if (subCategories.length > 0) {
       const status = subCategories.map((sub) => {
-        if (!sub.name || (!sub.imageUrl && !sub.file)) {
+        if (!sub.name || (!sub.file)) {
           return true;
         }
         return false;
@@ -314,8 +312,6 @@ function EditCategory() {
     image,
     bannerImage,
   ]);
-
-  console.log("disable", disabled);
 
   if (isSaving || isLoading) {
     const loadingText = isLoading ? "Loading...." : "Updating category...";

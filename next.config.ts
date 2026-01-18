@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
                 hostname: "**.filebase.com",
                 pathname: "/**",
             },
+            {
+                protocol: "https",
+                hostname: "**.myfilebase.com",
+                pathname: "/**",
+            },
         ],
     },
 };

@@ -8,8 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PaginationInfo } from "@/types/shared/pagination.types";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { PaginationInfo } from "@/types/product.types";
 
 interface PaginationProps {
   pagination: PaginationInfo;

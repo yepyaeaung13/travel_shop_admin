@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Search, CirclePlus } from "lucide-react";
+import { Search, CirclePlus, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -12,8 +12,8 @@ import { cn } from "@/lib/utils";
 import IconTrash from "@/assets/icons/Trash";
 import IconNoYet from "@/assets/icons/NoYet";
 import IconNoFound from "@/assets/icons/NoFound";
-import ConfirmDeleteDialog from "@/components/Category/ConfirmDeleteDialog";
-import ConfirmChangeDialog from "@/components/Category/ConfirmChangeDialog";
+import ConfirmDeleteDialog from "@/components/common/ConfirmDeleteDialog";
+import ConfirmChangeDialog from "@/components/common/ConfirmChangeDialog";
 import TablePagination from "@/components/TablePagination";
 import CategoryTable from "@/components/Category/CategoryTable";
 import IconBtnLoading from "@/components/BtnLoading";
@@ -29,6 +29,7 @@ import {
   useToggleStatus,
 } from "@/queries/category.queries";
 import { getToggleCategoryStatus } from "@/utils/commonHelper";
+import IconDefaultCategory from "@/assets/icons/category/IconDefaultCategory";
 
 type ListCategoryArgs = {
   page: number;
@@ -53,7 +54,9 @@ function CategoryList() {
   const [changeOpen, setChangeOpen] = useState(false);
 
   const [deleteCategoryIds, setDeleteCategoryIds] = useState<number[]>([]);
-  const [changeCategory, setChangeCategory] = useState<CategoryResponse | null>(null);
+  const [changeCategory, setChangeCategory] = useState<CategoryResponse | null>(
+    null
+  );
   const [btnLoading, setBtnLoading] = useState(false);
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
@@ -61,7 +64,8 @@ function CategoryList() {
   const [currentPage, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
   const { getParam } = useQueryParams();
-  const sortByValueFromQuery = getParam("sortBy") as SortOptionValue || SortOptionValue.NEWEST;
+  const sortByValueFromQuery =
+    (getParam("sortBy") as SortOptionValue) || SortOptionValue.NEWEST;
 
   // --- Side Effects ---
   // Debounce search term
@@ -81,11 +85,11 @@ function CategoryList() {
       search: debouncedSearch.trim() || undefined,
       sortBy: sortByValueFromQuery,
     }),
-    [currentPage, limit, debouncedSearch,sortByValueFromQuery]
+    [currentPage, limit, debouncedSearch, sortByValueFromQuery]
   );
 
   const { data: res, isLoading } = useGetCategories({
-    sortBy: queryArgs.sortBy ,
+    sortBy: queryArgs.sortBy,
     limit: queryArgs.limit,
     page: queryArgs.page,
     searchText: queryArgs.search,
@@ -96,7 +100,8 @@ function CategoryList() {
   const totalPages = Math.ceil(totalItems / limit);
 
   // --- CONVEX MUTATIONS ---
-  const { mutate: toggleStatusMutation, isPending: loading } = useToggleStatus();
+  const { mutate: toggleStatusMutation, isPending: loading } =
+    useToggleStatus();
   const { mutate: deleteMutation, isPending } = useDeleteCategory();
 
   // --- SELECT ALL LOGIC ---
@@ -134,7 +139,10 @@ function CategoryList() {
         setDeleteCategoryIds([]);
       },
       onError(error: any, variables, context) {
-        errorToast("Failed", error?.response?.data?.message || "Failed to delete category.");
+        errorToast(
+          "Failed",
+          error?.response?.data?.message || "Failed to delete category."
+        );
       },
     });
   };
@@ -148,10 +156,7 @@ function CategoryList() {
       {
         onSuccess(res) {
           setChangeOpen(false);
-          successToast(
-            "Success",
-            `Category status updated to ${newStatus}!`
-          );
+          successToast("Success", `Category status updated to ${newStatus}!`);
           setChangeCategory(null);
         },
         onError(error) {
@@ -189,10 +194,11 @@ function CategoryList() {
         : [...prev, categoryId];
     });
   };
- 
+
   // --- RENDER LOGIC ---
   const showNoCategoryYet = totalItems === 0 && !debouncedSearch;
   const showNoResult = totalItems === 0 && debouncedSearch;
+  const defaultCategory = categories.find((cat) => cat.id === 1);
 
   // ------------------------------------
   // --- JSX RENDER ---
@@ -222,26 +228,27 @@ function CategoryList() {
         </Button>
       </div>
 
+      <div className="bg-white rounded-xl px-5 py-3 flex justify-between">
+        <p className="flex items-center gap-4">
+          <IconDefaultCategory />
+          {defaultCategory?.name}
+          </p>
+        <Link
+          href={`/category/products/${defaultCategory?.id}`}
+          className="flex items-center gap-2"
+        >
+          {defaultCategory?.products.length} products{" "}
+          <ChevronRight className="size-5" />
+        </Link>
+      </div>
       {/* Categories Table */}
       <Card className="min-h-full bg-white gap-4 border-none py-5">
         <CardHeader className="max-sm:px-4">
           <div className="flex items-center justify-between gap-2">
             {/* {selectedCategory.length === 0 ? ( */}
-              <CardTitle className="text-nowrap flex gap-5 font-medium md:text-xl">
-                All Category ({totalItems})
-              </CardTitle>
-            {/* ) : (
-              <CardTitle className="text-nowrap flex items-center gap-2 font-medium max-sm:w-full max-sm:justify-between md:gap-5 md:text-xl">
-                {selectedCategory.length} selected
-                <button
-                  onClick={handleSetDeleteMultiple}
-                  className="flex h-[34px] w-[105px] items-center justify-center gap-2.5 rounded-[10px] bg-[#FFDCDC] text-lg text-[#FF3333]"
-                  disabled={isPending}
-                >
-                  Delete <IconTrash />
-                </button>
-              </CardTitle>
-            )} */}
+            <CardTitle className="text-nowrap flex gap-5 font-medium md:text-xl">
+              All Category ({totalItems})
+            </CardTitle>
             <div
               className={cn(
                 "relative",
@@ -260,7 +267,7 @@ function CategoryList() {
         </CardHeader>
         <CardContent className="px-0">
           <CategoryTable
-            categories={categories as any[]}
+            categories={categories.filter((cat) => cat.id !== 1) as any[]}
             selectCategory={selectedCategory}
             handleSelectCategory={handleSelectCategory as (id: number) => void}
             handleSetDeleteCategory={
@@ -279,13 +286,13 @@ function CategoryList() {
           )}
 
           {showNoCategoryYet && !isLoading && (
-              <div className="flex w-full flex-col items-center justify-center gap-5 pb-16 pt-24">
-                <IconNoYet className="h-[149px] w-[200px] md:h-[225px] md:w-[300px]" />
-                <span className="text-xl font-medium text-[#444444]">
-                  No category yet
-                </span>
-              </div>
-            )}
+            <div className="flex w-full flex-col items-center justify-center gap-5 pb-16 pt-24">
+              <IconNoYet className="h-[149px] w-[200px] md:h-[225px] md:w-[300px]" />
+              <span className="text-xl font-medium text-[#444444]">
+                No category yet
+              </span>
+            </div>
+          )}
 
           {showNoResult && !isLoading && (
             <div className="flex w-full flex-col items-center justify-center gap-5 pb-16 pt-24">

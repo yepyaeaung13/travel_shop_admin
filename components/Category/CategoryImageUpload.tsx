@@ -8,6 +8,7 @@ import IconPhoto from "../../assets/icons/photo";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
+import Image from "next/image";
 
 export default function CategoryImageUpload({
   categoryImage,
@@ -36,9 +37,11 @@ export default function CategoryImageUpload({
         </h2>
         {categoryImage || existingImageUrl ? (
           <div className={cn("relative", className)}>
-            <img
-              src={imagePreview || existingImageUrl || "/placeholder.svg"}
+            <Image
+              src={imagePreview || `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${existingImageUrl}` || "/placeholder.svg"}
               alt="Category"
+              width={400}
+              height={200}
               className="w-full h-full object-cover rounded-lg border border-primary"
             />
             <button

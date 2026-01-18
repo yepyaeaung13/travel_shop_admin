@@ -38,15 +38,15 @@ export default function ProductInfoSection({
   selectedSubCategory,
   setField
 }: ProductInfoSectionProps) {
-  console.log("select", selectedCategory)
+ 
   return (
-    <Card id="product-info">
+    <Card id="product-info" className="gap-2">
       <CardHeader>
         <CardTitle>Product Info</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Product Name */}
-        <div>
+        <div className="flex flex-col gap-2">
           <label>
             Product name <span className="text-red-500">*</span>
           </label>
@@ -55,13 +55,14 @@ export default function ProductInfoSection({
             value={name}
             onChange={(e) => setField("name", e.target.value)}
             className="h-12 rounded-[10px] p-4"
+            required
           />
         </div>
 
         {/* Description */}
-        <div>
+        <div className="flex flex-col gap-2">
           <label>
-            Description <span className="text-red-500">*</span>
+            Description
           </label>
           <Editor
             value={description || ""}
@@ -70,7 +71,7 @@ export default function ProductInfoSection({
           />
         </div>
 
-        <div>
+        <div className="flex flex-col gap-2">
           <label>
             Category <span className="text-red-500">*</span>
           </label>
@@ -80,7 +81,9 @@ export default function ProductInfoSection({
               if (value === "") return;
               const n = Number(value);
               setSelectedCategory(categories.find((c) => c.id === n));
+              setField("mainCategoryId", n);
             }}
+            required
           >
             <SelectTrigger className="!h-12 w-full cursor-pointer rounded-2xl text-black">
               <SelectValue placeholder="Main category" />
@@ -102,9 +105,9 @@ export default function ProductInfoSection({
           </Select>
         </div>
 
-        <div>
+        <div className="flex flex-col gap-2">
           <label>
-            Sub Category <span className="text-red-500">*</span>
+            Sub Category
           </label>
           <Select
             value={selectedSubCategory?.id?.toString()}
@@ -112,7 +115,9 @@ export default function ProductInfoSection({
               if (value === "") return;
               const n = Number(value);
               setSelectedSubCategory(selectedCategory.subCategories.find((c: any) => c.id === n));
+              setField("subCategoryId", n);
             }}
+            required={selectedCategory?.subCategories.length > 0}
           >
             <SelectTrigger
               className={cn(

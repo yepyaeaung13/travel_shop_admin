@@ -1,69 +1,339 @@
 "use client";
 
-import DeleteConfirmationDialog from "@/components/common/AlertDialog";
-import ProductList from "@/components/product/ProductList";
-import useProducts from "@/hooks/products/useProducts";
-import ProductListHeader from "@/components/product/ProductList-header";
-import ProductPagination from "@/components/product/ProductPagination";
-import { Suspense } from "react";
+import React, { useState, useEffect, useMemo, Suspense } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Search, CirclePlus, ChevronRight, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+
+// --- Component imports ---
+import IconTrash from "@/assets/icons/Trash";
+import IconNoYet from "@/assets/icons/NoYet";
+import IconNoFound from "@/assets/icons/NoFound";
+import ConfirmDeleteDialog from "@/components/common/ConfirmDeleteDialog";
+import ConfirmChangeDialog from "@/components/common/ConfirmChangeDialog";
+import TablePagination from "@/components/TablePagination";
+import IconBtnLoading from "@/components/BtnLoading";
+import IconLoading from "@/components/Loading";
+import { successToast, errorToast } from "@/components/toast";
+
+import { useQueryParams } from "@/hooks/use-query-params";
+import { getToggleCategoryStatus } from "@/utils/commonHelper";
+import {
+  useDeleteProducts,
+  useGetProductListing,
+  useStatusUpdateProduct,
+} from "@/queries/product";
+import { Product, ProductSortOption } from "@/types/product.types";
+import ProductTable from "@/components/product/ProductTable";
+
+type ListProductArgs = {
+  page: number;
+  limit: number;
+  search?: string;
+  sortBy: ProductSortOption;
+};
 
 export default function Page() {
   return (
     <Suspense fallback="">
-      <ProductPage />
+      <ProductList />
     </Suspense>
   );
 }
 
-const ProductPage = () => {
-  const {
-    pagination,
-    products,
-    table,
-    columns,
-    search,
-    deleteProducts,
-    isLoading: isLoadingProducts,
-    confirmDelete,
-    deleteDialog,
-    closeDeleteDialog,
-    handlePageChange,
-    handleSearchChange,
-    handlePageSizeChange,
-    handleDeleteProducts,
-  } = useProducts();
-  console.log("products", products)
+function ProductList() {
+  // --- State Initialization ---
+  const [selectedProduct, setSelectedProduct] = useState<number[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [open, setOpen] = useState(false);
+  const [changeOpen, setChangeOpen] = useState(false);
+
+  const [deleteProductIds, setDeleteProductIds] = useState<number[]>([]);
+  const [changeProduct, setChangeProduct] = useState<Product | null>(null);
+  const [btnLoading, setBtnLoading] = useState(false);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // --- PAGINATION AND SORT LOGIC ---
+  const [currentPage, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(10);
+  const { getParam } = useQueryParams();
+  const sortByValueFromQuery =
+    (getParam("sortBy") as ProductSortOption) || ProductSortOption.NEWEST;
+
+  // --- Side Effects ---
+  // Debounce search term
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPage(1); // Reset to first page on new search
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
+
+  // --- QUERY ---
+  const queryArgs: ListProductArgs = useMemo(
+    () => ({
+      page: currentPage,
+      limit: limit,
+      search: debouncedSearch.trim() || undefined,
+      sortBy: sortByValueFromQuery,
+    }),
+    [currentPage, limit, debouncedSearch, sortByValueFromQuery]
+  );
+
+  const { data: res, isLoading } = useGetProductListing({
+    sortBy: queryArgs.sortBy as any,
+    limit: queryArgs.limit,
+    page: queryArgs.page,
+    searchText: queryArgs.search,
+  });
+
+  const products = res?.data || [];
+  const totalItems = res?.meta?.total || 0;
+  const totalPages = Math.ceil(totalItems / limit);
+
+  // --- CONVEX MUTATIONS ---
+  const { mutate: toggleStatusMutation, isPending: loading } =
+    useStatusUpdateProduct();
+  const { mutate: deleteMutation, isPending } = useDeleteProducts();
+
+  // --- SELECT ALL LOGIC ---
+  const isAllSelected =
+    products.length > 0 && selectedProduct.length === products.length;
+  const isIndeterminate =
+    selectedProduct.length > 0 && selectedProduct.length < products.length;
+
+  const handleSelectAll = (checked: boolean | "indeterminate") => {
+    if (checked) {
+      // Select all currently visible products
+      const allVisibleIds = products.map((c) => c.id);
+      setSelectedProduct(allVisibleIds);
+    } else {
+      // Deselect all
+      setSelectedProduct([]);
+    }
+  };
+
+  // ------------------------------------
+  // --- CORE LOGIC HANDLERS ---
+  // ------------------------------------
+
+  const handleDelete = async () => {
+    if (deleteProductIds.length === 0) return;
+    deleteMutation(deleteProductIds, {
+      onSuccess: (res) => {
+        successToast(
+          "Success!",
+          `${deleteProductIds.length} product(ies) deleted successfully!`
+        );
+
+        setSelectedProduct([]); // Clear selection after deletion
+        setOpen(false);
+        setDeleteProductIds([]);
+      },
+      onError(error: any) {
+        errorToast(
+          "Failed",
+          error?.response?.data?.message || "Failed to delete product."
+        );
+      },
+    });
+  };
+
+  const handleStatusChange = async () => {
+    if (!changeProduct) return;
+    const newStatus = getToggleCategoryStatus(changeProduct.status);
+
+    toggleStatusMutation(
+      { id: changeProduct.id, status: newStatus },
+      {
+        onSuccess(res) {
+          setChangeOpen(false);
+          successToast("Success", `Category status updated to ${newStatus}!`);
+          setChangeProduct(null);
+        },
+        onError(error) {
+          // console.error("Status change failed:", error);
+          errorToast(
+            "Failed",
+            (error as Error).message || "Failed to change category status."
+          );
+        },
+      }
+    );
+  };
+
+  const handleSetDeleteCategory = (id: number) => {
+    setDeleteProductIds([id]); // Delete single category
+    setOpen(true);
+  };
+
+  const handleSetDeleteMultiple = () => {
+    if (selectedProduct.length > 0) {
+      setDeleteProductIds(selectedProduct); // Delete all selected
+      setOpen(true);
+    }
+  };
+
+  const handleSetChangeProduct = (product: Product) => {
+    setChangeOpen(true);
+    setChangeProduct(product);
+  };
+
+  const handleSelectProduct = (categoryId: number) => {
+    setSelectedProduct((prev) => {
+      return prev.includes(categoryId)
+        ? prev.filter((id) => id !== categoryId)
+        : [...prev, categoryId];
+    });
+  };
+
+  // --- RENDER LOGIC ---
+  const showNoProductYet = totalItems === 0 && !debouncedSearch;
+  const showNoResult = totalItems === 0 && debouncedSearch;
+
+  // ------------------------------------
+  // --- JSX RENDER ---
+  // ------------------------------------
   return (
-    <div className="container mx-auto px-4 py-2 md:px-8 md:py-4">
-      <ProductListHeader />
-      <ProductList
-        table={table}
-        columns={columns}
-        products={products}
-        pagination={pagination}
-        isLoadingProducts={isLoadingProducts}
-        hasSomeSelectedRows={
-          table.getIsSomeRowsSelected() || table.getIsAllRowsSelected()
-        }
-        // Search
-        searchQuery={search}
-        handleSearchChange={handleSearchChange}
-        // Delete
-        handleDeleteProducts={handleDeleteProducts}
+    <div className="h-full space-y-2.5 md:space-y-5">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-lg font-medium md:text-2xl">Product List</h1>
+        </div>
+
+        <Button className="bg-primary hover:bg-primary h-auto w-auto rounded-[10px] duration-300 active:scale-95 2xl:px-5 2xl:py-2.5">
+          <Link
+            href="/product/add"
+            className="flex h-6 w-36 text-white items-center justify-center gap-2.5 font-medium md:text-lg"
+            onClick={() => setBtnLoading(true)}
+          >
+            {btnLoading ? (
+              <IconBtnLoading />
+            ) : (
+              <>
+                <CirclePlus className="h-6 w-6 text-white" />
+                Add Product
+              </>
+            )}
+          </Link>
+        </Button>
+      </div>
+
+      {/* products Table */}
+      <Card className="min-h-full bg-white gap-4 border-none py-5">
+        <CardHeader className="max-sm:px-4">
+          <div className="flex items-center justify-between gap-2">
+            {/* {selectedProduct.length === 0 ? ( */}
+            <CardTitle className="text-nowrap flex gap-5 font-medium md:text-xl">
+              {selectedProduct.length === 0 ? (
+                "All Product"
+              ) : (
+                <div className="flex items-center gap-5">
+                  <span>{selectedProduct.length} selected</span>
+                  <Button
+                    size="sm"
+                    type="button"
+                    variant="destructive"
+                    onClick={handleSetDeleteMultiple}
+                    className={cn([
+                      "w-fit cursor-pointer bg-destructive/10 rounded-lg hover:bg-destructive/15",
+                    ])}
+                  >
+                    Delete
+                    <Trash2 className="mr-1 h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+            </CardTitle>
+            <div
+              className={cn(
+                "relative",
+                selectedProduct.length > 0 && "max-sm:hidden"
+              )}
+            >
+              <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
+              <Input
+                placeholder="Search category"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-48 border-[#44444480] pl-10 md:w-80 md:text-lg md:placeholder:text-lg"
+              />
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="px-0">
+          <ProductTable
+            products={products}
+            selectProduct={selectedProduct}
+            handleSelectProduct={handleSelectProduct as (id: number) => void}
+            handleSetDeleteProduct={
+              handleSetDeleteCategory as (id: number) => void
+            }
+            handleSetChangeProduct={handleSetChangeProduct as any}
+            isAllSelected={isAllSelected}
+            isIndeterminate={isIndeterminate}
+            handleSelectAll={handleSelectAll}
+          />
+
+          {isLoading && (
+            <div className="flex h-96 w-full items-center justify-center">
+              <IconLoading className="size-40" />
+            </div>
+          )}
+
+          {showNoProductYet && !isLoading && (
+            <div className="flex w-full flex-col items-center justify-center gap-5 pb-16 pt-24">
+              <IconNoYet className="h-[149px] w-[200px] md:h-[225px] md:w-[300px]" />
+              <span className="text-xl font-medium text-[#444444]">
+                No product yet
+              </span>
+            </div>
+          )}
+
+          {showNoResult && !isLoading && (
+            <div className="flex w-full flex-col items-center justify-center gap-5 pb-16 pt-24">
+              <IconNoFound className="h-[114px] w-[200px] md:h-[170px] md:w-[300px]" />
+              <span className="text-xl font-medium text-[#444444]">
+                No result found
+              </span>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* {totalItems > 0 && ( */}
+      {totalItems > 0 && (
+        <div className="pt-3 md:pb-5">
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            setPage={setPage}
+            setLimit={setLimit}
+            limit={limit}
+            count={totalItems}
+          />
+        </div>
+      )}
+
+      {/* Delete Dialog */}
+      <ConfirmDeleteDialog
+        open={open}
+        setOpen={setOpen}
+        loading={isPending}
+        callback={handleDelete}
       />
-      <DeleteConfirmationDialog
-        onConfirm={confirmDelete}
-        itemType="product"
-        onOpenChange={closeDeleteDialog}
-        itemName={deleteDialog.productName}
-        isLoading={deleteProducts.isPending}
-        open={deleteDialog.open}
-      />
-      <ProductPagination
-        pagination={pagination}
-        onPageChange={handlePageChange}
-        onPageSizeChange={handlePageSizeChange}
+      {/* Status Change Dialog */}
+      <ConfirmChangeDialog
+        status={changeProduct?.status || ""}
+        open={changeOpen}
+        setOpen={setChangeOpen}
+        loading={loading}
+        callback={handleStatusChange}
       />
     </div>
   );
-};
+}

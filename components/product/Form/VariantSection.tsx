@@ -14,27 +14,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  ArrowBigDown,
-  ArrowBigUp,
-  ArrowDown,
-  ArrowUp,
   ChevronDown,
-  ChevronRightIcon,
   ChevronUp,
-  Loader2Icon,
+  CircleChevronRight,
   PlusCircle,
   Trash2,
-  XIcon,
 } from "lucide-react";
-import { handleInputAmountChange } from "@/utils/numberFormat";
-import { UseFormReturn } from "react-hook-form";
-import { CreateProductPayload } from "@/types/product/product-form.schemas";
-import { useVariantsLogic } from "@/hooks/products/useVariantsLogic";
-import { Badge } from "@/components/ui/badge";
 import { CategoryVariantGroup } from "@/types/categories";
-import { Dialog } from "@/components/ui/dialog";
-import { VariantCombination } from "@/types/product";
-import VariantEditDialog from "./VariantEditDialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import {
   GroupedVariant,
@@ -42,15 +29,21 @@ import {
   VariantItem,
 } from "@/store/useProductStore";
 import IconTrash from "@/assets/icons/Trash";
+import {
+  generateGroupedVariants,
+  generateGroupedVariantsUpdate,
+} from "@/utils/product";
 
 interface Props {
+  isEdit: boolean;
+  variantItems?: VariantItem[];
   variants: GroupedVariant[];
   addVariant: (variant: GroupedVariant[]) => void;
   removeVariantItem: (parentIndexNo: number, index: number) => void;
   updateVariantItem: (
     parentIndexNo: number,
     index: number,
-    variant: VariantItem
+    variant: VariantItem,
   ) => void;
   productVarints: ProductVariant[];
   addProductVariant: (value: ProductVariant) => void;
@@ -63,6 +56,8 @@ interface Props {
 type EditProductVarint = { indexNo: number } & ProductVariant;
 
 export default function VariantSection({
+  isEdit,
+  variantItems,
   variants,
   addVariant,
   removeVariantItem,
@@ -88,18 +83,22 @@ export default function VariantSection({
       name: "",
       values: [],
       indexNo: 0,
-    }
+    },
   );
 
   const [showEdit, setShowEdit] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [newValue, setNewValue] = useState("");
   const [newEditValue, setNewEditValue] = useState("");
-  const [selectedVariants, setSelectedVariants] = useState<number[]>([]);
+  const [selectedVariant, setSelectedVariant] = useState<{
+    groupIndex: number;
+    itemIndex: number;
+    variantItem: VariantItem;
+  } | null>(null);
 
   const handleDeleteValue = (index: number) => {
     const updateValues = tempProductVarint.values.filter(
-      (v, idx) => idx !== index
+      (v, idx) => idx !== index,
     );
 
     setTempProductVarint({
@@ -110,7 +109,7 @@ export default function VariantSection({
 
   const handleDeleteValueForEdit = (index: number) => {
     const updateValues = editProductVarint.values.filter(
-      (v, idx) => idx !== index
+      (v, idx) => idx !== index,
     );
 
     setEditProductVarint({
@@ -122,6 +121,7 @@ export default function VariantSection({
 
   const handleDeleteTemp = () => {
     setTempProductVarint({ name: "", values: [] });
+    setShowNew(false);
   };
 
   const handleDeleteItem = () => {
@@ -157,13 +157,13 @@ export default function VariantSection({
   const toggleDeleteItem = (parentIndexNo: number, indexNo: number) => {
     setDeleteItemIds((prev) => {
       const exists = prev.some(
-        (i) => i.parentIndexNo === parentIndexNo && i.indexNo === indexNo
+        (i) => i.parentIndexNo === parentIndexNo && i.indexNo === indexNo,
       );
 
       if (exists) {
         // unselect
         return prev.filter(
-          (i) => !(i.parentIndexNo === parentIndexNo && i.indexNo === indexNo)
+          (i) => !(i.parentIndexNo === parentIndexNo && i.indexNo === indexNo),
         );
       }
 
@@ -174,7 +174,7 @@ export default function VariantSection({
 
   const isItemSelected = (parentIndexNo: number, indexNo: number) =>
     deleteItemIds.some(
-      (i) => i.parentIndexNo === parentIndexNo && i.indexNo === indexNo
+      (i) => i.parentIndexNo === parentIndexNo && i.indexNo === indexNo,
     );
 
   const deleteSelectedItems = () => {
@@ -201,16 +201,38 @@ export default function VariantSection({
     return { min, max };
   };
 
-  useEffect(() => {
-    const result = generateGroupedVariants(productVarints);
-    addVariant(result);
-  }, [productVarints]);
+  const updateGroupSellingPrice = (groupIndex: number, price: number) => {
+    const nextVariants = variants.map((group, gIdx) =>
+      gIdx === groupIndex
+        ? {
+            ...group,
+            variantItems: group.variantItems.map((item) => ({
+              ...item,
+              sellingPrice: price,
+            })),
+          }
+        : group,
+    );
 
-  console.log("isdelete", deleteItemIds);
+    addVariant(nextVariants);
+  };
+
+  useEffect(() => {
+    if (isEdit && variantItems) {
+      const result = generateGroupedVariantsUpdate(
+        productVarints,
+        variantItems!,
+      );
+      addVariant(result);
+    } else {
+      const result = generateGroupedVariants(productVarints);
+      addVariant(result);
+    }
+  }, [productVarints]);
 
   return (
     <>
-      <Card>
+      <Card className="gap-2">
         <CardHeader>
           <CardTitle>Variant</CardTitle>
         </CardHeader>
@@ -230,7 +252,10 @@ export default function VariantSection({
                 <label htmlFor="">{pv.name}</label>
                 <div className="flex gap-1.5">
                   {pv.values.map((pvv) => (
-                    <button className="bg-primary text-white py-1 px-2.5 rounded-[4px]">
+                    <button
+                      key={pvv}
+                      className="bg-primary text-white py-1 px-2.5 rounded-[4px]"
+                    >
                       {pvv}
                     </button>
                   ))}
@@ -249,6 +274,11 @@ export default function VariantSection({
                       name: e.target.value,
                     })
                   }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                    }
+                  }}
                 />
                 <label htmlFor="">Option values</label>
                 {tempProductVarint.values.map((v, index) => (
@@ -270,7 +300,7 @@ export default function VariantSection({
                 ))}
                 <Input
                   type="text"
-                  placeholder="Option values"
+                  placeholder="Type value and press Enter"
                   value={newValue}
                   onChange={(e) => setNewValue(e.target.value)}
                   onKeyDown={(e) => {
@@ -305,87 +335,91 @@ export default function VariantSection({
                 </div>
               </div>
             )}
-            {showEdit && (
-              <div className="border rounded-[10px] border-[#EEEEEE] p-5 flex flex-col gap-2.5">
-                <label htmlFor="">Option name</label>
-                <Input
-                  placeholder="Option name"
-                  value={editProductVarint.name}
-                  onChange={(e) =>
-                    setEditProductVarint({
-                      ...editProductVarint,
-                      name: e.target.value,
-                    })
-                  }
-                />
-                <label htmlFor="">Option values</label>
-                {editProductVarint.values.map((v, index) => (
-                  <div key={index} className="relative flex items-center">
-                    <Input
-                      placeholder="Option values"
-                      className="pointer-events-none"
-                      defaultValue={v}
-                    />
 
+            <Dialog open={showEdit} onOpenChange={setShowEdit}>
+              <DialogContent className="max-w-[600px] flex flex-col items-center justify-center gap-7 rounded-[10px]">
+                <div className="w-full max-h-[500px] p-5 flex flex-col gap-2.5 overflow-y-auto scrollbar-none">
+                  <label htmlFor="">Option name</label>
+                  <Input
+                    placeholder="Option name"
+                    value={editProductVarint.name}
+                    onChange={(e) =>
+                      setEditProductVarint({
+                        ...editProductVarint,
+                        name: e.target.value,
+                      })
+                    }
+                  />
+                  <label htmlFor="">Option values</label>
+                  {editProductVarint.values.map((v, index) => (
+                    <div key={index} className="relative flex items-center">
+                      <Input
+                        placeholder="Option values"
+                        className="pointer-events-none"
+                        defaultValue={v}
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteValueForEdit(index)}
+                        className="absolute right-5"
+                      >
+                        <IconTrash />
+                      </button>
+                    </div>
+                  ))}
+                  <Input
+                    type="text"
+                    placeholder="Option values"
+                    value={newEditValue}
+                    onChange={(e) => setNewEditValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && newEditValue.trim()) {
+                        e.preventDefault();
+
+                        setEditProductVarint((prev) => ({
+                          ...prev,
+                          values: [...prev.values, newEditValue.trim()],
+                        }));
+
+                        setNewEditValue("");
+                      }
+                    }}
+                  />
+
+                  <div className="w-full flex justify-between items-center">
                     <button
                       type="button"
-                      onClick={() => handleDeleteValueForEdit(index)}
-                      className="absolute right-5"
+                      onClick={handleDeleteItem}
+                      className="bg-[#FF3333] text-white rounded-[10px] w-[80px] h-[40px]"
                     >
-                      <IconTrash />
+                      Delete
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleUpdate}
+                      className="bg-[#616FF5] text-white rounded-[10px] w-[80px] h-[40px]"
+                    >
+                      Done
                     </button>
                   </div>
-                ))}
-                <Input
-                  type="text"
-                  placeholder="Option values"
-                  value={newEditValue}
-                  onChange={(e) => setNewEditValue(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && newEditValue.trim()) {
-                      e.preventDefault();
-
-                      setEditProductVarint((prev) => ({
-                        ...prev,
-                        values: [...prev.values, newEditValue.trim()],
-                      }));
-
-                      setNewEditValue("");
-                    }
-                  }}
-                />
-
-                <div className="w-full flex justify-between items-center">
-                  <button
-                    type="button"
-                    onClick={handleDeleteItem}
-                    className="bg-[#FF3333] text-white rounded-[10px] w-[80px] h-[40px]"
-                  >
-                    Delete
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleUpdate}
-                    className="bg-[#616FF5] text-white rounded-[10px] w-[80px] h-[40px]"
-                  >
-                    Done
-                  </button>
                 </div>
-              </div>
-            )}
+              </DialogContent>
+            </Dialog>
             <button
               className="text-primary flex gap-2"
+              type="button"
               onClick={() => setShowNew(true)}
             >
               <PlusCircle />
-              Add Add option
+              Add option
             </button>
           </div>
 
           {/* Table Section */}
           {variants.length > 0 && (
             <div className="relative min-h-[200px]">
-              <div className="flex items-center py-4 space-x-5 px-2">
+              <div className="flex items-center justify-end py-4 space-x-5 px-2">
                 <Button
                   size="sm"
                   type="button"
@@ -396,18 +430,15 @@ export default function VariantSection({
                     { hidden: deleteItemIds.length <= 0 },
                   ])}
                 >
-                  <Trash2 className="mr-1 h-4 w-4" />
                   Delete
+                  <Trash2 className="mr-1 h-4 w-4" />
                 </Button>
               </div>
 
               <Table>
                 <TableHeader>
                   <TableRow className="bg-[#EEEEEE]">
-                    <TableHead className="w-12">
-                      <Checkbox />
-                    </TableHead>
-                    <TableHead>Variants</TableHead>
+                    <TableHead className="pl-5">Variants</TableHead>
                     {/* <TableHead>Buying price</TableHead> */}
                     <TableHead>Selling price</TableHead>
                     <TableHead>Stock</TableHead>
@@ -418,18 +449,74 @@ export default function VariantSection({
                 <TableBody>
                   {variants.map((group, groupIndex) => {
                     const { min, max } = getMinMaxPrice(group.variantItems);
+
+                    if (productVarints.length === 1) {
+                      return group.variantItems.map((item, itemIndex) => (
+                        <TableRow key={item.sku}>
+                          <TableCell className="pl-5 flex gap-4">
+                            <Checkbox
+                              checked={isItemSelected(groupIndex, itemIndex)}
+                              onCheckedChange={() =>
+                                toggleDeleteItem(groupIndex, itemIndex)
+                              }
+                            />
+                            {item.name}
+                          </TableCell>
+
+                          <TableCell>
+                            <Input
+                              value={item.sellingPrice}
+                              className="h-8 w-24"
+                              onChange={(e) =>
+                                updateVariantItem(groupIndex, itemIndex, {
+                                  ...item,
+                                  sellingPrice: Number(e.target.value),
+                                })
+                              }
+                            />
+                          </TableCell>
+
+                          <TableCell>
+                            <Input
+                              value={item.stock}
+                              className="h-8 w-20"
+                              onChange={(e) =>
+                                updateVariantItem(groupIndex, itemIndex, {
+                                  ...item,
+                                  stock: Number(e.target.value),
+                                })
+                              }
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <button
+                              type="button"
+                              className=""
+                              onClick={() =>
+                                setSelectedVariant({
+                                  groupIndex,
+                                  itemIndex,
+                                  variantItem: item,
+                                })
+                              }
+                            >
+                              <CircleChevronRight />
+                            </button>
+                          </TableCell>
+                        </TableRow>
+                      ));
+                    }
+
                     return (
                       <Fragment key={group.name}>
                         {/* GROUP ROW */}
                         <TableRow className="bg-muted/40">
-                          <TableCell>
-                            <Checkbox />
-                          </TableCell>
-                          <TableCell className="font-semibold capitalize">
+                          <TableCell className="pl-5 font-semibold capitalize">
                             {group.name}
-                            <p
+                            <button
                               onClick={() => toggleGroup(group.name)}
-                              className="text-xs text-[#3C3C3CCC] font-normal flex gap-1.5 items-center"
+                              className="text-xs text-[#3C3C3CCC] font-normal flex gap-1.5 items-center cursor-pointer"
+                              type="button"
                             >
                               {group.variantItems.length} Variants{" "}
                               {expanded[group.name] ? (
@@ -437,35 +524,36 @@ export default function VariantSection({
                               ) : (
                                 <ChevronDown className="size-4" />
                               )}
-                            </p>
+                            </button>
                           </TableCell>
                           <TableCell
                             colSpan={1}
                             className="text-sm text-muted-foreground"
                           >
-                            {min === max ? (
-                              <Input className="h-8 w-36 pointer-events-none" value={min} />
-                            ) : (
-                              <Input className="h-8 w-36 pointer-events-none" value={`${min} – ${max}`} />
-                               
-                            )}
-                            {/* <Input
-                              defaultValue={group.variantItems.reduce(
-                                (pv, cv) => pv + cv.sellingPrice,
-                                0
-                              )}
-                              className="h-8 w-24 pointer-events-none"
-                            /> */}
+                            <Input
+                              className="h-8 w-36"
+                              value={min === max ? min : ""}
+                              placeholder={
+                                min === max ? undefined : `${min} – ${max}`
+                              }
+                              onChange={(e) =>
+                                updateGroupSellingPrice(
+                                  groupIndex,
+                                  Number(e.target.value),
+                                )
+                              }
+                            />
                           </TableCell>
                           <TableCell
                             colSpan={4}
                             className="text-sm text-muted-foreground"
                           >
                             <Input
-                              defaultValue={group.variantItems.reduce(
+                              value={group.variantItems.reduce(
                                 (pv, cv) => pv + cv.stock,
-                                0
+                                0,
                               )}
+                              onChange={() => {}}
                               className="h-8 w-24 pointer-events-none"
                             />
                           </TableCell>
@@ -475,19 +563,16 @@ export default function VariantSection({
                         {expanded[group.name] &&
                           group.variantItems.map((item, itemIndex) => (
                             <TableRow key={item.sku}>
-                              <TableCell className="pl-8">
+                              <TableCell className="pl-5 flex gap-4">
                                 <Checkbox
                                   checked={isItemSelected(
                                     groupIndex,
-                                    itemIndex
+                                    itemIndex,
                                   )}
                                   onCheckedChange={() =>
                                     toggleDeleteItem(groupIndex, itemIndex)
                                   }
                                 />
-                              </TableCell>
-
-                              <TableCell className="pl-8">
                                 {item.name}
                               </TableCell>
 
@@ -529,6 +614,22 @@ export default function VariantSection({
                                   }
                                 />
                               </TableCell>
+
+                              <TableCell>
+                                <button
+                                  type="button"
+                                  className=""
+                                  onClick={() =>
+                                    setSelectedVariant({
+                                      groupIndex,
+                                      itemIndex,
+                                      variantItem: item,
+                                    })
+                                  }
+                                >
+                                  <CircleChevronRight />
+                                </button>
+                              </TableCell>
                             </TableRow>
                           ))}
                       </Fragment>
@@ -542,78 +643,81 @@ export default function VariantSection({
       </Card>
 
       {/* --- DIALOG COMPONENT --- */}
-      {/* <Dialog
-        open={!!dialogSelectedVariant}
-        onOpenChange={(open) => {
-          if (!open) setDialogSelectedVariant(null);
-        }}
+      <Dialog
+        open={!!selectedVariant}
+        onOpenChange={() => setSelectedVariant(null)}
       >
-        {dialogSelectedVariant && (
-          <VariantEditDialog
-            variants={variants}
-            SelectedVariant={dialogSelectedVariant}
-            updateVariantFields={(vid, data) => {
-              const i = variants.findIndex((v) => v.id === Number(vid));
-              if (i > -1) {
-                const { ...payload } = data;
-                updateFields(i, payload);
-              }
-            }}
-            handleClose={() => setDialogSelectedVariant(null)}
-          />
-        )}
-      </Dialog> */}
+        <DialogContent showCloseButton={false}>
+          <DialogTitle>Edit {selectedVariant?.variantItem?.sku}</DialogTitle>
+          <div className="w-full space-y-4">
+            <div className="w-full flex flex-col gap-2">
+              <label>Price (MMK)</label>
+              <Input
+                value={selectedVariant?.variantItem?.sellingPrice}
+                className="h-10"
+                onChange={(e) =>
+                  setSelectedVariant({
+                    ...selectedVariant,
+                    variantItem: {
+                      ...selectedVariant?.variantItem,
+                      sellingPrice: Number(e.target.value),
+                    },
+                  } as any)
+                }
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label>Stock</label>
+              <Input
+                value={selectedVariant?.variantItem?.stock}
+                className="h-10"
+                onChange={(e) =>
+                  setSelectedVariant({
+                    ...selectedVariant,
+                    variantItem: {
+                      ...selectedVariant?.variantItem,
+                      stock: Number(e.target.value),
+                    },
+                  } as any)
+                }
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label>SKU</label>
+              <Input
+                readOnly
+                defaultValue={selectedVariant?.variantItem?.sku}
+                className="h-10 opacity-50 cursor-not-allowed"
+              />
+            </div>
+          </div>
+          <div className="flex justify-between gap-5">
+            <button
+              type="button"
+              className="h-[47px] w-full flex items-center justify-center bg-[#A1A1A1] text-white rounded-[10px] text-lg"
+              onClick={() => setSelectedVariant(null)}
+            >
+              cancel
+            </button>
+            <button
+              type="button"
+              className="h-[47px] w-full flex items-center justify-center bg-primary text-white rounded-[10px] text-lg"
+              onClick={() => {
+                updateVariantItem(
+                  selectedVariant?.groupIndex!,
+                  selectedVariant?.itemIndex!,
+                  selectedVariant?.variantItem!,
+                );
+                setSelectedVariant(null);
+              }}
+            >
+              save
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
-}
-
-function cartesian<T>(arrays: T[][]): T[][] {
-  return arrays.reduce<T[][]>(
-    (acc, curr) => acc.flatMap((a) => curr.map((c) => [...a, c])),
-    [[]]
-  );
-}
-
-export function generateGroupedVariants(
-  variants: ProductVariant[]
-): GroupedVariant[] {
-  if (variants.length === 0) return [];
-
-  const [baseVariant, ...otherVariants] = variants;
-
-  // If only 1 variant (e.g. only Size)
-  if (otherVariants.length === 0) {
-    return baseVariant.values.map((base) => ({
-      name: base,
-      variantItems: [
-        {
-          name: base,
-          sku: base.toUpperCase(),
-          buyingPrice: 0,
-          sellingPrice: 0,
-          stock: 0,
-        },
-      ],
-    }));
-  }
-
-  const otherValueSets = otherVariants.map((v) => v.values);
-  const combinations = cartesian(otherValueSets);
-
-  return baseVariant.values.map((baseValue) => ({
-    name: baseValue,
-    variantItems: combinations.map((combo) => {
-      const fullValues = [baseValue, ...combo];
-
-      return {
-        name: combo.join(" / "),
-        sku: fullValues
-          .map((v) => v.toUpperCase().replace(/\s+/g, "-"))
-          .join("-"),
-        buyingPrice: 0,
-        sellingPrice: 0,
-        stock: 0,
-      };
-    }),
-  }));
 }

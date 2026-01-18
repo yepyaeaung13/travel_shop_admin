@@ -1,14 +1,8 @@
 "use client";
 
-import React, { useCallback, useState } from "react";
-import { useForm, UseFormReturn, useWatch } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useGetCategories } from "@/queries/category";
-import {
-  CreateProductPayload,
-  CreateProductSchema,
-} from "@/types/product/product-form.schemas";
-import { ProductSortOption } from "@/types/product";
+import { SortOptionValue } from "@/components/Category/CategoryTable";
+import { useGetCategories } from "@/queries/category.queries";
+import React, { useState } from "react";
 
 export function useProductForm() {
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
@@ -16,7 +10,7 @@ export function useProductForm() {
 
   // --- Category Data logic (unchanged) ---
   const { data: rawCategories, isLoading: categoryLoading } = useGetCategories({
-    sort: ProductSortOption.NEWEST,
+    sortBy: SortOptionValue.NEWEST,
     page: 1,
     limit: 10,
   });

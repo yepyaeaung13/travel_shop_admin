@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useDebounce } from "@/hooks/use-debounce";
-import { PaginationInfo } from "@/types/product.types";
 import { UserSortOption } from "@/types/users.types";
 import { useQueryParams } from "@/hooks/use-query-params";
 import { useUsers } from "@/queries/users.queries";
+import { PaginationInfo } from "@/types/shared/pagination.types";
 
 export interface CustomerListFilters {
   searchQuery: string;

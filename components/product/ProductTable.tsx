@@ -16,7 +16,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import IconTrash from "@/assets/icons/Trash";
-import { CategoryResponse } from "@/types/category.types";
 import Link from "next/link";
 import { ArrowUpDown, ArrowUpIcon } from "lucide-react";
 import { useMemo } from "react";
@@ -24,6 +23,7 @@ import { useQueryParams } from "@/hooks/use-query-params";
 import EditIcon2 from "@/assets/icons/EditIcon2";
 import Image from "next/image";
 import dayjs from "dayjs";
+import { Product } from "@/types/product.types";
 
 export enum SortOptionValue {
   NEWEST = "newest",
@@ -51,27 +51,27 @@ export const categorySortOptions = [
   { label: "Z-A", value: SortOptionValue.CATEGORY_DESC },
 ];
 
-type CategoryTableProps = {
-  categories: CategoryResponse[];
-  selectCategory: number[];
-  handleSelectCategory: (id: number) => void;
-  handleSetDeleteCategory: (id: number) => void;
-  handleSetChangeCategory: (product: CategoryResponse) => void;
+type Props = {
+  products: Product[];
+  selectProduct: number[];
+  handleSelectProduct: (id: number) => void;
+  handleSetDeleteProduct: (id: number) => void;
+  handleSetChangeProduct: (product: Product) => void;
   isAllSelected: boolean;
   isIndeterminate: boolean;
   handleSelectAll: (checked: boolean | "indeterminate") => void;
 };
 
-export default function CategoryTable({
-  categories,
-  selectCategory,
-  handleSelectCategory,
-  handleSetDeleteCategory,
-  handleSetChangeCategory,
+export default function ProductTable({
+  products,
+  selectProduct,
+  handleSelectProduct,
+  handleSetDeleteProduct,
+  handleSetChangeProduct,
   isAllSelected,
   isIndeterminate,
   handleSelectAll,
-}: CategoryTableProps) {
+}: Props) {
   const { setParam, getParam, deleteParam } = useQueryParams();
 
   const handleSortNameChange = () => {
@@ -96,19 +96,20 @@ export default function CategoryTable({
 
   const isNameFilterUsed = useMemo(
     () => nameSortOptions.some((option) => option.value === getParam("sortBy")),
-    [nameSortOptions, getParam]
+    [nameSortOptions, getParam],
   );
 
   const isStatusFilterUsed = useMemo(
     () =>
       statusSortOptions.some((option) => option.value === getParam("sortBy")),
-    [statusSortOptions, getParam]
+    [statusSortOptions, getParam],
   );
+
   return (
     <Table className="table-fixed md:table-auto">
       <TableHeader className="bg-[#4444441A]">
         <TableRow className="md:text-lg">
-          <TableHead className="w-10 pl-5 md:w-16 md:pl-6">
+          <TableHead className="w-10 pl-5 md:w-10 md:pl-6">
             <Checkbox
               checked={isAllSelected}
               onCheckedChange={handleSelectAll as (checked: boolean) => void}
@@ -118,8 +119,8 @@ export default function CategoryTable({
                 isIndeterminate
                   ? "indeterminate"
                   : isAllSelected
-                  ? "checked"
-                  : "unchecked"
+                    ? "checked"
+                    : "unchecked"
               }
             />
           </TableHead>
@@ -129,31 +130,12 @@ export default function CategoryTable({
             className={cn("w-[150px] cursor-pointer md:w-72 2xl:w-96")}
             onClick={handleSortNameChange}
           >
-            <span
-              className={cn(
-                "hover:text-primary flex h-auto items-center font-medium",
-                {
-                  "text-primary": isNameFilterUsed,
-                }
-              )}
-            >
-              Category Name
-              {!isNameFilterUsed ? (
-                <ArrowUpDown className="ml-2 h-4 w-4" />
-              ) : (
-                <ArrowUpIcon
-                  className={cn("ml-2 h-4 w-4", {
-                    "rotate-180":
-                      nameSortOptions.at(0)?.value ===
-                      (getParam("sortBy") as SortOptionValue),
-                  })}
-                />
-              )}
-            </span>
+            Product
           </TableHead>
 
-          <TableHead className="w-[100px] text-center">Sub Category</TableHead>
-          <TableHead className="w-[150px] text-center">Date & time</TableHead>
+          <TableHead className="w-[100px]">Category</TableHead>
+          <TableHead className="w-[100px]">Stock</TableHead>
+          <TableHead className="w-[100px]">Price</TableHead>
 
           {/* SORTABLE: Status */}
           <TableHead
@@ -165,7 +147,7 @@ export default function CategoryTable({
                 "hover:text-primary flex h-auto items-center justify-center font-medium",
                 {
                   "text-primary": isStatusFilterUsed,
-                }
+                },
               )}
             >
               Status
@@ -187,69 +169,84 @@ export default function CategoryTable({
         </TableRow>
       </TableHeader>
       <TableBody className="border-0">
-        {categories.length > 0 &&
-          categories.map((category: any) => {
+        {products.length > 0 &&
+          products.map((product: any) => {
             return (
-              <TableRow key={category.id} className="border-none md:text-lg">
+              <TableRow key={product.id} className="border-none md:text-lg">
                 <TableCell className="pl-5 md:pl-6">
                   <Checkbox
-                    checked={selectCategory.includes(category.id)}
-                    onCheckedChange={() => handleSelectCategory(category.id)}
+                    checked={selectProduct.includes(product.id)}
+                    onCheckedChange={() => handleSelectProduct(product.id)}
                     className="h-5 w-5 rounded-[5px] border-[#444444]"
                   />
                 </TableCell>
                 <TableCell className="py-2.5">
                   <div className="max-sm:pl-2 flex items-center gap-5 h-[50px]">
-                    <Image src={`${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${category.image}`} loading="lazy" width={50} height={50} alt="category photo" />
+                    <Image
+                      src={`${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${product.imageUrl}`}
+                      loading="lazy"
+                      width={50}
+                      height={50}
+                      alt="product photo"
+                    />
                     <p className="text-wrap line-clamp-2 break-all md:text-lg">
-                      {category.name}
+                      {product.name}
                     </p>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <p className="text-center">
-                    {category.subCategories.length > 0
-                      ? category.subCategories.length
-                      : "None"}
+                  <p className="">
+                    {product.subCategory?.name ?? product.mainCategory?.name}
                   </p>
                 </TableCell>
-                <TableCell className="text-center">
-                  {dayjs(category.createdAt).format("MMM DD YYYY [at] hh:mm A")}
+                <TableCell className="">
+                  {product.variants.length > 0
+                    ? product.variants.reduce(
+                        (pv: number, cv: any) => pv + cv.stock,
+                        0,
+                      )
+                    : product.stock}
+                </TableCell>
+                <TableCell>
+                  {product.variants.length > 0
+                    ? Number(product.variants[0].sellingPrice).toLocaleString()
+                    : Number(product.sellingPriceMMK).toLocaleString()} ks
                 </TableCell>
                 <TableCell className="text-center">
                   <div className="flex justify-center">
                     <Select
-                      value={
-                        category?.status
-                      }
+                      value={product?.status}
                       onValueChange={(value) => {
-                        if (value === category.status) return;
-                        handleSetChangeCategory(category);
+                        if (value === product.status) return;
+                        handleSetChangeProduct(product);
                       }}
                     >
                       <SelectTrigger
                         className={cn(
                           "w-[128px] justify-center rounded-[10px] px-0 focus-visible:ring-0",
-                          category?.status === "active"
+                          product?.status === "active"
                             ? "*:data-[slot=select-value]:text-[#97BD3F] border-[#97BD3F]"
-                            : "*:data-[slot=select-value]:text-[#444444] border-border"
+                            : "*:data-[slot=select-value]:text-[#444444] border-border",
                         )}
                       >
                         <SelectValue placeholder="Publish" />
                       </SelectTrigger>
 
-                      <SelectContent position="popper" className="min-w-[128px] rounded-[10px] p-0 bg-white border-border">
+                      <SelectContent
+                        position="popper"
+                        className="min-w-[128px] rounded-[10px] p-0 bg-white border-border"
+                      >
                         <SelectItem
                           value="active"
                           className="*:[span]:hidden rounded-none border-b border-border p-3 last:border-b-0 cursor-pointer"
                         >
-                          Publish
+                          Published
                         </SelectItem>
                         <SelectItem
                           value="inactive"
                           className="*:[span]:hidden border-b border-border p-3 last:border-b-0 cursor-pointer"
                         >
-                          Unpublish
+                          Unpublished
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -257,14 +254,14 @@ export default function CategoryTable({
                 </TableCell>
                 <TableCell>
                   <div className="flex h-full items-center justify-center gap-5">
-                    <Link href={`/category/${category.id}`} passHref>
+                    <Link href={`/product/${product.id}`} passHref>
                       <button className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-[#44444414]">
                         <EditIcon2 />
                       </button>
                     </Link>
                     <button
                       onClick={() => {
-                        handleSetDeleteCategory(category.id);
+                        handleSetDeleteProduct(product.id);
                       }}
                       className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-[#44444414]"
                     >

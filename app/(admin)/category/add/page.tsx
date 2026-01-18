@@ -101,7 +101,7 @@ export default function CreateCategory() {
 
           return {
             ...cat,
-            image: uploadedImage?.data?.key,
+            image: uploadedImage?.data?.cid,
           };
         })
       );
@@ -109,8 +109,8 @@ export default function CreateCategory() {
 
     const payload = {
       name: categoryName,
-      bannerImage: uploadBanner.data.key,
-      image: uploadedImage.data.key,
+      bannerImage: uploadBanner.data.cid,
+      image: uploadedImage.data.cid,
       status,
       subCategories: subCategoriesData,
     };

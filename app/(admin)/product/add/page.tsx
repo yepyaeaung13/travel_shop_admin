@@ -1,5 +1,4 @@
 "use client";
-import { useProductSubmit } from "@/hooks/products/useProductSubmit";
 import { useProductForm } from "@/hooks/products/useProductForm";
 import { IconLoading } from "@/assets/icons/IconLoading";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
@@ -14,9 +13,11 @@ import { useCreateProductStore } from "@/store/useProductStore";
 import { useRouter } from "next/navigation";
 import { useCreateProduct } from "@/queries/product";
 import { uploadImage } from "@/services/common.service";
+import { useMemo, useState } from "react";
 
 export default function ProductCreatePage() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const {
     categories,
     categoryVariantGroups,
@@ -47,6 +48,7 @@ export default function ProductCreatePage() {
     updateProductVariant,
     setField,
     images,
+    replaceMainImage,
     addImage,
     removeImage,
     reset,
@@ -56,17 +58,23 @@ export default function ProductCreatePage() {
 
   const buildPayload = async (
     store: ReturnType<typeof useCreateProductStore.getState>,
-    status: "ACTIVE" | "DRAFT"
+    status: "active" | "inactive",
   ) => {
     const uploadedImages = await Promise.all(
       store.images.map(async (img, index) => {
         const res = await uploadImage(img.file!);
         return {
-          url: res.data.key,
+          url: res.data.cid,
           isMain: index === 0,
         };
-      })
+      }),
     );
+
+    const variantItems = store.variants.flatMap((v) => v.variantItems);
+    const options = store.productVarints.map((opt) => ({
+      ...opt,
+      values: opt.values.join(","),
+    }));
 
     return {
       name: store.name,
@@ -75,55 +83,75 @@ export default function ProductCreatePage() {
       sellingPriceMMK: store.sellingPriceMMK,
       sellingPriceCNY: store.sellingPriceCNY,
       sellingPriceUSD: store.sellingPriceUSD,
+      isPromote: store.isPromote,
       promoteType: store.promoteType,
       promoteValue: store.promoteValue,
       stock: store.stock,
+      sku: store.sku,
       status,
       mainCategoryId: store.mainCategoryId!,
       subCategoryId: store.subCategoryId!,
       images: uploadedImages,
-      variants: store.variants,
+      variants: variantItems,
+      variantOptions: options,
     };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const store = useCreateProductStore.getState();
-      const payload = await buildPayload(store, "ACTIVE");
+      const payload = await buildPayload(store, "active");
 
       createProduct(payload, {
         onSuccess: () => {
           reset();
           router.push("/product");
         },
+        onError: () => {
+          setLoading(false);
+        },
       });
     } catch (err) {
       console.error("Create product failed", err);
+      setLoading(false);
     }
   };
 
   const handleSaveDraft = async () => {
+    setLoading(true);
     try {
       const store = useCreateProductStore.getState();
-      const payload = await buildPayload(store, "DRAFT");
+      const payload = await buildPayload(store, "inactive");
 
       createProduct(payload, {
         onSuccess: () => {
+          reset();
           router.push("/product");
+        },
+        onError: () => {
+          setLoading(false);
         },
       });
     } catch (err) {
       console.error("Save draft failed", err);
+      setLoading(false);
     }
   };
 
+  const disabled = useMemo(() => {
+    if (images.length === 0) return true;
+  }, [images]);
+
+  // console.log(loading, isPending, disabled);
+
   return (
     <div>
-      {categoryLoading && <LoadingSpinner />}
+      {(categoryLoading || isPending || loading) && <LoadingSpinner />}
       <form onSubmit={handleSubmit} className="space-y-6">
-        <ProductHeader isEdit={false} />
+        <ProductHeader />
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2 space-y-6">
@@ -139,6 +167,7 @@ export default function ProductCreatePage() {
             />
             <PhotoSection
               images={images}
+              replaceMainImage={replaceMainImage}
               addImage={addImage}
               removeImage={removeImage}
             />
@@ -152,6 +181,7 @@ export default function ProductCreatePage() {
               sellingPriceCNY={sellingPriceCNY}
             />
             <VariantSection
+              isEdit={false}
               variants={variants}
               addVariant={addVariant}
               removeVariantItem={removeVariantItem}
@@ -173,11 +203,16 @@ export default function ProductCreatePage() {
         </div>
 
         <div className="flex justify-end gap-4">
-          <Button type="button" variant="outline" onClick={handleSaveDraft}>
-            Save draft
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleSaveDraft}
+            disabled={loading || isPending || disabled}
+          >
+            Unpublish
           </Button>
-          <Button type="submit" disabled={isPending}>
-            {isPending ? <IconLoading /> : "Create"}
+          <Button type="submit" disabled={loading || isPending || disabled}>
+            {isPending ? <IconLoading /> : "Publish"}
           </Button>
         </div>
       </form>

@@ -6,7 +6,12 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { CreateProductState, PromoteType } from "@/store/useProductStore";
+import {
+  CreateProductState,
+  PromoteType,
+  useCreateProductStore,
+} from "@/store/useProductStore";
+import { useEffect } from "react";
 
 interface PricingSectionProps {
   promoteType: PromoteType;
@@ -14,7 +19,7 @@ interface PricingSectionProps {
   isPromote: boolean;
   setField: <K extends keyof CreateProductState>(
     key: K,
-    value: CreateProductState[K]
+    value: CreateProductState[K],
   ) => void;
   sellingPriceMMK: number;
   sellingPriceUSD: number;
@@ -30,22 +35,42 @@ export default function PricingSection({
   sellingPriceUSD,
   sellingPriceCNY,
 }: PricingSectionProps) {
+  const { productVarints } = useCreateProductStore.getState();
+
+  useEffect(() => {
+    if (productVarints.length > 0) {
+      setField("sellingPriceMMK", 0);
+    }
+  }, [productVarints]);
+
   return (
-    <Card>
+    <Card className="gap-2">
       <CardHeader>
         <CardTitle>Pricing</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="grid grid-cols-2 gap-4">
-          <PriceField
-            name="sellingPriceMMK"
-            label="Selling Price"
-            placeholder="Selling price"
-            unit="Ks"
-            isRequired={true}
-            value={sellingPriceMMK.toString()}
-            onChangeValue={(value: number) => setField("sellingPriceMMK", value)}
-          />
+      <CardContent className="space-y-6 grid grid-cols-2 gap-5">
+        <div
+          className={cn(
+            "space-y-6"
+          )}
+        >
+          <div
+            className={cn(
+              productVarints.length > 0 && "pointer-events-none opacity-50",
+            )}
+          >
+            <PriceField
+              name="sellingPriceMMK"
+              label="Selling Price"
+              placeholder="Selling price"
+              unit="Ks"
+              isRequired={true}
+              value={sellingPriceMMK.toString()}
+              onChangeValue={(value: number) =>
+                setField("sellingPriceMMK", value)
+              }
+            />
+          </div>
           <PriceField
             name="sellingPriceUSD"
             label="Selling Price (USD)"
@@ -71,7 +96,8 @@ export default function PricingSection({
         </div>
 
         <div className="space-y-4">
-          <div className="flex items-center space-x-2">
+          <div className="flex justify-between items-center space-x-2">
+            <label>Discount</label>
             <Switch
               checked={isPromote}
               onCheckedChange={(checked) => {
@@ -83,10 +109,32 @@ export default function PricingSection({
                 }
               }}
             />
-            <label>Discount</label>
           </div>
 
-          <div className={cn("space-y-4 pl-4", !isPromote && "pointer-events-none opacity-50")}>
+          <div
+            className={cn(
+              "space-y-4 pl-4",
+              !isPromote && "pointer-events-none opacity-50",
+            )}
+          >
+            <div className="relative">
+              <Input
+                type="number"
+                placeholder={
+                  promoteType === PromoteType.PERCENT
+                    ? "Enter percentage"
+                    : "Enter amount"
+                }
+                value={promoteValue.toString()}
+                onChange={(e) => {
+                  setField("promoteValue", Number(e.target.value));
+                }}
+                className="h-12 rounded-[10px] p-4 pr-12"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-500 text-sm font-medium">
+                {promoteType === PromoteType.PERCENT ? "%" : "Ks"}
+              </span>
+            </div>
             <div>
               <RadioGroup
                 onValueChange={(value) =>
@@ -111,25 +159,6 @@ export default function PricingSection({
                   </Label>
                 </div>
               </RadioGroup>
-            </div>
-
-            <div className="relative">
-              <Input
-                type="number"
-                placeholder={
-                  promoteType === PromoteType.PERCENT
-                    ? "Enter percentage"
-                    : "Enter amount"
-                }
-                value={promoteValue.toString()}
-                onChange={(e) => {
-                  setField("promoteValue", Number(e.target.value));
-                }}
-                className="h-12 rounded-[10px] p-4 pr-12"
-              />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-500 text-sm font-medium">
-                {promoteType === PromoteType.PERCENT ? "%" : "Ks"}
-              </span>
             </div>
           </div>
         </div>
@@ -156,7 +185,7 @@ function PriceField({
   onChangeValue: (value: number) => void;
 }) {
   return (
-    <>
+    <div className="flex flex-col gap-2">
       <label>
         {label} {isRequired && <span className="text-red-500">*</span>}
       </label>
@@ -169,6 +198,7 @@ function PriceField({
           name={name}
           className="h-12 rounded-[10px] p-4 pr-12"
           value={value}
+          onWheel={(e) => e.currentTarget.blur()}
           onChange={(e) => {
             // ✅ Numbers only!
             const rawValue = e.target.value;
@@ -187,6 +217,6 @@ function PriceField({
           {unit}
         </span>
       </div>
-    </>
+    </div>
   );
 }

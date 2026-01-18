@@ -33,7 +33,7 @@ export default function UpdateSubCategoryItem({
   if (!subCategory) return null;
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateSubCategory(indexNo, e.target.value, subCategory.imageUrl);
+    updateSubCategory(indexNo, e.target.value, subCategory.image);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,8 +46,8 @@ export default function UpdateSubCategoryItem({
       e.target.value = ""; // reset input
       return;
     }
-    const imageUrl = URL.createObjectURL(file);
-    updateSubCategory(indexNo, subCategory.name, imageUrl, file);
+    const image = URL.createObjectURL(file);
+    updateSubCategory(indexNo, subCategory.name, image, file);
   };
 
   //   console.log("subcategories", subCategory)
@@ -58,8 +58,8 @@ export default function UpdateSubCategoryItem({
         {/* Image */}
         <label className="w-fit cursor-pointer">
           <Avatar className="size-[50px] md:size-[60px]">
-            {subCategory.imageUrl ? (
-              <AvatarImage src={subCategory.imageUrl} />
+            {subCategory.image ? (
+              <AvatarImage src={subCategory.image}/>
             ) : (
               <AvatarFallback className="border-2 border-dashed border-[#3C3C3C4D]">
                 <CameraUpIcon />

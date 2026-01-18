@@ -10,11 +10,11 @@ import {
 } from "@tanstack/react-table";
 import { CustomerTableColumns } from "./customer-table-columns";
 import Pagination from "./pagination";
-import type { PaginationInfo } from "@/types/product.types";
 import TableWrapper from "./customer-table-wrapper";
 import { User } from "@/types/users.types";
 import { BlockUserModal } from "../BlockUserModal";
-import { useDeleteUser, useUpdateUserStatus } from "@/queries/users.queries";
+import { useDeleteUser } from "@/queries/users.queries";
+import { PaginationInfo } from "@/types/shared/pagination.types";
 
 interface CustomerTableProps {
   data: User[];
