@@ -216,7 +216,7 @@ export default function ProductCreatePage() {
             Unpublish
           </Button>
           <Button type="submit" disabled={loading || isPending || disabled}>
-            {isPending ? <IconLoading /> : "Publish"}
+            Publish
           </Button>
         </div>
       </form>
