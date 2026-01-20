@@ -5,6 +5,11 @@ import {
   GetProductsResponse,
 } from "@/types/product.types";
 
+export const getProductDashboard = async () => {
+  const res = await axiosClient.get("/v1/products/dashboard");
+  return res.data;
+};
+
 export const createProduct = async (payload: any) => {
   const res = await axiosClient.post("/v1/products", payload);
   return res.data;
@@ -22,16 +27,27 @@ export const updateProduct = async ({
 };
 
 export const getProductListing = async (
-  params?: GetProductsParams
+  params?: GetProductsParams,
 ): Promise<GetProductsResponse> => {
   const res = await axiosClient.get("/v1/products", { params });
   return res.data;
 };
 
 export const getProductById = async (
-  id: number
+  id: number,
 ): Promise<GetProductByIdResponse> => {
   const res = await axiosClient.get(`/v1/products/${id}`);
+  return res.data;
+};
+
+export const getProductsByCategory = async (
+  categoryId: number,
+  take: number,
+) => {
+  console.log("called api");
+  const res = await axiosClient.get(`/v1/products/category/${categoryId}`, {
+    params: { take },
+  });
   return res.data;
 };
 

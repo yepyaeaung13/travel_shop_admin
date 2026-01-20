@@ -30,6 +30,7 @@ import {
 } from "@/queries/category.queries";
 import { getToggleCategoryStatus } from "@/utils/commonHelper";
 import IconDefaultCategory from "@/assets/icons/category/IconDefaultCategory";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type ListCategoryArgs = {
   page: number;
@@ -55,7 +56,7 @@ function CategoryList() {
 
   const [deleteCategoryIds, setDeleteCategoryIds] = useState<number[]>([]);
   const [changeCategory, setChangeCategory] = useState<CategoryResponse | null>(
-    null
+    null,
   );
   const [btnLoading, setBtnLoading] = useState(false);
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -85,7 +86,7 @@ function CategoryList() {
       search: debouncedSearch.trim() || undefined,
       sortBy: sortByValueFromQuery,
     }),
-    [currentPage, limit, debouncedSearch, sortByValueFromQuery]
+    [currentPage, limit, debouncedSearch, sortByValueFromQuery],
   );
 
   const { data: res, isLoading } = useGetCategories({
@@ -131,7 +132,7 @@ function CategoryList() {
       onSuccess: (res) => {
         successToast(
           "Success!",
-          `${deleteCategoryIds.length} category(ies) deleted successfully!`
+          `${deleteCategoryIds.length} category(ies) deleted successfully!`,
         );
 
         setSelectedCategory([]); // Clear selection after deletion
@@ -141,7 +142,7 @@ function CategoryList() {
       onError(error: any, variables, context) {
         errorToast(
           "Failed",
-          error?.response?.data?.message || "Failed to delete category."
+          error?.response?.data?.message || "Failed to delete category.",
         );
       },
     });
@@ -163,10 +164,10 @@ function CategoryList() {
           console.error("Status change failed:", error);
           errorToast(
             "Failed",
-            (error as Error).message || "Failed to change category status."
+            (error as Error).message || "Failed to change category status.",
           );
         },
-      }
+      },
     );
   };
 
@@ -228,19 +229,23 @@ function CategoryList() {
         </Button>
       </div>
 
-      <div className="bg-white rounded-xl px-5 py-3 flex justify-between">
-        <p className="flex items-center gap-4">
-          <IconDefaultCategory />
-          {defaultCategory?.name}
+      {isLoading ? (
+        <Skeleton className="bg-gray-300 h-10" />
+      ) : (
+        <div className="bg-white rounded-xl px-5 py-3 flex justify-between">
+          <p className="flex items-center gap-4">
+            <IconDefaultCategory />
+            {defaultCategory?.name}
           </p>
-        <Link
-          href={`/category/products/${defaultCategory?.id}`}
-          className="flex items-center gap-2"
-        >
-          {defaultCategory?.products.length} products{" "}
-          <ChevronRight className="size-5" />
-        </Link>
-      </div>
+          <Link
+            href={`/category/products/${defaultCategory?.id}`}
+            className="flex items-center gap-2"
+          >
+            {defaultCategory?.products} products{" "}
+            <ChevronRight className="size-5" />
+          </Link>
+        </div>
+      )}
       {/* Categories Table */}
       <Card className="min-h-full bg-white gap-4 border-none py-5">
         <CardHeader className="max-sm:px-4">
@@ -252,7 +257,7 @@ function CategoryList() {
             <div
               className={cn(
                 "relative",
-                selectedCategory.length > 0 && "max-sm:hidden"
+                selectedCategory.length > 0 && "max-sm:hidden",
               )}
             >
               <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform" />

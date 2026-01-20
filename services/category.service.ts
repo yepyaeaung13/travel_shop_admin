@@ -38,8 +38,8 @@ export const getCategories = async ({
 }): Promise<CategoryListResponse> => {
   const params = Object.fromEntries(
     Object.entries({ sortBy, searchText, page, limit }).filter(
-      ([_, value]) => value !== undefined
-    )
+      ([_, value]) => value !== undefined,
+    ),
   );
 
   const res = await axiosClient.get("/v1/categories", {
@@ -58,14 +58,14 @@ export const getCategoryById = async ({
 };
 
 export const createCategory = async (
-  payload: CreateCategoryRequest
+  payload: CreateCategoryRequest,
 ): Promise<CreateCategoryResponse> => {
   const res = await axiosClient.post("/v1/categories", payload);
   return res.data;
 };
 
 export const updateCategory = async (
-  payload: UpdateCategoryRequest
+  payload: UpdateCategoryRequest,
 ): Promise<CreateCategoryResponse> => {
   const res = await axiosClient.put(`/v1/categories/${payload.id}`, payload);
   return res.data;
@@ -73,7 +73,7 @@ export const updateCategory = async (
 
 export const toggleStatus = async (
   id: number,
-  status: string
+  status: string,
 ): Promise<CreateCategoryResponse> => {
   const res = await axiosClient.put(`/v1/categories/changeStatus/${id}`, {
     status,

@@ -9,7 +9,9 @@ import {
   deleteProduct,
   deleteProducts,
   getProductById,
+  getProductDashboard,
   getProductListing,
+  getProductsByCategory,
   statusUpdateProduct,
   updateProduct,
 } from "@/services/product.service";
@@ -18,6 +20,13 @@ import {
   GetProductsResponse,
   Product,
 } from "@/types/product.types";
+
+export const useGetProductDashboard = () => {
+  return useQuery({
+    queryKey: ["product-dashboard"],
+    queryFn: () => getProductDashboard(),
+  });
+};
 
 export const useGetProductListing = (params: GetProductsParams) =>
   useQuery<GetProductsResponse, Error>({
@@ -29,12 +38,19 @@ export const useGetProductById = (id: number): UseQueryResult<any, Error> =>
   useQuery<any, Error>({
     queryKey: ["product", id],
     queryFn: () => getProductById(id),
-    enabled: !!id
+    enabled: !!id,
   });
+
+export const useGetProductsByCategory = (categoryId: number, take: number) => {
+  return useQuery({
+    queryKey: ["product-category", categoryId, take],
+    queryFn: () => getProductsByCategory(categoryId, take),
+  });
+};
 
 export const useCreateProduct = () => {
   return useMutation<Product, Error, any>({
-    mutationFn: (payload) => createProduct(payload)
+    mutationFn: (payload) => createProduct(payload),
   });
 };
 
@@ -74,8 +90,11 @@ export const useDeleteProducts = () => {
   return useMutation<Product, Error, number[]>({
     mutationFn: (ids) => deleteProducts(ids),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["product-list"], refetchType: "active"})
+      queryClient.invalidateQueries({
+        queryKey: ["product-list"],
+        refetchType: "active",
+      });
       // e.g. invalidate ["product-listing"]
     },
   });
-}
+};

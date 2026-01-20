@@ -23,11 +23,17 @@ import { useQueryParams } from "@/hooks/use-query-params";
 import { getToggleCategoryStatus } from "@/utils/commonHelper";
 import {
   useDeleteProducts,
+  useGetProductDashboard,
   useGetProductListing,
   useStatusUpdateProduct,
 } from "@/queries/product";
 import { Product, ProductSortOption } from "@/types/product.types";
 import ProductTable from "@/components/product/ProductTable";
+import IconProduct from "@/assets/icons/sidebar/Product";
+import { IconProductActive } from "@/assets/icons/product/IconProductActive";
+import { IconProductInactive } from "@/assets/icons/product/IconProductInactive";
+import { IconProductOutStock } from "@/assets/icons/product/IconProductOutStock";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type ListProductArgs = {
   page: number;
@@ -81,8 +87,13 @@ function ProductList() {
       search: debouncedSearch.trim() || undefined,
       sortBy: sortByValueFromQuery,
     }),
-    [currentPage, limit, debouncedSearch, sortByValueFromQuery]
+    [currentPage, limit, debouncedSearch, sortByValueFromQuery],
   );
+
+  const { data: dashbaordData, isLoading: dashboardLoading } =
+    useGetProductDashboard();
+
+  console.log("data", dashbaordData);
 
   const { data: res, isLoading } = useGetProductListing({
     sortBy: queryArgs.sortBy as any,
@@ -127,7 +138,7 @@ function ProductList() {
       onSuccess: (res) => {
         successToast(
           "Success!",
-          `${deleteProductIds.length} product(ies) deleted successfully!`
+          `${deleteProductIds.length} product(ies) deleted successfully!`,
         );
 
         setSelectedProduct([]); // Clear selection after deletion
@@ -137,7 +148,7 @@ function ProductList() {
       onError(error: any) {
         errorToast(
           "Failed",
-          error?.response?.data?.message || "Failed to delete product."
+          error?.response?.data?.message || "Failed to delete product.",
         );
       },
     });
@@ -159,10 +170,10 @@ function ProductList() {
           // console.error("Status change failed:", error);
           errorToast(
             "Failed",
-            (error as Error).message || "Failed to change category status."
+            (error as Error).message || "Failed to change category status.",
           );
         },
-      }
+      },
     );
   };
 
@@ -194,12 +205,86 @@ function ProductList() {
   // --- RENDER LOGIC ---
   const showNoProductYet = totalItems === 0 && !debouncedSearch;
   const showNoResult = totalItems === 0 && debouncedSearch;
+  const skeletonArray = new Array(4);
 
   // ------------------------------------
   // --- JSX RENDER ---
   // ------------------------------------
   return (
     <div className="h-full space-y-2.5 md:space-y-5">
+      <div className="h-auto grid grid-cols-2 md:grid-cols-4 gap-3">
+        {dashboardLoading ? (
+          <>
+            <Skeleton className="h-[106px] bg-gray-300 rounded-[20px]" />
+            <Skeleton className="h-[106px] bg-gray-300 rounded-[20px]" />
+            <Skeleton className="h-[106px] bg-gray-300 rounded-[20px]" />
+            <Skeleton className="h-[106px] bg-gray-300 rounded-[20px]" />
+          </>
+        ) : (
+          <>
+            <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between">
+              <div className="space-y-[11px]">
+                <h2 className="text-[#1E1E1E] text-[24px] md:text-[28px] font-medium md:font-semibold">
+                  {dashbaordData?.data?.total?.toLocaleString()}
+                </h2>
+                <p className="text-[#303030] max-sm:text-sm">Total products</p>
+              </div>
+              <span
+                className="md:mt-2 rounded-[12px] shadow-[0px_2px_10px_0px_#7C8DB51F]
+ size-11 flex items-center justify-center"
+              >
+                <IconProduct className="fill-primary stroke-primary" />
+              </span>
+            </div>
+
+            <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between">
+              <div className="space-y-[11px]">
+                <h2 className="text-[#1E1E1E] text-[24px] md:text-[28px] font-medium md:font-semibold">
+                  {dashbaordData?.data?.totalActive?.toLocaleString()}
+                </h2>
+                <p className="text-[#303030] max-sm:text-sm">Total products</p>
+              </div>
+              <span
+                className="md:mt-2 rounded-[12px] shadow-[0px_2px_10px_0px_#7C8DB51F]
+ size-11 flex items-center justify-center"
+              >
+                <IconProductActive />
+              </span>
+            </div>
+
+            <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between">
+              <div className="space-y-[11px]">
+                <h2 className="text-[#1E1E1E] text-[24px] md:text-[28px] font-medium md:font-semibold">
+                  {dashbaordData?.data?.totalInactive?.toLocaleString()}
+                </h2>
+                <p className="text-[#303030] max-sm:text-sm">Total products</p>
+              </div>
+              <span
+                className="md:mt-2 rounded-[12px] shadow-[0px_2px_10px_0px_#7C8DB51F]
+ size-11 flex items-center justify-center"
+              >
+                <IconProductInactive />
+              </span>
+            </div>
+
+            <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between">
+              <div className="space-y-[11px]">
+                <h2 className="text-[#1E1E1E] text-[24px] md:text-[28px] font-medium md:font-semibold">
+                  {dashbaordData?.data?.totalOutStock?.toLocaleString()}
+                </h2>
+                <p className="text-[#303030] max-sm:text-sm">Total products</p>
+              </div>
+
+              <span
+                className="md:mt-2 rounded-[12px] shadow-[0px_2px_10px_0px_#7C8DB51F]
+ size-11 flex items-center justify-center"
+              >
+                <IconProductOutStock />
+              </span>
+            </div>
+          </>
+        )}
+      </div>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-lg font-medium md:text-2xl">Product List</h1>
@@ -252,7 +337,7 @@ function ProductList() {
             <div
               className={cn(
                 "relative",
-                selectedProduct.length > 0 && "max-sm:hidden"
+                selectedProduct.length > 0 && "max-sm:hidden",
               )}
             >
               <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
