@@ -28,4 +28,28 @@ function Switch({
   )
 }
 
-export { Switch }
+function CustomSwitch({
+  className,
+  ...props
+}: React.ComponentProps<typeof SwitchPrimitive.Root>) {
+  return (
+    <SwitchPrimitive.Root
+      data-slot="switch"
+      className={cn(
+        "focus-visible:border-ring focus-visible:ring-ring/50 dark:data-[state=unchecked]:bg-input/80 shadow-xs peer inline-flex h-[27px] w-[50px] shrink-0 items-center rounded-full border border-transparent outline-none transition-all focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-[#44444433]",
+        className
+      )}
+      {...props}
+    >
+      <SwitchPrimitive.Thumb
+        data-slot="switch-thumb"
+        className={cn(
+          "size-5 pointer-events-none block rounded-full bg-white ring-0 transition-transform data-[state=checked]:translate-x-6 data-[state=unchecked]:translate-x-1 data-[state=unchecked]:bg-[#44444499] dark:data-[state=checked]:bg-white"
+        )}
+      />
+    </SwitchPrimitive.Root>
+  );
+}
+
+
+export { Switch, CustomSwitch }
