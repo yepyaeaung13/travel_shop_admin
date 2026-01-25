@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
 import IconLoading from "../Loading";
+import { cn } from "@/lib/utils";
 
 type Props = {
   open: boolean;
@@ -16,6 +17,8 @@ type Props = {
   loading: boolean;
   title?: string;
   description?: string;
+  className?: string;
+  titleClassName?: string;
 };
 export default function ConfirmDialog({
   open,
@@ -24,14 +27,26 @@ export default function ConfirmDialog({
   loading,
   title,
   description,
+  className,
+  titleClassName,
 }: Props) {
   return (
     <Dialog open={open} onOpenChange={loading ? () => {} : setOpen}>
-      <DialogContent className="flex w-[440px] flex-col items-center justify-center p-5 gap-5 rounded-[10px]">
+      <DialogContent
+        className={cn(
+          "flex w-[440px] flex-col items-center justify-center p-5 gap-5 rounded-[10px]",
+          className,
+        )}
+      >
         {title && (
-            <p className="pt-5 max-w-[306px] w-full text-center text-base font-semibold text-[#1E1E1E] md:text-lg">
-              {title}
-            </p>
+          <p
+            className={cn(
+              "pt-5 w-full max-w-[306px] text-center text-base font-semibold text-[#1E1E1E] md:text-lg",
+              titleClassName,
+            )}
+          >
+            {title}
+          </p>
         )}
         {description && (
           <DialogDescription className="text-center text-sm font-normal text-[#3C3C3C] md:text-base -mt-2.5">
@@ -44,7 +59,7 @@ export default function ConfirmDialog({
               variant="outline"
               onClick={() => setOpen(false)}
               disabled={loading}
-              className="h-auto w-[47%] rounded-[10px] bg-[#44444480] py-2 text-base text-white md:text-lg cursor-pointer"
+              className="h-auto w-[47%] rounded-[10px] bg-[#44444480] hover:bg-[#44444490] hover:text-white border-none py-2 text-base text-white md:text-lg cursor-pointer"
             >
               Cancel
             </Button>

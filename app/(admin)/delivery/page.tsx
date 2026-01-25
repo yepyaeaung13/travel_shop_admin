@@ -1,6 +1,6 @@
 "use client";
 
-import ConfirmDialog from "@/components/delivery/confirm-dialog";
+import ConfirmDialog from "@/components/confirm-dialog/confirm-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { CustomSwitch, Switch } from "@/components/ui/switch";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import { Search } from "lucide-react";
+import { ChevronLeft, Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 
@@ -299,7 +299,7 @@ const DeliveryPage = () => {
           </Button>
         </div>
       </div>
-      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-5">
+      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 md:gap-5">
         <Card
           className={cn(
             "w-full md:w-[320px] rounded-[10px] p-5 shrink-0 h-full md:h-[75vh] overflow-y-scroll hide-scrollbar",
@@ -342,6 +342,16 @@ const DeliveryPage = () => {
             </div>
           </CardContent>
         </Card>
+
+        {isMobile && regionId ? (
+          <div className="flex gap-2.5 items-center" onClick={() => router.back()}>
+            <ChevronLeft className="size-6" />
+            <div className="text-lg font-normal text-[#1E1E1E]">
+              {regions[regionId]}
+            </div>
+          </div>
+        ): null}
+
         <Card
           className={cn(
             "w-full rounded-[10px] p-5 max-h-[75vh] overflow-y-scroll hide-scrollbar",
