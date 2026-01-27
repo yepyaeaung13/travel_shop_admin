@@ -17,6 +17,7 @@ import IconNotification from "@/assets/icons/sidebar/Notification";
 import IconSetting from "@/assets/icons/sidebar/Setting";
 import { useNavStore } from "@/store/useNavStore";
 import { successToast } from "../toast";
+import IconDelivery from "@/assets/icons/sidebar/Delivery";
 
 export const sidebarItems = [
   { icon: IconProduct, label: "Product management", path: "/product" },
@@ -36,9 +37,14 @@ export const sidebarItems = [
     path: "/customers",
   },
   {
+    icon: IconDelivery,
+    label: "Region and State Lists",
+    path: "/delivery",
+  },
+  {
     icon: IconPayment,
-    label: "Payment management",
-    path: "/payments",
+    label: "Wallet List",
+    path: "/wallet",
   },
   {
     icon: IconNotification,
