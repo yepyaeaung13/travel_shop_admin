@@ -35,9 +35,11 @@ type DialogModal = {
 };
 
 export default function Page() {
-  <Suspense fallback="">
-    <DeliveryPage />
-  </Suspense>
+  return (
+    <Suspense fallback="">
+      <DeliveryPage />
+    </Suspense>
+  );
 }
 
 const DeliveryPage = () => {
@@ -350,13 +352,16 @@ const DeliveryPage = () => {
         </Card>
 
         {isMobile && regionId ? (
-          <div className="flex gap-2.5 items-center" onClick={() => router.back()}>
+          <div
+            className="flex gap-2.5 items-center"
+            onClick={() => router.back()}
+          >
             <ChevronLeft className="size-6" />
             <div className="text-lg font-normal text-[#1E1E1E]">
               {regions[regionId]}
             </div>
           </div>
-        ): null}
+        ) : null}
 
         <Card
           className={cn(
