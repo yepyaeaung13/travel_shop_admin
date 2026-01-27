@@ -10,7 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 
 const regions = [
   "Ayeyarwady",
@@ -33,6 +33,12 @@ type DialogModal = {
   onConfirm: () => void;
   onCancel: () => void;
 };
+
+export default function Page() {
+  <Suspense fallback="">
+    <DeliveryPage />
+  </Suspense>
+}
 
 const DeliveryPage = () => {
   const router = useRouter();
@@ -552,5 +558,3 @@ const DeliveryPage = () => {
     </section>
   );
 };
-
-export default DeliveryPage;
