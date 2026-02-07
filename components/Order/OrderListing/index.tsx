@@ -15,24 +15,15 @@ import IconLoading from "@/components/Loading";
 import IconNoYet from "@/assets/icons/NoYet";
 import IconNoFound from "@/assets/icons/NoFound";
 import { useGetOrderList } from "@/queries/order";
-
-export enum OrderSortOption {
-  ALL = "all",
-  PENDING = "pending",
-  CONFIRMED = "confirmed",
-  PREPARING = "preparing",
-  SHIPPED = "shipped",
-  DELIVERED = "delivered",
-  FULLFILLED = "fullfilled",
-  REJECTED = "rejected",
-}
+import { OrderStatus } from "./sort-dropdown";
 
 type ListOrderArgs = {
   page: number;
   limit: number;
   search?: string;
-  sortBy: OrderSortOption;
-  sortOrder: "asc" | "desc";
+  status: OrderStatus | undefined;
+  fromDate: string | undefined;
+  toDate: string | undefined;
 };
 
 export interface OrderListProps {
@@ -48,18 +39,27 @@ export default function OrderList({ onImport, onExport }: OrderListProps) {
   // --- PAGINATION AND SORT LOGIC ---
   const [currentPage, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
-  const [sortBy, setSortBy] = useState<ListOrderArgs["sortBy"]>(
-    OrderSortOption.ALL,
+  const [status, setStatus] = useState<ListOrderArgs["status"]>(
+    OrderStatus.ALL,
   );
-  const [sortOrder, setSortOrder] = useState<ListOrderArgs["sortOrder"]>("asc");
+  const [date, setDate] = useState<{
+    from: string | undefined;
+    to: string | undefined;
+  }>({
+    from: undefined,
+    to: undefined,
+  });
   const { getParam } = useQueryParams();
-  const sortByValueFromQuery = getParam("sortBy") as OrderSortOption;
+  const statusValue = getParam("status") as OrderStatus;
+  const fromDate = getParam("from");
+  const toDate = getParam("to");
 
   useEffect(() => {
-    if (sortByValueFromQuery) {
-      setSortBy(sortByValueFromQuery);
+    if (statusValue) {
+      setStatus(statusValue);
     }
-  }, [sortByValueFromQuery]);
+    setDate({ from: fromDate || undefined, to: toDate || undefined });
+  }, [statusValue, fromDate, toDate]);
 
   // --- Side Effects ---
   // Debounce search term
@@ -77,23 +77,21 @@ export default function OrderList({ onImport, onExport }: OrderListProps) {
       page: currentPage,
       limit: limit,
       search: debouncedSearch.trim() || undefined,
-      sortBy,
-      sortOrder,
+      status: status === OrderStatus.ALL ? undefined : status,
+      fromDate: date.from ?? undefined,
+      toDate: date.to ?? undefined,
     }),
-    [currentPage, limit, debouncedSearch, sortBy, sortOrder],
+    [currentPage, limit, debouncedSearch, status, date],
   );
 
-  // const { data: res, isLoading } = useGetOrders({
-  //   sort: queryArgs.sortBy as OrderSortOption,
-  //   limit: queryArgs.limit,
-  //   page: queryArgs.limit,
-  //   searchText: queryArgs.search,
-  // });
   const { data: res, isLoading } = useGetOrderList({
-    sort: queryArgs.sortBy as OrderSortOption,
+    sort: queryArgs.status as OrderStatus,
     limit: queryArgs.limit,
     page: queryArgs.page,
     searchText: queryArgs.search,
+    status: queryArgs.status,
+    fromDate: queryArgs.fromDate,
+    toDate: queryArgs.toDate,
   });
   const orders: any[] = res?.data?.orders || [];
   const totalItems = res?.data?.total || 0;

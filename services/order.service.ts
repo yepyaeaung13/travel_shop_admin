@@ -1,14 +1,27 @@
 import axiosClient from "@/lib/axios";
 
-export const getPrderList = async (data: any) => {
+export const getOrderDashboard = async () => {
+  const res = await axiosClient.get("/v1/orders/dashboard");
+
+  return res?.data;
+};
+
+export const getOrderList = async (data: any) => {
   const res = await axiosClient.get("/v1/orders", {
-    params: { page: data.page, limit: data.limit, searchText: data.searchText },
+    params: {
+      page: data.page,
+      limit: data.limit,
+      searchText: data.searchText,
+      status: data.status,
+      fromDate: data.fromDate,
+      toDate: data.toDate,
+    },
   });
 
   return res?.data;
 };
 
-export const getPrderById = async (id: number) => {
+export const getOrderById = async (id: number) => {
   const res = await axiosClient.get(`/v1/orders/${id}`);
 
   return res?.data;

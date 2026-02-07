@@ -32,6 +32,10 @@ export function SortByDate() {
 
   const handleClear = () => {
     setOpen(false);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("from");
+    params.delete("to");
+    router.replace(`?${params.toString()}`);
     setDateRange({
       from: undefined,
       to: undefined,
@@ -44,7 +48,7 @@ export function SortByDate() {
         onClick={handleOpen}
         className={cn(
           "flex cursor-pointer items-center justify-center gap-2.5 rounded-[10px] bg-white p-1",
-          open || dateRange?.from || dateRange?.to ? "" : "max-sm:w-fit"
+          open || dateRange?.from || dateRange?.to ? "" : "max-sm:w-fit",
         )}
       >
         <div className="size-10 flex items-center justify-center rounded-[8px] bg-[#EEEEEE]">
@@ -53,7 +57,7 @@ export function SortByDate() {
         <p
           className={cn(
             "w-full md:w-52",
-            open || dateRange?.from || dateRange?.to ? "" : "hidden"
+            open || dateRange?.from || dateRange?.to ? "" : "hidden",
           )}
         >
           <span>Date: </span>
@@ -66,7 +70,7 @@ export function SortByDate() {
       <div
         className={cn(
           "absolute right-0 top-14 z-50 flex w-full flex-col items-center justify-center overflow-hidden rounded-lg border bg-white shadow-sm md:w-auto ",
-          open ? "visible" : "invisible"
+          open ? "visible" : "invisible",
         )}
       >
         <Calendar

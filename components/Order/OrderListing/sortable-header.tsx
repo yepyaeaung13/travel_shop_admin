@@ -10,11 +10,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { OrderSortOption } from ".";
+import { OrderStatus } from "./sort-dropdown";
 
 interface SortOption {
   label: string;
-  value: OrderSortOption;
+  value: OrderStatus;
 }
 
 interface SortableHeaderProps {
@@ -29,7 +29,7 @@ export const SortableHeader = ({ title, sortOptions }: SortableHeaderProps) => {
 
   const noSortUI = sortOptions.length === 0;
 
-  const handleSortChange = (value: OrderSortOption) => {
+  const handleSortChange = (value: OrderStatus) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("sortBy", value);
     router.replace(`?${params.toString()}`);

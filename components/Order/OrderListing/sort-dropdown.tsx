@@ -6,32 +6,31 @@ import {
   SelectTrigger,
   SelectContent,
   SelectItem,
+  SelectValue,
 } from "@/components/ui/select";
-import { ProductSortOption } from "@/types/product.types";
 import { useQueryParams } from "@/hooks/use-query-params";
-import { OrderStatus } from "../OrderDetail/order-info";
 import IconSortDownArrow from "@/assets/icons/common/arrows/IconSortDownArrow";
 
-enum OrderSortOption {
+export enum OrderStatus {
   ALL = "all",
-  PENDING = "pending",
-  CONFIRMED = "confirmed",
-  PREPARING = "preparing",
-  SHIPPED = "shipped",
-  DELIVERED = "delivered",
-  FULLFILLED = "fullfilled",
-  REJECTED = "rejected",
+  Pending = "Pending",
+  Confirmed = "Confirmed",
+  Preparing = "Preparing",
+  Shipped = "Shipped",
+  Delivered = "Delivered",
+  Fulfilled = "Fulfilled",
+  Rejected = "Rejected",
 }
 
 const defaultFilterOptions = [
-  { label: "All", value: OrderSortOption.ALL },
-  { label: "Pending", value: OrderSortOption.PENDING },
-  { label: "Confirmed", value: OrderSortOption.CONFIRMED },
-  { label: "Preparing", value: OrderSortOption.PREPARING },
-  { label: "Shipped", value: OrderSortOption.SHIPPED },
-  { label: "Delivered", value: OrderSortOption.DELIVERED },
-  { label: "Fullfilled", value: OrderSortOption.FULLFILLED },
-  { label: "Rejected", value: OrderSortOption.REJECTED },
+  { label: "All", value: OrderStatus.ALL },
+  { label: "Pending", value: OrderStatus.Pending },
+  { label: "Confirmed", value: OrderStatus.Confirmed },
+  { label: "Preparing", value: OrderStatus.Preparing },
+  { label: "Shipped", value: OrderStatus.Shipped },
+  { label: "Delivered", value: OrderStatus.Delivered },
+  { label: "Fullfilled", value: OrderStatus.Fulfilled },
+  { label: "Rejected", value: OrderStatus.Rejected },
 ];
 
 export default function OrderSortByBtn({
@@ -41,10 +40,10 @@ export default function OrderSortByBtn({
 } = {}) {
   const { setParam, getParam } = useQueryParams();
 
-  const sortByParms = getParam("sortBy") as ProductSortOption | undefined;
+  const sortByParms = getParam("status") as OrderStatus | undefined;
 
   const handleSortChange = (value: OrderStatus) => {
-    setParam("sortBy", value);
+    setParam("status", value);
   };
 
   // find the title for the current sortBy
@@ -55,24 +54,22 @@ export default function OrderSortByBtn({
 
   return (
     <Select
-      value={selectedLabel ? sortByParms : undefined}
-      onValueChange={(val) => {
-        handleSortChange(val as OrderStatus);
-      }}
+      value={sortByParms ?? "ALL"}
+      onValueChange={(val) => handleSortChange(val as OrderStatus)}
     >
       <SelectTrigger
         disabledIcon
         className="h-[42px]! flex w-full items-center justify-center gap-3 rounded-[10px] bg-white font-medium !text-black dark:!text-white md:w-[236px] md:text-lg"
       >
         <IconSortDownArrow className="size-5!" />
-        <span>
-          {sortByParms && !!selectedLabel
-            ? `Sort by: ${selectedLabel}`
-            : "Sort by: All"}
-        </span>
+
+        <span>Sort by: {selectedLabel ?? "All"}</span>
       </SelectTrigger>
 
-      <SelectContent className="rounded-[10px] [&>div:nth-child(2)]:p-0">
+      <SelectContent
+        position="popper"
+        className="rounded-[10px] [&>div:nth-child(2)]:p-0"
+      >
         {customFilterOptions.map((option) => {
           return (
             <SelectItem

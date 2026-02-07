@@ -1,22 +1,30 @@
 import {
   changeOrderStatus,
   changePaymentStatus,
-  getPrderById,
-  getPrderList,
+  getOrderById,
+  getOrderDashboard,
+  getOrderList,
 } from "@/services/order.service";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+export const useGetOrderDashboard = () => {
+  return useQuery({
+    queryKey: ["order-dashboard"],
+    queryFn: () => getOrderDashboard(),
+  });
+};
 
 export const useGetOrderList = (data: any) => {
   return useQuery({
     queryKey: ["order-list", data],
-    queryFn: () => getPrderList(data),
+    queryFn: () => getOrderList(data),
   });
 };
 
 export const useGetOrderDetail = (id: number) => {
   return useQuery({
     queryKey: ["order-detail", id],
-    queryFn: () => getPrderById(id),
+    queryFn: () => getOrderById(id),
   });
 };
 

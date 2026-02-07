@@ -10,28 +10,23 @@ import IconOrderPending from "@/assets/icons/order/status/IconOrderPending";
 import IconOrderPrepare from "@/assets/icons/order/status/IconOrderPrepare";
 import IconOrderReject from "@/assets/icons/order/status/IconOrderReject";
 import IconOrderShipped from "@/assets/icons/order/status/IconOrderShipped";
-
-const orders = [
-  { icon: <IconOrderPending />, number: 10, label: "Pending orders" },
-  { icon: <IconOrderConfirm />, number: 10, label: "Confirmed orders" },
-  { icon: <IconOrderPrepare />, number: 10, label: "Preparing orders" },
-  { icon: <IconOrderShipped />, number: 10, label: "Shipped orders" },
-  { icon: <IconOrderDelivered />, number: 10, label: "Delivered orders" },
-  { icon: <IconOrderFullfill />, number: 10, label: "Fullfilled orders" },
-  { icon: <IconOrderReject />, number: 10, label: "Rejected orders" },
-];
+import { useGetOrderDashboard } from "@/queries/order";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const OrderAnalyzeSection = () => {
   const scrollbarRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
+  const { data: dashboardData, isLoading: dashboardLoading } =
+    useGetOrderDashboard();
+
   const checkScroll = () => {
     if (scrollbarRef.current) {
       setCanScrollLeft(scrollbarRef.current.scrollLeft > 0);
       setCanScrollRight(
         scrollbarRef.current.scrollLeft + scrollbarRef.current.clientWidth <
-          scrollbarRef.current.scrollWidth - 1
+          scrollbarRef.current.scrollWidth - 1,
       );
     }
   };
@@ -50,6 +45,7 @@ const OrderAnalyzeSection = () => {
       scrollbarRef.current?.removeEventListener("scroll", checkScroll);
     };
   }, []);
+
 
   return (
     <div className="relative">
@@ -76,10 +72,49 @@ const OrderAnalyzeSection = () => {
             <ChevronRight className="text-gray-600" />
           </button>
         )}
-
-        {orders.map((order, index) => (
-          <OrderCard key={index} {...order} />
-        ))}
+        {dashboardLoading ? (
+          Array.from({ length: 6 }).map((_, index) => (
+            <Skeleton key={index} className="h-28 w-52 bg-gray-300"></Skeleton>
+          ))
+        ) : (
+          <>
+            <OrderCard
+              icon={<IconOrderPending />}
+              number={dashboardData?.data?.Pending}
+              label="Pending orders"
+            />
+            <OrderCard
+              icon={<IconOrderConfirm />}
+              number={dashboardData?.data?.Confirmed}
+              label="Confirmed orders"
+            />
+            <OrderCard
+              icon={<IconOrderPrepare />}
+              number={dashboardData?.data?.Preparing}
+              label="Preparing orders"
+            />
+            <OrderCard
+              icon={<IconOrderShipped />}
+              number={dashboardData?.data?.Shipped}
+              label="Shipped orders"
+            />
+            <OrderCard
+              icon={<IconOrderDelivered />}
+              number={dashboardData?.data?.Delivered}
+              label="Delivered orders"
+            />
+            <OrderCard
+              icon={<IconOrderFullfill />}
+              number={dashboardData?.data?.Fulfilled}
+              label="Fullfilled orders"
+            />
+            <OrderCard
+              icon={<IconOrderReject />}
+              number={dashboardData?.data?.Rejected}
+              label="Rejected orders"
+            />
+          </>
+        )}
       </div>
     </div>
   );
