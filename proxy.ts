@@ -7,6 +7,10 @@ export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
     // return NextResponse.next();
 
+  if(pathname === "/") {
+    return NextResponse.redirect(new URL("/product", request.url));
+  }
+
   if (publicRoutes.includes(pathname) && pathname.startsWith("/login")) {
     return NextResponse.next();
   }

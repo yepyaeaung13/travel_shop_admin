@@ -16,19 +16,19 @@ export function IconProductInactive() {
         d="M23 19C23 20.2 22.47 21.27 21.64 22C20.93 22.62 20.01 23 19 23C16.79 23 15 21.21 15 19C15 17.74 15.58 16.61 16.5 15.88C17.19 15.33 18.06 15 19 15C21.21 15 23 16.79 23 19Z"
         fill="white"
         stroke="#827C00"
-        stroke-width="1.5"
-        stroke-miterlimit="10"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path d="M19.25 17.75V19.25L18 20" fill="white" />
       <path
         d="M19.25 17.75V19.25L18 20"
         stroke="#827C00"
-        stroke-width="1.5"
-        stroke-miterlimit="10"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

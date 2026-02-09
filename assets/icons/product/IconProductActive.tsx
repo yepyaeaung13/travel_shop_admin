@@ -16,18 +16,18 @@ export function IconProductActive() {
         d="M22.5011 18.411C22.5211 19.161 22.3211 19.871 21.9611 20.481C21.7611 20.841 21.4912 21.171 21.1912 21.441C20.5012 22.081 19.5911 22.471 18.5811 22.501C17.1211 22.531 15.8311 21.7811 15.1211 20.6311C14.7411 20.041 14.5111 19.3311 14.5011 18.5811C14.4711 17.3211 15.0311 16.181 15.9311 15.431C16.6111 14.871 17.4712 14.521 18.4112 14.501C20.6212 14.451 22.4511 16.201 22.5011 18.411Z"
         fill="white"
         stroke="#126D00"
-        stroke-width="1.5"
-        stroke-miterlimit="10"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path d="M16.9414 18.5327L17.9514 19.4927L20.0414 17.4727" fill="white" />
       <path
         d="M16.9414 18.5327L17.9514 19.4927L20.0414 17.4727"
         stroke="#126D00"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

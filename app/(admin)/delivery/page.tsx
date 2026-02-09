@@ -1,6 +1,7 @@
 "use client";
 
 import ConfirmDialog from "@/components/confirm-dialog/confirm-dialog";
+import { successToast } from "@/components/toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -8,9 +9,15 @@ import { Input } from "@/components/ui/input";
 import { CustomSwitch, Switch } from "@/components/ui/switch";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, Search } from "lucide-react";
+import {
+  useGetDeliveryRegion,
+  useGetDeliveryRegionById,
+  useUpdateDeliveryRegionById,
+  useUpdateStatusRegionById,
+} from "@/queries/delivery";
+import { ChevronDown, ChevronLeft, ChevronUp, Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 
 const regions = [
   "Ayeyarwady",
@@ -44,15 +51,15 @@ export default function Page() {
 
 const DeliveryPage = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const isMobile = useIsMobile();
-
-  const id = searchParams.get("regionId") ?? "0";
-  const regionId = parseInt(id);
 
   const [disabled, setDisabled] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedRegion, setSelectedRegion] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
 
   const [deliveryType, setDeliveryType] = useState<
     "none" | "free" | "perTown" | "allTown"
@@ -65,6 +72,165 @@ const DeliveryPage = () => {
     onConfirm: () => {},
     onCancel: () => {},
   });
+  const [expandedDistricts, setExpandedDistricts] = useState<number[]>([]);
+
+  const { data: deliveryRegionData, isLoading } = useGetDeliveryRegion();
+  const { data: regionDetail, isLoading: detailLoading } =
+    useGetDeliveryRegionById(selectedRegion?.id);
+  const { mutate: updateStatusRegion, isPending } = useUpdateStatusRegionById();
+  const { mutate: updateRegion, isPending: updateRegionLoading } =
+    useUpdateDeliveryRegionById();
+
+  const [regionState, setRegionState] = useState<any | null>(null);
+
+  useEffect(() => {
+    if (regionDetail?.data) {
+      setRegionState(regionDetail.data);
+    }
+  }, [regionDetail]);
+
+  useEffect(() => {
+    if (deliveryRegionData?.data) {
+      setSelectedRegion(deliveryRegionData?.data[0]);
+    }
+  }, [deliveryRegionData]);
+
+  type RegionDeliveryField =
+    | "deliveryFeePerTownship"
+    | "deliveryFree"
+    | "deliveryFeeForAllTownship"
+    | "deliveryFee";
+
+  const updateRegionFieldForBoolean = (
+    field: RegionDeliveryField,
+    checked: boolean,
+  ) => {
+    setRegionState((prev: any) => {
+      // start by turning all off
+      const next = {
+        ...prev,
+        deliveryFeePerTownship: false,
+        deliveryFree: false,
+        deliveryFeeForAllTownship: false,
+      };
+
+      // if checked, enable only the selected field
+      if (checked) {
+        next[field] = true;
+      }
+
+      return next;
+    });
+  };
+
+  const updateRegionField = (field: RegionDeliveryField, value: any) => {
+    setRegionState((prev: any) => {
+      // start by turning all off
+      const next = {
+        ...prev,
+        [field]: value,
+      };
+
+      return next;
+    });
+  };
+
+  const updateDistrictField = (
+    districtId: number,
+    field: string,
+    value: any,
+  ) => {
+    setRegionState((prev: any) => ({
+      ...prev,
+      districts: prev.districts.map((d: any) =>
+        d.id === districtId ? { ...d, [field]: value } : d,
+      ),
+    }));
+  };
+
+  const updateTownshipField = (
+    districtId: number,
+    townshipId: number,
+    field: "fee" | "status",
+    value: any,
+  ) => {
+    setRegionState((prev: any) => ({
+      ...prev,
+      districts: prev.districts.map((d: any) => {
+        if (d.id !== districtId) return d;
+
+        return {
+          ...d,
+          townships: d.townships.map((t: any) =>
+            t.id === townshipId ? { ...t, [field]: value } : t,
+          ),
+        };
+      }),
+    }));
+  };
+
+  const toggleDistrict = (id: number) => {
+    setExpandedDistricts((prev) =>
+      prev.includes(id) ? prev.filter((d) => d !== id) : [...prev, id],
+    );
+  };
+
+  const getDistrictFeeRange = (townships: { fee: number }[]) => {
+    if (!townships.length) return { min: 0, max: 0 };
+
+    const fees = townships.map((t) => t.fee);
+    return {
+      min: Math.min(...fees),
+      max: Math.max(...fees),
+    };
+  };
+
+  const updateDistrictTownshipFee = (districtId: number, fee: number) => {
+    setRegionState((prev: any) => ({
+      ...prev,
+      districts: prev.districts.map((d: any) => {
+        if (d.id !== districtId) return d;
+
+        return {
+          ...d,
+          townships: d.townships.map((t: any) => ({
+            ...t,
+            fee,
+          })),
+        };
+      }),
+    }));
+  };
+
+  const updateDistrictTownshipStatus = (districtId: number, status: string) => {
+    setRegionState((prev: any) => ({
+      ...prev,
+      districts: prev.districts.map((d: any) => {
+        if (d.id !== districtId) return d;
+
+        return {
+          ...d,
+          townships: d.townships.map((t: any) => ({
+            ...t,
+            status,
+          })),
+        };
+      }),
+    }));
+  };
+
+  const togglePaymentMethod = (methodId: number, checked: boolean) => {
+    setRegionState((prev: any) => {
+      const current = prev.paymentMethods ?? [];
+
+      return {
+        ...prev,
+        paymentMethods: checked
+          ? [...current, methodId] // add
+          : current.filter((id: number) => id !== methodId), // remove
+      };
+    });
+  };
 
   const resetDialogModal = () => {
     setDialogModal({
@@ -83,9 +249,18 @@ const DeliveryPage = () => {
       title: "Are you sure you want to save your changes?",
       message: "",
       onConfirm: () => {
-        setDialogModal({
-          ...dialogModal,
-          isOpen: false,
+        const { allPaymentMethods, ...payload } = regionState;
+        updateRegion(payload, {
+          onSuccess: () => {
+            successToast(
+              "Success",
+              `${regionState.name} region update successfully.`,
+            );
+            setDialogModal({
+              ...dialogModal,
+              isOpen: false,
+            });
+          },
         });
       },
       onCancel: resetDialogModal,
@@ -110,46 +285,29 @@ const DeliveryPage = () => {
     });
   };
 
-  const handleDiscardAll = () => {
+  const handleTurnOnFreeDeli = (checked: boolean) => {
     setDialogModal({
       isOpen: true,
-      title: "Are you sure you want to discard all changes?",
-      message: "This action cannot be undone",
-      onConfirm: () => {
-        setDialogModal({
-          ...dialogModal,
-          isOpen: false,
-        });
-        router.back();
-      },
-      onCancel: resetDialogModal,
-    });
-  };
-
-  const handleTurnOnFreeDeli = () => {
-    setDialogModal({
-      isOpen: true,
-      title: "Are you sure you want to set free delivery for all townships?",
+      title: `Are you sure you want to ${checked ? "set" : "disable"} set free delivery for all townships?`,
       message: "",
       onConfirm: () => {
+        updateRegionFieldForBoolean("deliveryFree", checked);
         setDialogModal({
           ...dialogModal,
           isOpen: false,
         });
-        setDeliveryType("free");
       },
       onCancel: resetDialogModal,
     });
   };
 
-  const handleTurnOffFreeDeli = () => {
+  const handleTurnOnPerTownship = (checked: boolean) => {
     setDialogModal({
       isOpen: true,
-      title:
-        "Are you sure you want to disable free delivery for all townships?",
+      title: `Are you sure you want to ${checked ? "set" : "disable"} delivery fees per township?`,
       message: "",
       onConfirm: () => {
-        setDeliveryType("none");
+        updateRegionFieldForBoolean("deliveryFeePerTownship", checked);
         setDialogModal({
           ...dialogModal,
           isOpen: false,
@@ -159,21 +317,13 @@ const DeliveryPage = () => {
     });
   };
 
-  const handleFreeDeliChecked = (checked: boolean) => {
-    if (checked) {
-      handleTurnOnFreeDeli();
-    } else {
-      handleTurnOffFreeDeli();
-    }
-  };
-
-  const handleTurnOnPerTownship = () => {
+  const handleTurnOnAllTownship = (checked: boolean) => {
     setDialogModal({
       isOpen: true,
-      title: "Are you sure you want to set delivery fees per township?",
+      title: `Are you sure you want to ${checked ? "set" : "disable"} universal delivery fees?`,
       message: "",
       onConfirm: () => {
-        setDeliveryType("perTown");
+        updateRegionFieldForBoolean("deliveryFeeForAllTownship", checked);
         setDialogModal({
           ...dialogModal,
           isOpen: false,
@@ -183,81 +333,28 @@ const DeliveryPage = () => {
     });
   };
 
-  const handleTurnOffPerTownship = () => {
-    setDialogModal({
-      isOpen: true,
-      title: "Are you sure you want to disable delivery fees per township?",
-      message: "",
-      onConfirm: () => {
-        setDeliveryType("none");
-        setDialogModal({
-          ...dialogModal,
-          isOpen: false,
-        });
-      },
-      onCancel: resetDialogModal,
-    });
-  };
-
-  const handlePerTownChecked = (checked: boolean) => {
-    if (checked) {
-      handleTurnOnPerTownship();
-    } else {
-      handleTurnOffPerTownship();
-    }
-  };
-
-  const handleTurnOnAllTownship = () => {
-    setDialogModal({
-      isOpen: true,
-      title: "Are you sure you want to set universal delivery fees?",
-      message: "",
-      onConfirm: () => {
-        setDeliveryType("allTown");
-        setDialogModal({
-          ...dialogModal,
-          isOpen: false,
-        });
-      },
-      onCancel: resetDialogModal,
-    });
-  };
-
-  const handleTurnOffAllTownship = () => {
-    setDialogModal({
-      isOpen: true,
-      title: "Are you sure you want to disable universal delivery fees?",
-      message: "",
-      onConfirm: () => {
-        setDeliveryType("none");
-        setDialogModal({
-          ...dialogModal,
-          isOpen: false,
-        });
-      },
-      onCancel: resetDialogModal,
-    });
-  };
-
-  const handleAllTownChecked = (checked: boolean) => {
-    if (checked) {
-      handleTurnOnAllTownship();
-    } else {
-      handleTurnOffAllTownship();
-    }
-  };
-
-  const handleDisableDelivery = () => {
+  const handleDisableDelivery = (id: number, checked: boolean) => {
     setDeliveryType("none");
+    const selectedRegion = deliveryRegionData?.data.find(
+      (r: any) => r.id === id,
+    );
     setDialogModal({
       isOpen: true,
-      title: `Are you sure you want to disable delivery for ${regions[regionId]}?`,
+      title: `Are you sure you want to ${checked ? "enable" : "disable"} delivery for ${selectedRegion.name}?`,
       message: "",
       onConfirm: () => {
-        setDialogModal({
-          ...dialogModal,
-          isOpen: false,
-        });
+        updateStatusRegion(
+          { id, status: checked ? "ACTIVE" : "INACTIVE" },
+          {
+            onSuccess: () => {
+              successToast("Success", "Status update successfully.");
+              setDialogModal({
+                ...dialogModal,
+                isOpen: false,
+              });
+            },
+          },
+        );
       },
       onCancel: resetDialogModal,
     });
@@ -271,9 +368,8 @@ const DeliveryPage = () => {
     });
   };
 
-  const handleSelectRegion = (id: number) => {
-    router.push(`/delivery?regionId=${id}`);
-    // handleDiscard();
+  const handleSelectRegion = (region: any) => {
+    setSelectedRegion(region);
   };
 
   return (
@@ -311,7 +407,7 @@ const DeliveryPage = () => {
         <Card
           className={cn(
             "w-full md:w-[320px] rounded-[10px] p-5 shrink-0 h-full md:h-[75vh] overflow-y-scroll hide-scrollbar",
-            isMobile && regionId && "hidden",
+            isMobile && selectedRegion && "hidden",
           )}
         >
           <CardContent className="px-0 space-y-5">
@@ -328,37 +424,42 @@ const DeliveryPage = () => {
               />
             </div>
             <div className="space-y-2.5">
-              {regions.map((region, index) => (
-                <div
-                  key={index}
-                  onClick={() => handleSelectRegion(index)}
-                  className={cn(
-                    "cursor-pointer px-3 py-4 flex justify-between items-center border border-[#A1A1A1]/50 rounded-[10px]",
-                    regionId === index && "bg-[#616FF5]/20",
-                  )}
-                >
-                  <p className="text-base md:text-lg font-normal text-[#303030]">
-                    {region}
-                  </p>
-                  <CustomSwitch
-                    onCheckedChange={(checked: boolean) => {
-                      if (!checked) handleDisableDelivery();
-                    }}
-                  />
-                </div>
-              ))}
+              {isLoading ? (
+                <p className="text-center">loading...</p>
+              ) : (
+                deliveryRegionData?.data?.map((region: any) => (
+                  <div
+                    key={region.id}
+                    onClick={() => handleSelectRegion(region)}
+                    className={cn(
+                      "cursor-pointer px-3 py-4 flex justify-between items-center border border-[#A1A1A1]/50 rounded-[10px]",
+                      selectedRegion?.id === region.id && "bg-[#616FF5]/20",
+                    )}
+                  >
+                    <p className="text-base md:text-lg font-normal text-[#303030]">
+                      {region.name}
+                    </p>
+                    <CustomSwitch
+                      checked={region.status === "ACTIVE"}
+                      onCheckedChange={(checked: boolean) => {
+                        handleDisableDelivery(region.id, checked);
+                      }}
+                    />
+                  </div>
+                ))
+              )}
             </div>
           </CardContent>
         </Card>
 
-        {isMobile && regionId ? (
+        {isMobile && selectedRegion ? (
           <div
             className="flex gap-2.5 items-center"
             onClick={() => router.back()}
           >
             <ChevronLeft className="size-6" />
             <div className="text-lg font-normal text-[#1E1E1E]">
-              {regions[regionId]}
+              {selectedRegion.name}
             </div>
           </div>
         ) : null}
@@ -366,162 +467,292 @@ const DeliveryPage = () => {
         <Card
           className={cn(
             "w-full rounded-[10px] p-5 max-h-[75vh] overflow-y-scroll hide-scrollbar",
-            isMobile && !regionId && "hidden",
+            isMobile && !selectedRegion && "hidden",
           )}
         >
-          <CardContent className="px-0 space-y-5">
-            <h3 className="text-lg md:text-xl font-medium text-black">
-              Payment method
-            </h3>
-            <div className="flex items-center gap-2.5">
-              <Checkbox id="cod" className="size-5" />
-              <label
-                htmlFor="cod"
-                className="text-lg font-normal cursor-pointer"
-              >
-                Cash on Delivery (COD)
-              </label>
+          {isLoading || detailLoading ? (
+            <div className="min-h-[75vh] flex items-center justify-center">
+              <p className="text-center">loading...</p>
             </div>
-            <div className="flex items-center gap-2.5">
-              <Checkbox id="prepaid" className="size-5" />
-              <label
-                htmlFor="prepaid"
-                className="text-lg font-normal cursor-pointer"
-              >
-                Prepaid
-              </label>
-            </div>
-            <div className="w-full h-[1px] bg-[#A1A1A1]/50" />
-            <div className=" flex justify-between items-center">
-              <p className="text-base md:text-lg font-normal text-[#303030]">
-                Free delivery for all township
-              </p>
-              <CustomSwitch
-                checked={deliveryType === "free"}
-                onCheckedChange={handleFreeDeliChecked}
-              />
-            </div>
-            <div className="space-y-4">
+          ) : (
+            <CardContent className="px-0 space-y-5">
+              <h3 className="text-lg md:text-xl font-medium text-black">
+                Payment method
+              </h3>
+              {regionState?.allPaymentMethods.map(
+                (method: { id: number; name: string }) => (
+                  <div key={method.id} className="flex items-center gap-2.5">
+                    <Checkbox
+                      id={method.name}
+                      className="size-5"
+                      checked={regionState?.paymentMethods?.includes(method.id)}
+                      onCheckedChange={(checked) =>
+                        togglePaymentMethod(method.id, Boolean(checked))
+                      }
+                    />
+                    <label
+                      htmlFor={method.name}
+                      className="text-lg font-normal cursor-pointer"
+                    >
+                      {method.name}
+                    </label>
+                  </div>
+                ),
+              )}
+              <div className="w-full h-[1px] bg-[#A1A1A1]/50" />
               <div className=" flex justify-between items-center">
                 <p className="text-base md:text-lg font-normal text-[#303030]">
-                  Universal fee for this region
+                  Free delivery for all township
                 </p>
                 <CustomSwitch
-                  checked={deliveryType === "allTown"}
-                  onCheckedChange={handleAllTownChecked}
+                  checked={regionState?.deliveryFree}
+                  onCheckedChange={handleTurnOnFreeDeli}
                 />
               </div>
-              {deliveryType === "allTown" && (
-                <div className="w-full md:w-[242px] h-11 md:h-14 rounded-[10px] border border-[#3C3C3C]/30  relative">
-                  <Input
-                    placeholder=""
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className=" border-[#44444480] pl-4 pr-10 h-11 md:h-14 rounded-[10px] w-full md:w-[242px] text-sm placeholder:text-sm md:text-base md:placeholder:text-base"
-                  />
-                  <span className="text-base md:text-lg absolute top-1/2 -translate-y-1/2 right-4">
-                    Ks
-                  </span>
-                </div>
-              )}
-            </div>
-            <div className="w-full h-[1px] bg-[#A1A1A1]/50" />
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg md:text-xl font-medium text-black">
-                Delivery fee per township
-              </h3>
-              <CustomSwitch
-                checked={deliveryType === "perTown"}
-                onCheckedChange={handlePerTownChecked}
-              />
-            </div>
-            {deliveryType === "perTown" && (
-              <>
-                <div className="w-full md:w-[340px] relative border border-[#A1A1A1] h-10 rounded-full">
-                  <Search className="text-[#A1A1A1] size-6 absolute top-1/2 -translate-y-1/2 left-4" />
-                  <Input
-                    placeholder="Search"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className=" border-[#44444480] pl-12 h-10 rounded-full w-full md:w-[340px] md:text-lg md:placeholder:text-lg"
+              <div className="space-y-4">
+                <div className=" flex justify-between items-center">
+                  <p className="text-base md:text-lg font-normal text-[#303030]">
+                    Universal fee for this region
+                  </p>
+                  <CustomSwitch
+                    checked={regionState?.deliveryFeeForAllTownship}
+                    onCheckedChange={handleTurnOnAllTownship}
                   />
                 </div>
-                {isMobile ? (
-                  <div className="space-y-4">
-                    {regions.map((region, index) => (
-                      <div key={index} className="space-y-2.5">
-                        <div className="flex items-center justify-between">
-                          <div className="text-base md:text-lg font-normal">
-                            {region}
-                          </div>
-                          <CustomSwitch />
-                        </div>
-                        <div className="w-full md:w-[242px] h-11 md:h-14 rounded-[10px] border border-[#3C3C3C]/30  relative">
-                          <Input
-                            placeholder=""
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className=" border-[#44444480] pl-4 pr-10 h-11 md:h-14 rounded-[10px] w-full md:w-[242px] text-sm placeholder:text-sm md:text-base md:placeholder:text-base"
-                          />
-                          <span className="text-base md:text-lg absolute top-1/2 -translate-y-1/2 right-4">
-                            Ks
-                          </span>
-                        </div>{" "}
-                      </div>
-                    ))}
+                {regionState?.deliveryFeeForAllTownship && (
+                  <div className="w-full md:w-[242px] h-11 md:h-14 rounded-[10px] border border-[#3C3C3C]/30  relative">
+                    <Input
+                      type="number"
+                      placeholder=""
+                      value={regionState?.deliveryFee.toString()}
+                      onChange={(e) =>
+                        updateRegionField("deliveryFee", Number(e.target.value))
+                      }
+                      className=" border-[#44444480] pl-4 pr-10 h-11 md:h-14 rounded-[10px] w-full md:w-[242px] text-sm placeholder:text-sm md:text-base md:placeholder:text-base"
+                    />
+                    <span className="text-base md:text-lg absolute top-1/2 -translate-y-1/2 right-4">
+                      Ks
+                    </span>
                   </div>
-                ) : (
-                  <table className="w-[calc(100%+40px)] table-fixed -translate-x-5 overflow-visible">
-                    <thead className="bg-[#EEEEEE]">
-                      <tr>
-                        <th className="w-1/3 text-start py-4 px-5 text-base md:text-lg font-medium">
-                          Township
-                        </th>
-                        <th className="w-1/3 text-center py-4 px-5 text-base md:text-lg font-medium">
-                          Amount
-                        </th>
-                        <th className="w-1/3 text-end py-4 px-5 text-base md:text-lg font-medium">
-                          Delivery availability
-                        </th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      {regions.map((region, index) => (
-                        <tr key={index}>
-                          <td className="w-1/3 text-start text-base md:text-lg font-normal pt-4 px-5">
-                            {region}
-                          </td>
-                          <td className="w-1/3 text-center pt-4 px-5">
-                            <div className="w-full flex items-center justify-center">
-                              <div className="w-[242px] h-14 rounded-[10px] border border-[#3C3C3C]/30  relative">
-                                <Input
-                                  placeholder=""
-                                  value={searchTerm}
-                                  onChange={(e) =>
-                                    setSearchTerm(e.target.value)
-                                  }
-                                  className=" border-[#44444480] pl-4 pr-10 h-14 rounded-[10px] w-[242px] text-sm placeholder:text-sm md:text-base md:placeholder:text-base"
-                                />
-                                <span className="text-base md:text-lg absolute top-1/2 -translate-y-1/2 right-4">
-                                  Ks
-                                </span>
+                )}
+              </div>
+              <div className="w-full h-[1px] bg-[#A1A1A1]/50" />
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg md:text-xl font-medium text-black">
+                  Delivery fee per township
+                </h3>
+                <CustomSwitch
+                  checked={regionState?.deliveryFeePerTownship}
+                  onCheckedChange={handleTurnOnPerTownship}
+                />
+              </div>
+              {regionState?.deliveryFeePerTownship && (
+                <>
+                  <div className="w-full md:w-[340px] relative border border-[#A1A1A1] h-10 rounded-full">
+                    <Search className="text-[#A1A1A1] size-6 absolute top-1/2 -translate-y-1/2 left-4" />
+                    <Input
+                      placeholder="Search"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className=" border-[#44444480] pl-12 h-10 rounded-full w-full md:w-[340px] md:text-lg md:placeholder:text-lg"
+                    />
+                  </div>
+                  {isMobile ? (
+                    <div className="space-y-4">
+                      {regionState.districts.map(
+                        (distrct: {
+                          id: number;
+                          name: string;
+                          townships: any[];
+                        }) => (
+                          <div key={distrct.id} className="space-y-2.5">
+                            <div className="flex items-center justify-between">
+                              <div className="text-base md:text-lg font-normal">
+                                {distrct.name}
                               </div>
-                            </div>
-                          </td>
-                          <td className="w-1/3 pt-4 px-5">
-                            <div className="flex justify-end pr-14 items-center w-full">
                               <CustomSwitch />
                             </div>
-                          </td>
+                            <div className="w-full md:w-[242px] h-11 md:h-14 rounded-[10px] border border-[#3C3C3C]/30  relative">
+                              <Input
+                                placeholder=""
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className=" border-[#44444480] pl-4 pr-10 h-11 md:h-14 rounded-[10px] w-full md:w-[242px] text-sm placeholder:text-sm md:text-base md:placeholder:text-base"
+                              />
+                              <span className="text-base md:text-lg absolute top-1/2 -translate-y-1/2 right-4">
+                                Ks
+                              </span>
+                            </div>{" "}
+                          </div>
+                        ),
+                      )}
+                    </div>
+                  ) : (
+                    <table className="w-[calc(100%+40px)] table-fixed -translate-x-5 overflow-visible">
+                      <thead className="bg-[#EEEEEE]">
+                        <tr>
+                          <th className="w-1/3 text-start py-4 px-5 text-base md:text-lg font-medium">
+                            Township
+                          </th>
+                          <th className="w-1/3 text-center py-4 px-5 text-base md:text-lg font-medium">
+                            Amount
+                          </th>
+                          <th className="w-1/3 text-end py-4 px-5 text-base md:text-lg font-medium">
+                            Delivery availability
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </>
-            )}
-          </CardContent>
+                      </thead>
+
+                      <tbody>
+                        {regionState.districts.map(
+                          (district: {
+                            id: number;
+                            name: string;
+                            status: string;
+                            townships: {
+                              id: number;
+                              name: string;
+                              fee: number;
+                              status: string;
+                            }[];
+                          }) => {
+                            const isExpanded = expandedDistricts.includes(
+                              district.id,
+                            );
+                            const { min, max } = getDistrictFeeRange(
+                              district.townships,
+                            );
+
+                            return (
+                              <React.Fragment key={district.id}>
+                                {/* 🔹 DISTRICT ROW */}
+                                <tr className="">
+                                  <td
+                                    className="w-1/3 text-start text-base md:text-lg font-medium py-2 px-5 cursor-pointer"
+                                    onClick={() => toggleDistrict(district.id)}
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      {isExpanded ? (
+                                        <ChevronUp className="size-4" />
+                                      ) : (
+                                        <ChevronDown className="size-4" />
+                                      )}
+                                      {district.name}
+                                    </div>
+                                  </td>
+
+                                  <td className="w-1/3 text-center py-2 px-5">
+                                    <div className="w-full flex items-center justify-center">
+                                      <div className="w-[242px] h-12 rounded-[10px] border border-[#3C3C3C]/30 relative">
+                                        <Input
+                                          key={district.id}
+                                          className="pl-4 pr-10 h-12 rounded-[10px] w-[242px]"
+                                          value={min === max ? min : ""}
+                                          placeholder={
+                                            min === max
+                                              ? undefined
+                                              : `${min} – ${max}`
+                                          }
+                                          onChange={(e) => {
+                                            const rawValue = e.target.value;
+                                            const numericValue =
+                                              rawValue.replace(/[^0-9]/g, "");
+
+                                            updateDistrictTownshipFee(
+                                              district.id,
+                                              Number(numericValue),
+                                            );
+                                          }}
+                                        />
+                                        <span className="absolute top-1/2 -translate-y-1/2 right-4">
+                                          Ks
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </td>
+
+                                  <td className="w-1/3 py-2 px-5">
+                                    <div className="flex justify-end pr-14">
+                                      <CustomSwitch
+                                        checked={district.status === "ACTIVE"}
+                                        onCheckedChange={(v) => {
+                                          const status = v
+                                            ? "ACTIVE"
+                                            : "INACTIVE";
+
+                                          updateDistrictField(
+                                            district.id,
+                                            "status",
+                                            status,
+                                          );
+                                          updateDistrictTownshipStatus(
+                                            district.id,
+                                            status,
+                                          );
+                                        }}
+                                      />
+                                    </div>
+                                  </td>
+                                </tr>
+
+                                {/* 🔸 TOWNSHIP ROWS */}
+                                {isExpanded &&
+                                  district.townships.map((ts) => (
+                                    <tr key={ts.id} className="bg-white">
+                                      <td className="pl-14 pt-3 pb-3 text-sm md:text-base">
+                                        {ts.name}
+                                      </td>
+
+                                      <td className="text-center pt-3 pb-3">
+                                        <div className="flex justify-center">
+                                          <div className="w-[242px] h-10 rounded-[8px] border border-[#3C3C3C]/30 relative">
+                                            <Input
+                                              value={ts.fee}
+                                              onChange={(e) =>
+                                                updateTownshipField(
+                                                  district.id,
+                                                  ts.id,
+                                                  "fee",
+                                                  Number(e.target.value),
+                                                )
+                                              }
+                                              className="pl-4 pr-10 h-10 rounded-[8px]"
+                                            />
+                                            <span className="absolute top-1/2 -translate-y-1/2 right-4 text-sm">
+                                              Ks
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </td>
+
+                                      <td className="pt-3 pb-3">
+                                        <div className="flex justify-end pr-18">
+                                          <CustomSwitch
+                                            checked={ts.status === "ACTIVE"}
+                                            onCheckedChange={(v) =>
+                                              updateTownshipField(
+                                                district.id,
+                                                ts.id,
+                                                "status",
+                                                v ? "ACTIVE" : "INACTIVE",
+                                              )
+                                            }
+                                          />
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  ))}
+                              </React.Fragment>
+                            );
+                          },
+                        )}
+                      </tbody>
+                    </table>
+                  )}
+                </>
+              )}
+            </CardContent>
+          )}
         </Card>
 
         <div className="md:hidden flex items-center justify-between w-full">
@@ -556,7 +787,7 @@ const DeliveryPage = () => {
         open={dialogModal.isOpen}
         setOpen={dialogToggle}
         callback={dialogModal.onConfirm}
-        loading={false}
+        loading={isPending || updateRegionLoading}
         title={dialogModal.title}
         description={dialogModal.message}
       />
