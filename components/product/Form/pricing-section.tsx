@@ -74,7 +74,9 @@ export default function PricingSection({
   return (
     <Card className="gap-2">
       <CardHeader>
-        <CardTitle>Pricing</CardTitle>
+        <CardTitle className="text-lg md:text-xl font-medium">
+          Pricing
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6 grid grid-cols-2 gap-5">
         <div className={cn("space-y-6")}>
@@ -119,9 +121,11 @@ export default function PricingSection({
           />
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-4 md:space-y-2">
           <div className="flex justify-between items-center space-x-2">
-            <label>Discount</label>
+            <label className="text-base md:text-lg font-medium text-[#303030]">
+              Discount
+            </label>
             <Switch
               checked={isPromote}
               onCheckedChange={(checked) => {
@@ -137,7 +141,7 @@ export default function PricingSection({
 
           <div
             className={cn(
-              "space-y-4 pl-4",
+              "space-y-4 pl-4 md:pl-0",
               !isPromote && "pointer-events-none opacity-50",
             )}
           >
@@ -164,9 +168,9 @@ export default function PricingSection({
 
                   setField("promoteValue", safeValue);
                 }}
-                className="h-12 rounded-[10px] p-4 pr-12"
+                className="h-12 md:h-14 placeholder:md:text-base md:text-base rounded-[10px] p-4 pr-12"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-500 text-sm font-medium">
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-500 text-sm md:text-lg font-normal">
                 {promoteType === PromoteType.PERCENT ? "%" : "Ks"}
               </span>
             </div>
@@ -183,14 +187,17 @@ export default function PricingSection({
                   <RadioGroupItem value="PERCENT" id="discount-percentage" />
                   <Label
                     htmlFor="discount-percentage"
-                    className="cursor-pointer"
+                    className="cursor-pointer md:text-lg font-normal"
                   >
                     Percentage
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="AMOUNT" id="discount-amount" />
-                  <Label htmlFor="discount-amount" className="cursor-pointer">
+                  <Label
+                    htmlFor="discount-amount"
+                    className="cursor-pointer md:text-lg font-normal"
+                  >
                     Amount
                   </Label>
                 </div>
@@ -222,7 +229,7 @@ function PriceField({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <label>
+      <label className="text-base md:text-lg font-medium text-[#303030]">
         {label} {isRequired && <span className="text-red-500">*</span>}
       </label>
       <div className="relative">
@@ -232,7 +239,7 @@ function PriceField({
           pattern="[0-9]*"
           placeholder={placeholder}
           name={name}
-          className="h-12 rounded-[10px] p-4 pr-12"
+          className="h-12 md:h-14 rounded-[10px] p-4 pr-12 placeholder:md:text-base md:text-base"
           value={value}
           onWheel={(e) => e.currentTarget.blur()}
           onChange={(e) => {
@@ -246,7 +253,7 @@ function PriceField({
         />
         <span
           className={cn([
-            "absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-500 text-sm font-medium",
+            "absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-500 text-sm md:text-lg font-normal",
             { "text-primary text-lg": unit !== "Ks" },
           ])}
         >

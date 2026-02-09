@@ -233,7 +233,7 @@ export default function CreateCategory() {
                   <div className="space-y-2">
                     <Label
                       htmlFor="category-name"
-                      className="text-base font-medium md:text-lg"
+                      className="text-lg md:text-xl font-medium text-black"
                     >
                       Main category <span className="text-[#FF3333]">*</span>
                     </Label>
@@ -256,7 +256,7 @@ export default function CreateCategory() {
                   <div className="flex items-center justify-between pt-2">
                     <Label
                       htmlFor="has-subcategory"
-                      className="cursor-pointer text-base font-medium md:text-lg"
+                      className="cursor-pointer text-lg md:text-xl font-medium text-black"
                     >
                       Add has sub-category
                     </Label>

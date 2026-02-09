@@ -42,37 +42,52 @@ export default function ProductInfoSection({
   return (
     <Card id="product-info" className="gap-2">
       <CardHeader>
-        <CardTitle>Product Info</CardTitle>
+        <CardTitle className="text-lg md:text-xl font-medium">Product Info</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Product Name */}
         <div className="flex flex-col gap-2">
-          <label>
+          <label className="text-base md:text-lg font-normal text-[#303030]">
             Product name <span className="text-red-500">*</span>
           </label>
           <Input
             placeholder="Product name"
             value={name}
             onChange={(e) => setField("name", e.target.value)}
-            className="h-12 rounded-[10px] p-4"
+            className="h-12 md:h-14 rounded-[10px] p-4 placeholder:text-base text-base"
             required
+            maxLength={60}
           />
+          {name.length > 0 && (
+            <span className="text-sm text-muted-foreground">
+              {name.length}/60 characters
+            </span>
+          )}
         </div>
 
         {/* Description */}
         <div className="flex flex-col gap-2">
-          <label>
+          <label className="text-base md:text-lg font-normal text-[#303030]">
             Description
           </label>
           <Editor
             value={description || ""}
-            onChange={(value) => setField("description", value)}
+            onChange={(value) => {
+              if (value.length <= 1000) {
+                setField("description", value);
+              }
+            }}
             placeholder="Enter product description..."
           />
+          {description && description.length > 0 && (
+            <span className="text-sm text-muted-foreground">
+              {description.length}/1000 characters
+            </span>
+          )}
         </div>
 
         <div className="flex flex-col gap-2">
-          <label>
+          <label className="text-base md:text-lg font-normal text-[#303030]">
             Category <span className="text-red-500">*</span>
           </label>
           <Select
@@ -85,7 +100,7 @@ export default function ProductInfoSection({
             }}
             required
           >
-            <SelectTrigger className="!h-12 w-full cursor-pointer rounded-2xl text-black">
+            <SelectTrigger className="!h-12 md:!h-14 w-full cursor-pointer rounded-2xl text-black md:text-base">
               <SelectValue placeholder="Main category" />
             </SelectTrigger>
 
@@ -106,7 +121,7 @@ export default function ProductInfoSection({
         </div>
 
         <div className="flex flex-col gap-2">
-          <label>
+          <label className="text-base md:text-lg font-normal text-[#303030]">
             Sub Category
           </label>
           <Select
@@ -121,7 +136,7 @@ export default function ProductInfoSection({
           >
             <SelectTrigger
               className={cn(
-                "!h-12 w-full cursor-pointer rounded-2xl",
+                "!h-12 md:text-base md:!h-14 w-full cursor-pointer rounded-2xl",
                 selectedCategory && selectedCategory?.subCategories.length > 0
                   ? ""
                   : "cursor-not-allowed pointer-events-none"

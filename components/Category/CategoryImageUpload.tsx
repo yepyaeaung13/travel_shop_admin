@@ -32,7 +32,7 @@ export default function CategoryImageUpload({
   return (
     <Card className="px-5">
       <CardContent className="space-y-4 px-0">
-        <h2 className="text-lg md:text-xl font-semibold text-foreground">
+        <h2 className="text-lg md:text-xl font-medium text-black">
           {title} <span className="text-[#FF3333]">*</span>
         </h2>
         {categoryImage || existingImageUrl ? (

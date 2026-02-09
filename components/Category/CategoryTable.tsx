@@ -96,19 +96,19 @@ export default function CategoryTable({
 
   const isNameFilterUsed = useMemo(
     () => nameSortOptions.some((option) => option.value === getParam("sortBy")),
-    [nameSortOptions, getParam]
+    [nameSortOptions, getParam],
   );
 
   const isStatusFilterUsed = useMemo(
     () =>
       statusSortOptions.some((option) => option.value === getParam("sortBy")),
-    [statusSortOptions, getParam]
+    [statusSortOptions, getParam],
   );
   return (
     <Table className="table-fixed md:table-auto">
       <TableHeader className="bg-[#4444441A]">
         <TableRow className="md:text-lg">
-          <TableHead className="w-10 pl-5 md:w-16 md:pl-6">
+          <TableHead className="w-10 pl-5 md:w-16 md:pl-6 text-base md:text-lg py-2 md:py-4">
             <Checkbox
               checked={isAllSelected}
               onCheckedChange={handleSelectAll as (checked: boolean) => void}
@@ -118,15 +118,15 @@ export default function CategoryTable({
                 isIndeterminate
                   ? "indeterminate"
                   : isAllSelected
-                  ? "checked"
-                  : "unchecked"
+                    ? "checked"
+                    : "unchecked"
               }
             />
           </TableHead>
 
           {/* SORTABLE: Category Name */}
           <TableHead
-            className={cn("w-[150px] cursor-pointer md:w-72 2xl:w-96")}
+            className={cn("w-[150px] cursor-pointer md:w-72 2xl:w-96 text-base md:text-lg py-2 md:py-4")}
             onClick={handleSortNameChange}
           >
             <span
@@ -134,7 +134,7 @@ export default function CategoryTable({
                 "hover:text-primary flex h-auto items-center font-medium",
                 {
                   "text-primary": isNameFilterUsed,
-                }
+                },
               )}
             >
               Category Name
@@ -152,8 +152,8 @@ export default function CategoryTable({
             </span>
           </TableHead>
 
-          <TableHead className="w-[100px] text-center">Sub Category</TableHead>
-          <TableHead className="w-[150px] text-center">Date & time</TableHead>
+          <TableHead className="w-[100px] text-center text-base md:text-lg py-2 md:py-4">Sub Category</TableHead>
+          <TableHead className="w-[150px] text-center text-base md:text-lg py-2 md:py-4">Date & time</TableHead>
 
           {/* SORTABLE: Status */}
           <TableHead
@@ -165,7 +165,7 @@ export default function CategoryTable({
                 "hover:text-primary flex h-auto items-center justify-center font-medium",
                 {
                   "text-primary": isStatusFilterUsed,
-                }
+                },
               )}
             >
               Status
@@ -200,7 +200,14 @@ export default function CategoryTable({
                 </TableCell>
                 <TableCell className="py-2.5">
                   <div className="max-sm:pl-2 flex items-center gap-5 h-[50px]">
-                    <Image src={`${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${category.image}`} loading="lazy" width={50} height={50} alt="category photo" />
+                    <Image
+                      src={`${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${category.image}`}
+                      loading="lazy"
+                      width={50}
+                      height={50}
+                      alt="category photo"
+                      className="w-[50px] h-[50px] object-cover rounded-lg"
+                    />
                     <p className="text-wrap line-clamp-2 break-all md:text-lg">
                       {category.name}
                     </p>
@@ -219,9 +226,7 @@ export default function CategoryTable({
                 <TableCell className="text-center">
                   <div className="flex justify-center">
                     <Select
-                      value={
-                        category?.status
-                      }
+                      value={category?.status}
                       onValueChange={(value) => {
                         if (value === category.status) return;
                         handleSetChangeCategory(category);
@@ -232,13 +237,16 @@ export default function CategoryTable({
                           "w-[128px] justify-center rounded-[10px] px-0 focus-visible:ring-0",
                           category?.status === "active"
                             ? "*:data-[slot=select-value]:text-[#97BD3F] border-[#97BD3F]"
-                            : "*:data-[slot=select-value]:text-[#444444] border-border"
+                            : "*:data-[slot=select-value]:text-[#444444] border-border",
                         )}
                       >
                         <SelectValue placeholder="Publish" />
                       </SelectTrigger>
 
-                      <SelectContent position="popper" className="min-w-[128px] rounded-[10px] p-0 bg-white border-border">
+                      <SelectContent
+                        position="popper"
+                        className="min-w-[128px] rounded-[10px] p-0 bg-white border-border"
+                      >
                         <SelectItem
                           value="active"
                           className="*:[span]:hidden rounded-none border-b border-border p-3 last:border-b-0 cursor-pointer"

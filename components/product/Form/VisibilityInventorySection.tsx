@@ -38,13 +38,13 @@ export default function VisibilityInventorySection({
     <div className={cn("space-y-6")}>
       <Card className={cn("gap-2", isDisabled && "opacity-40")}>
         <CardHeader>
-          <CardTitle>Inventory</CardTitle>
+          <CardTitle className="text-lg mdLtext-xl font-medium text-[#303030]">Inventory</CardTitle>
         </CardHeader>
 
         <CardContent className="space-y-4">
           {/* Stock - Updated field name */}
           <div className="flex flex-col gap-2">
-            <label>Stock</label>
+            <label className="text-base md:text-lg font-normal text-[#303030]">Stock</label>
 
             <Input
               type="number"
@@ -58,19 +58,19 @@ export default function VisibilityInventorySection({
                 const numericValue = rawValue.replace(/[^0-9.]/g, "");
                 setField("stock", Number(numericValue));
               }}
-              className="h-12 rounded-[10px] p-4"
+              className="h-12 md:h-14 placeholder:md:text-base md:text-base rounded-[10px] p-4"
             />
           </div>
 
           <div className="flex flex-col gap-2">
-            <label>Product SKU</label>
+            <label className="text-base md:text-lg font-normal text-[#303030]">Product SKU</label>
             <Input
               value={sku}
               disabled={isDisabled}
               required={!isDisabled}
               onChange={(e) => setField("sku", e.target.value)}
               placeholder="Product SKU"
-              className="h-12 rounded-[10px] p-4"
+              className="h-12 md:h-14 placeholder:md:h-base md:text-base rounded-[10px] p-4"
             />
           </div>
         </CardContent>
