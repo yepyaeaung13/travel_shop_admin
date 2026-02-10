@@ -471,7 +471,7 @@ const DeliveryPage = () => {
         <Card
           className={cn(
             "w-full rounded-[10px] p-5 max-h-[75vh] overflow-y-scroll hide-scrollbar",
-            !showDetail && "hidden",
+            !showDetail && isMobile && "hidden",
           )}
         >
           {isLoading || detailLoading ? (
