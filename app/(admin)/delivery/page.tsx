@@ -82,6 +82,7 @@ const DeliveryPage = () => {
     useUpdateDeliveryRegionById();
 
   const [regionState, setRegionState] = useState<any | null>(null);
+  const [showDetail, setShowDetail] = useState(false);
 
   useEffect(() => {
     if (regionDetail?.data) {
@@ -369,6 +370,9 @@ const DeliveryPage = () => {
   };
 
   const handleSelectRegion = (region: any) => {
+    if (isMobile) {
+      setShowDetail(true);
+    }
     setSelectedRegion(region);
   };
 
@@ -407,7 +411,7 @@ const DeliveryPage = () => {
         <Card
           className={cn(
             "w-full md:w-[320px] rounded-[10px] p-5 shrink-0 h-full md:h-[75vh] overflow-y-scroll hide-scrollbar",
-            isMobile && selectedRegion && "hidden",
+            showDetail && "hidden",
           )}
         >
           <CardContent className="px-0 space-y-5">
@@ -452,10 +456,10 @@ const DeliveryPage = () => {
           </CardContent>
         </Card>
 
-        {isMobile && selectedRegion ? (
+        {showDetail && selectedRegion ? (
           <div
             className="flex gap-2.5 items-center"
-            onClick={() => router.back()}
+            onClick={() => setShowDetail(false)}
           >
             <ChevronLeft className="size-6" />
             <div className="text-lg font-normal text-[#1E1E1E]">
@@ -467,7 +471,7 @@ const DeliveryPage = () => {
         <Card
           className={cn(
             "w-full rounded-[10px] p-5 max-h-[75vh] overflow-y-scroll hide-scrollbar",
-            isMobile && !selectedRegion && "hidden",
+            !showDetail && "hidden",
           )}
         >
           {isLoading || detailLoading ? (
@@ -557,32 +561,147 @@ const DeliveryPage = () => {
               </div>
               {isMobile ? (
                 <div className="space-y-4">
-                  {regionState.districts.map(
-                    (distrct: {
+                  {regionState?.districts.map(
+                    (district: {
                       id: number;
                       name: string;
-                      townships: any[];
-                    }) => (
-                      <div key={distrct.id} className="space-y-2.5">
-                        <div className="flex items-center justify-between">
-                          <div className="text-base md:text-lg font-normal">
-                            {distrct.name}
+                      status: string;
+                      townships: {
+                        id: number;
+                        name: string;
+                        fee: number;
+                        status: string;
+                      }[];
+                    }) => {
+                      const isExpanded = expandedDistricts.includes(
+                        district.id,
+                      );
+                      const { min, max } = getDistrictFeeRange(
+                        district.townships,
+                      );
+
+                      return (
+                        <React.Fragment key={district.id}>
+                          {/* 🔹 DISTRICT ROW */}
+                          <div className="flex items-center justify-between">
+                            <div
+                              className="text-start text-base md:text-lg font-medium py-2 cursor-pointer"
+                              onClick={() => toggleDistrict(district.id)}
+                            >
+                              <div className="w-[100px] flex items-center gap-2">
+                                {isExpanded ? (
+                                  <ChevronUp className="size-4" />
+                                ) : (
+                                  <ChevronDown className="size-4" />
+                                )}
+                                {district.name}
+                              </div>
+                            </div>
+
+                            <div className="text-center py-2">
+                              <div className="w-full flex items-center justify-center">
+                                <div className="w-[150px] h-12 rounded-[10px] border border-[#3C3C3C]/30 relative">
+                                  <Input
+                                    key={district.id}
+                                    className="pl-4 h-12 rounded-[10px] w-[150px]"
+                                    value={min === max ? min : ""}
+                                    placeholder={
+                                      min === max
+                                        ? undefined
+                                        : `${min} – ${max}`
+                                    }
+                                    onChange={(e) => {
+                                      const rawValue = e.target.value;
+                                      const numericValue = rawValue.replace(
+                                        /[^0-9]/g,
+                                        "",
+                                      );
+
+                                      updateDistrictTownshipFee(
+                                        district.id,
+                                        Number(numericValue),
+                                      );
+                                    }}
+                                  />
+                                  <span className="absolute top-1/2 -translate-y-1/2 right-4">
+                                    Ks
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="py-2">
+                              <div className="flex justify-end">
+                                <CustomSwitch
+                                  checked={district.status === "ACTIVE"}
+                                  onCheckedChange={(v) => {
+                                    const status = v ? "ACTIVE" : "INACTIVE";
+
+                                    updateDistrictField(
+                                      district.id,
+                                      "status",
+                                      status,
+                                    );
+                                    updateDistrictTownshipStatus(
+                                      district.id,
+                                      status,
+                                    );
+                                  }}
+                                />
+                              </div>
+                            </div>
                           </div>
-                          <CustomSwitch />
-                        </div>
-                        <div className="w-full md:w-[242px] h-11 md:h-14 rounded-[10px] border border-[#3C3C3C]/30  relative">
-                          <Input
-                            placeholder=""
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className=" border-[#44444480] pl-4 pr-10 h-11 md:h-14 rounded-[10px] w-full md:w-[242px] text-sm placeholder:text-sm md:text-base md:placeholder:text-base"
-                          />
-                          <span className="text-base md:text-lg absolute top-1/2 -translate-y-1/2 right-4">
-                            Ks
-                          </span>
-                        </div>{" "}
-                      </div>
-                    ),
+
+                          {/* 🔸 TOWNSHIP ROWS */}
+                          {isExpanded &&
+                            district.townships.map((ts) => (
+                              <div key={ts.id} className="flex items-center justify-between bg-white">
+                                <div className="pl-5 py-1 w-[100px] text-sm md:text-base">
+                                  {ts.name}
+                                </div>
+
+                                <div className="text-center py-2">
+                                  <div className="flex justify-end">
+                                    <div className="w-[150px] h-10 rounded-[8px] border border-[#3C3C3C]/30 relative">
+                                      <Input
+                                        value={ts.fee}
+                                        onChange={(e) =>
+                                          updateTownshipField(
+                                            district.id,
+                                            ts.id,
+                                            "fee",
+                                            Number(e.target.value),
+                                          )
+                                        }
+                                        className="h-10 rounded-[8px]"
+                                      />
+                                      <span className="absolute top-1/2 -translate-y-1/2 right-4 text-sm">
+                                        Ks
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="py-2">
+                                  <div className="flex justify-end">
+                                    <CustomSwitch
+                                      checked={ts.status === "ACTIVE"}
+                                      onCheckedChange={(v) =>
+                                        updateTownshipField(
+                                          district.id,
+                                          ts.id,
+                                          "status",
+                                          v ? "ACTIVE" : "INACTIVE",
+                                        )
+                                      }
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                        </React.Fragment>
+                      );
+                    },
                   )}
                 </div>
               ) : (
