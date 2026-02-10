@@ -655,7 +655,10 @@ const DeliveryPage = () => {
                           {/* 🔸 TOWNSHIP ROWS */}
                           {isExpanded &&
                             district.townships.map((ts) => (
-                              <div key={ts.id} className="flex items-center justify-between bg-white">
+                              <div
+                                key={ts.id}
+                                className="flex items-center justify-between bg-white"
+                              >
                                 <div className="pl-5 py-1 w-[100px] text-sm md:text-base">
                                   {ts.name}
                                 </div>
@@ -869,33 +872,34 @@ const DeliveryPage = () => {
             </CardContent>
           )}
         </Card>
-
-        <div className="md:hidden flex items-center justify-between w-full">
-          <div className="flex items-center justify-between w-full gap-2.5">
-            <Button
-              type="button"
-              onClick={handleDiscard}
-              disabled={isSaving || disabled}
-              className={cn(
-                "h-auto w-full flex-1 rounded-[10px] bg-[#A1A1A1] py-1.5 text-base font-medium text-white duration-300 hover:bg-[#444444] active:scale-95 mfull md:text-lg",
-                disabled || (isSaving && "bg-[#444444]/50"),
-              )}
-            >
-              Discard
-            </Button>
-            <Button
-              type="button"
-              onClick={handleSaveChanges}
-              disabled={isSaving || disabled}
-              className={cn(
-                "bg-primary flex-1 h-auto w-full rounded-[10px] py-1.5 text-base font-medium text-white duration-300 active:scale-95 md:w-[135px] md:text-lg",
-                disabled && "bg-primary/50",
-              )}
-            >
-              {isSaving ? "Saving..." : "Save"}
-            </Button>
+        {showDetail && (
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center justify-between w-full gap-2.5">
+              <Button
+                type="button"
+                onClick={handleDiscard}
+                disabled={isSaving || disabled}
+                className={cn(
+                  "h-auto w-full flex-1 rounded-[10px] bg-[#A1A1A1] py-1.5 text-base font-medium text-white duration-300 hover:bg-[#444444] active:scale-95 mfull md:text-lg",
+                  disabled || (isSaving && "bg-[#444444]/50"),
+                )}
+              >
+                Discard
+              </Button>
+              <Button
+                type="button"
+                onClick={handleSaveChanges}
+                disabled={isSaving || disabled}
+                className={cn(
+                  "bg-primary flex-1 h-auto w-full rounded-[10px] py-1.5 text-base font-medium text-white duration-300 active:scale-95 md:w-[135px] md:text-lg",
+                  disabled && "bg-primary/50",
+                )}
+              >
+                {isSaving ? "Saving..." : "Save"}
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <ConfirmDialog
