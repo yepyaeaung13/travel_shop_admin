@@ -67,7 +67,7 @@ export default function VisibilityInventorySection({
             <Input
               value={sku}
               disabled={isDisabled}
-              required={!isDisabled}
+              // required={!isDisabled}
               onChange={(e) => setField("sku", e.target.value)}
               placeholder="Product SKU"
               className="h-12 md:h-14 placeholder:md:h-base md:text-base rounded-[10px] p-4"

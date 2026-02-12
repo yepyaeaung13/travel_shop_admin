@@ -80,7 +80,7 @@ export default function ProductInfoSection({
             placeholder="Enter product description..."
           />
           {description && description.length > 0 && (
-            <span className="text-sm text-muted-foreground">
+            <span className="text-sm text-muted-foreground max-md:pt-3">
               {description.length}/1000 characters
             </span>
           )}

@@ -105,6 +105,26 @@ export default function ProductTable({
     [statusSortOptions, getParam],
   );
 
+  const calculateOriginalPrice = (product: any) => {
+    return product.variants.length > 0
+      ? Number(product.variants[0].sellingPrice)
+      : Number(product.sellingPriceMMK);
+  };
+
+  const calculatePromotePrice = (product: any) => {
+    const originalPrice = calculateOriginalPrice(product);
+
+    if (product.promoteValue == 0) {
+      return originalPrice;
+    } else {
+      if (product?.promoteType == "PERCENTAGE") {
+        return originalPrice - (originalPrice * product.promoteValue) / 100;
+      } else {
+        return originalPrice - product.promoteValue;
+      }
+    }
+  };
+
   return (
     <Table className="table-fixed md:table-auto">
       <TableHeader className="bg-[#4444441A]">
@@ -127,19 +147,29 @@ export default function ProductTable({
 
           {/* SORTABLE: Category Name */}
           <TableHead
-            className={cn("w-[150px] cursor-pointer md:w-72 2xl:w-96 text-base md:text-lg py-2 md:py-4")}
+            className={cn(
+              "w-[150px] cursor-pointer md:w-72 2xl:w-96 text-base md:text-lg py-2 md:py-4",
+            )}
             onClick={handleSortNameChange}
           >
             Product
           </TableHead>
 
-          <TableHead className="w-[100px] text-base md:text-lg py-2 md:py-4">Category</TableHead>
-          <TableHead className="w-[100px] text-base md:text-lg py-2 md:py-4">Stock</TableHead>
-          <TableHead className="w-[100px] text-base md:text-lg py-2 md:py-4">Price</TableHead>
+          <TableHead className="w-[100px] text-base md:text-lg py-2 md:py-4">
+            Category
+          </TableHead>
+          <TableHead className="w-[100px] text-base md:text-lg py-2 md:py-4">
+            Stock
+          </TableHead>
+          <TableHead className="w-[100px] text-base md:text-lg py-2 md:py-4">
+            Price
+          </TableHead>
 
           {/* SORTABLE: Status */}
           <TableHead
-            className={cn("w-[200px] cursor-pointer text-center text-base md:text-lg py-2 md:py-4")}
+            className={cn(
+              "w-[200px] cursor-pointer text-center text-base md:text-lg py-2 md:py-4",
+            )}
             onClick={handleSortStatusChange}
           >
             <span
@@ -165,7 +195,9 @@ export default function ProductTable({
             </span>
           </TableHead>
 
-          <TableHead className="w-[100px] text-center text-base md:text-lg py-2 md:py-4">Actions</TableHead>
+          <TableHead className="w-[100px] text-center text-base md:text-lg py-2 md:py-4">
+            Actions
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody className="border-0">
@@ -209,10 +241,14 @@ export default function ProductTable({
                     : product.stock}
                 </TableCell>
                 <TableCell>
-                  {product.variants.length > 0
-                    ? Number(product.variants[0].sellingPrice).toLocaleString()
-                    : Number(product.sellingPriceMMK).toLocaleString()}{" "}
-                  ks
+                  <div className="flex flex-col items-center">
+                    {product?.promoteValue != 0 && (
+                      <p className="text-sm text-[#929292] line-through">
+                        {calculateOriginalPrice(product)?.toLocaleString()} ks
+                      </p>
+                    )}
+                    <p>{calculatePromotePrice(product)?.toLocaleString()} ks</p>
+                  </div>
                 </TableCell>
                 <TableCell>
                   {(() => {

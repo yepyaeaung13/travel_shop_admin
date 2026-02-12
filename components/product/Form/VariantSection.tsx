@@ -156,6 +156,17 @@ export default function VariantSection({
       setTempProductError({ name: "", values: "Option value is required" });
       return;
     }
+    if (
+      productVarints.some(
+        (v) => v.name.toLowerCase() === tempProductVarint.name.toLowerCase(),
+      )
+    ) {
+      setTempProductError({
+        name: "Option name must be unique",
+        values: "",
+      });
+      return;
+    }
     addProductVariant(tempProductVarint);
     setTempProductVarint({ name: "", values: [] });
     setNewValue("");

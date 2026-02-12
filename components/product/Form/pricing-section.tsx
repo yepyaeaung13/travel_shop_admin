@@ -24,6 +24,7 @@ interface PricingSectionProps {
   sellingPriceMMK: number;
   sellingPriceUSD: number;
   sellingPriceCNY: number;
+  disablePromotion?: boolean;
 }
 
 export default function PricingSection({
@@ -34,6 +35,7 @@ export default function PricingSection({
   sellingPriceMMK,
   sellingPriceUSD,
   sellingPriceCNY,
+  disablePromotion = false,
 }: PricingSectionProps) {
   const { variants } = useCreateProductStore.getState();
 
@@ -78,7 +80,7 @@ export default function PricingSection({
           Pricing
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6 grid grid-cols-2 gap-5">
+      <CardContent className="space-y-6 grid grid-cols-1 md:grid-cols-2 md:gap-5">
         <div className={cn("space-y-6")}>
           <div
             className={cn(
@@ -127,6 +129,7 @@ export default function PricingSection({
               Discount
             </label>
             <Switch
+              disabled={disablePromotion}
               checked={isPromote}
               onCheckedChange={(checked) => {
                 setField("isPromote", checked);
