@@ -14,7 +14,7 @@ import { useOrderStatusChange } from "@/queries/order";
 import { successToast } from "@/components/toast";
 
 const orderStatus = [
-  OrderStatus.Rejected,
+  // OrderStatus.Rejected,
   OrderStatus.Pending,
   OrderStatus.Confirmed,
   OrderStatus.Preparing,

@@ -108,7 +108,7 @@ export default function CategoryTable({
     <Table className="table-fixed md:table-auto">
       <TableHeader className="bg-[#4444441A]">
         <TableRow className="md:text-lg">
-          <TableHead className="w-10 pl-5 md:w-16 md:pl-6 text-base md:text-lg py-2 md:py-4">
+          {/* <TableHead className="w-10 pl-5 md:w-16 md:pl-6 text-base md:text-lg py-2 md:py-4">
             <Checkbox
               checked={isAllSelected}
               onCheckedChange={handleSelectAll as (checked: boolean) => void}
@@ -122,11 +122,13 @@ export default function CategoryTable({
                     : "unchecked"
               }
             />
-          </TableHead>
+          </TableHead> */}
 
           {/* SORTABLE: Category Name */}
           <TableHead
-            className={cn("w-[150px] cursor-pointer md:w-72 2xl:w-96 text-base md:text-lg py-2 md:py-4")}
+            className={cn(
+              "w-[150px] pl-5 md:pl-6 cursor-pointer md:w-72 2xl:w-96 text-base md:text-lg py-2 md:py-4",
+            )}
             onClick={handleSortNameChange}
           >
             <span
@@ -152,8 +154,12 @@ export default function CategoryTable({
             </span>
           </TableHead>
 
-          <TableHead className="w-[100px] text-center text-base md:text-lg py-2 md:py-4">Sub Category</TableHead>
-          <TableHead className="w-[150px] text-center text-base md:text-lg py-2 md:py-4">Date & time</TableHead>
+          <TableHead className="w-[100px] text-center text-base md:text-lg py-2 md:py-4">
+            Sub Category
+          </TableHead>
+          <TableHead className="w-[150px] text-center text-base md:text-lg py-2 md:py-4">
+            Date & time
+          </TableHead>
 
           {/* SORTABLE: Status */}
           <TableHead
@@ -191,14 +197,14 @@ export default function CategoryTable({
           categories.map((category: any) => {
             return (
               <TableRow key={category.id} className="border-none md:text-lg">
-                <TableCell className="pl-5 md:pl-6">
+                {/* <TableCell className="pl-5 md:pl-6">
                   <Checkbox
                     checked={selectCategory.includes(category.id)}
                     onCheckedChange={() => handleSelectCategory(category.id)}
                     className="h-5 w-5 rounded-[5px] border-[#444444]"
                   />
-                </TableCell>
-                <TableCell className="py-2.5">
+                </TableCell> */}
+                <TableCell className="py-2.5 pl-5 md:pl-6">
                   <div className="max-sm:pl-2 flex items-center gap-5 h-[50px]">
                     <Image
                       src={`${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${category.image}`}
@@ -251,13 +257,13 @@ export default function CategoryTable({
                           value="active"
                           className="*:[span]:hidden rounded-none border-b border-border p-3 last:border-b-0 cursor-pointer"
                         >
-                          Publish
+                          Published
                         </SelectItem>
                         <SelectItem
                           value="inactive"
                           className="*:[span]:hidden border-b border-border p-3 last:border-b-0 cursor-pointer"
                         >
-                          Unpublish
+                          Unpublished
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -270,14 +276,14 @@ export default function CategoryTable({
                         <EditIcon2 />
                       </button>
                     </Link>
-                    <button
+                    {/* <button
                       onClick={() => {
                         handleSetDeleteCategory(category.id);
                       }}
                       className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-[#44444414]"
                     >
                       <IconTrash />
-                    </button>
+                    </button> */}
                   </div>
                 </TableCell>
               </TableRow>

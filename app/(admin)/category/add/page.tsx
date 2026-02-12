@@ -120,8 +120,10 @@ export default function CreateCategory() {
         successToast("Suucess", "Main Category created!");
         router.back();
       },
-      onError: () => {
-        errorToast("Failed", "Create category unsuccefully, please try again.");
+      onError: (error: any) => {
+        console.log("Error", error);
+        
+        errorToast("Failed", error?.response?.data?.message || "Create category unsuccefully, please try again.");
         setIsSaving(false);
       },
     });
@@ -329,7 +331,7 @@ export default function CreateCategory() {
 
               {/* PUBLISH Button - calls the core logic explicitly */}
               <Button
-                type="button"
+                type="submit"
                 onClick={() => handleSubmitWithStatus("active")}
                 disabled={isSaving || disabled}
                 className={cn(
