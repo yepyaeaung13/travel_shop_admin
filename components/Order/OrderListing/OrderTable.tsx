@@ -56,24 +56,24 @@ export default function OrderTable({ orders }: OrderTableProps) {
     <Table className="table-fixed md:table-auto">
       <TableHeader className="bg-[#4444441A]">
         <TableRow className="md:text-lg h-14">
-          <TableHead className="w-10 pl-5 md:w-16 md:pl-6">
+          <TableHead className="text-[#303030] w-10 pl-5 md:w-16 md:pl-6">
             <p>ID</p>
           </TableHead>
           <TableHead
-            className={cn("w-[150px] cursor-pointer md:w-72 2xl:w-96")}
+            className={cn("w-[150px] text-[#303030] cursor-pointer md:w-72 2xl:w-96")}
           >
             Customer name
           </TableHead>
-          <TableHead className="w-[100px] text-center">Date</TableHead>
-          <TableHead className="w-[150px] text-center">Qty</TableHead>
-          <TableHead className="w-[150px] text-center">Total</TableHead>
-          <TableHead className="w-[200px] text-center">
+          <TableHead className="w-[100px] text-[#303030] text-center">Date</TableHead>
+          <TableHead className="w-[150px] text-[#303030] text-center">Qty</TableHead>
+          <TableHead className="w-[150px] text-[#303030] text-center">Total</TableHead>
+          <TableHead className="w-[200px] text-[#303030] text-center">
             Payment method
           </TableHead>
-          <TableHead className="w-[200px] text-center">
+          <TableHead className="w-[200px] text-[#303030] text-center">
             Payment status
           </TableHead>
-          <TableHead className="w-[200px] text-center">Order status</TableHead>
+          <TableHead className="w-[200px] text-[#303030] text-center">Order status</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody className="border-0">
@@ -83,25 +83,25 @@ export default function OrderTable({ orders }: OrderTableProps) {
               <TableRow
                 key={order.id}
                 onClick={() => router.push(`/orders/${order.id}`)}
-                className="border-none md:text-lg cursor-pointer"
+                className="border-none md:text-lg cursor-pointer text-[#303030]"
               >
                 <TableCell className="pl-5 md:pl-6">
                   <p className="text-center">
                     #{order.id.toString().padStart(3, "0")}
                   </p>
                 </TableCell>
-                <TableCell className="py-2.5">
+                <TableCell className="py-4">
                   <div className="pl-2 md:pl-5">
                     <p className="text-wrap line-clamp-2 break-all md:text-lg">
                       {order.user.name}
                     </p>
-                    <p className="text-wrap line-clamp-2 break-all text-[#929292] md:text-lg">
+                    <p className="text-wrap line-clamp-2 break-all text-[#929292] text-sm md:text-base">
                       {order.user.phoneNumber}
                     </p>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <p className="text-center text-wrap w-[100px]">
+                  <p className="text-center text-wrap w-[120px]">
                     {new Date(order.createdAt)
                       .toLocaleString("en-GB", {
                         day: "2-digit",

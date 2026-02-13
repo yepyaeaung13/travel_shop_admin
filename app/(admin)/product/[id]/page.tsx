@@ -22,6 +22,9 @@ import { mapProductToStore } from "@/utils/product";
 import { cn } from "@/lib/utils";
 import ConfirmDeleteDialog from "@/components/common/ConfirmDeleteDialog";
 import { errorToast, successToast } from "@/components/toast";
+import ConfirmDialog from "@/components/confirm-dialog/confirm-dialog";
+import IconTrash from "@/assets/icons/Trash";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function Page() {
   return (
@@ -34,8 +37,10 @@ export default function Page() {
 function ProductCreatePage() {
   const { id } = useParams();
   const router = useRouter();
+  const isMobile = useIsMobile();
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [discardModalOpen, setDiscardModalOpen] = useState(false);
   const { data: product, isPending: productLoading } = useGetProductById(
     Number(id) as number,
   );
@@ -203,9 +208,22 @@ function ProductCreatePage() {
       {(categoryLoading || productLoading || isPending || loading) && (
         <LoadingSpinner />
       )}
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-1 md:space-y-6">
         <div className="flex justify-between">
           <ProductHeader title="Edit product" />
+
+          <Button
+            type="button"
+            onClick={() => setOpen(true)}
+            disabled={isPending || disabled}
+            className={cn(
+              "md:hidden",
+              "h-[30px] w-[30px] rounded-[6px] duration-300 bg-white active:scale-95 ",
+              disabled || (isPending && "bg-[#444444]/50"),
+            )}
+          >
+            <IconTrash />
+          </Button>
 
           <div className="md:flex justify-between gap-2.5 md:justify-end lg:col-span-3 hidden">
             {/* UNPUBLISH Button - calls the core logic explicitly */}
@@ -223,7 +241,7 @@ function ProductCreatePage() {
             {/* UNPUBLISH Button - calls the core logic explicitly */}
             <Button
               type="button"
-              onClick={() => router.back()}
+              onClick={() => setDiscardModalOpen(true)}
               className={cn(
                 "h-auto w-[135px] rounded-[10px] bg-[#A1A1A1] py-1.5 text-base font-medium text-white duration-300 hover:bg-[#444444] active:scale-95 md:w-[135px] md:text-lg",
               )}
@@ -272,7 +290,16 @@ function ProductCreatePage() {
               sellingPriceMMK={sellingPriceMMK}
               sellingPriceUSD={sellingPriceUSD}
               sellingPriceCNY={sellingPriceCNY}
+              disablePromotion={false}
             />
+            {isMobile && (
+              <VisibilityInventorySection
+                sku={sku}
+                stock={stock}
+                setField={setField}
+                variants={variants}
+              />
+            )}
             <VariantSection
               isEdit={true}
               variantItems={product?.data?.variants}
@@ -288,12 +315,14 @@ function ProductCreatePage() {
             />
           </div>
 
-          <VisibilityInventorySection
-            sku={sku}
-            stock={stock}
-            setField={setField}
-            variants={variants}
-          />
+          {!isMobile && (
+            <VisibilityInventorySection
+              sku={sku}
+              stock={stock}
+              setField={setField}
+              variants={variants}
+            />
+          )}
         </div>
       </form>
 
@@ -303,6 +332,20 @@ function ProductCreatePage() {
         setOpen={setOpen}
         loading={deleteLoading}
         callback={handleDelete}
+      />
+
+      <ConfirmDialog
+        open={discardModalOpen}
+        setOpen={setDiscardModalOpen}
+        callback={() => {
+          router.back();
+          setDiscardModalOpen(false);
+        }}
+        loading={false}
+        title="Are you sure you want to discard all changes?"
+        description="This action cannot be undone"
+        className="w-[450px]"
+        titleClassName="max-w-[290px]"
       />
     </div>
   );

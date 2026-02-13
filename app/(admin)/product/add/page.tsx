@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { useCreateProduct } from "@/queries/product";
 import { uploadImage } from "@/services/common.service";
 import { useEffect, useMemo, useState } from "react";
+import { cn } from "@/lib/utils";
 
 export default function ProductCreatePage() {
   const router = useRouter();
@@ -183,6 +184,7 @@ export default function ProductCreatePage() {
               sellingPriceMMK={sellingPriceMMK}
               sellingPriceUSD={sellingPriceUSD}
               sellingPriceCNY={sellingPriceCNY}
+              disablePromotion={true}
             />
             <VariantSection
               isEdit={false}
@@ -209,14 +211,23 @@ export default function ProductCreatePage() {
         <div className="flex justify-end gap-4">
           <Button
             type="button"
-            variant="outline"
             onClick={handleSaveDraft}
             disabled={loading || isPending || disabled}
+            className={cn(
+              "h-10 max-md:flex-1 md:h-12 w-full rounded-[10px] bg-[#A1A1A1] py-1.5 text-base font-medium text-white duration-300 hover:bg-[#444444] active:scale-95 md:w-[215px] md:text-lg",
+            )}
           >
             Unpublish
           </Button>
-          <Button type="submit" disabled={loading || isPending || disabled}>
-            Publish
+          <Button
+            type="submit"
+            disabled={loading || isPending || disabled}
+            className={cn(
+              "bg-primary max-md:flex-1 h-10 md:h-12 w-full rounded-[10px] py-1.5 text-base font-medium text-white duration-300 active:scale-95 md:w-[215px] md:text-lg",
+              disabled && "bg-primary/50",
+            )}
+          >
+            {isPending ? "Publishing..." : "Publish"}
           </Button>
         </div>
       </form>

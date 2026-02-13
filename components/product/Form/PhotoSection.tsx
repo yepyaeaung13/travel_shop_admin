@@ -121,14 +121,14 @@ export default function PhotoSection({ images, replaceMainImage, addImage, remov
   return (
     <Card className="gap-2">
       <CardHeader>
-        <CardTitle>Photo</CardTitle>
+        <CardTitle className="text-lg md:text-xl font-medium">Photo</CardTitle>
       </CardHeader>
 
       <CardContent>
         <div className="flex flex-col gap-6 md:flex-row">
           {/* MAIN SLOT (index 0) */}
           <div className="space-y-2">
-            <div className="text-sm font-medium">
+            <div className="text-base md:text-lg font-normal text-[#303030]">
               Showcase photo <span className="text-red-500">*</span>
             </div>
 
@@ -139,8 +139,8 @@ export default function PhotoSection({ images, replaceMainImage, addImage, remov
 
           {/* OTHER 4 SLOTS (index 1–4) */}
           <div className="flex-1 space-y-2">
-            <div className="text-sm font-medium">
-              Photos <span className="text-gray-500">(max 5 photos)</span>
+            <div className="text-base md:text-lg font-normal text-[#303030]/50">
+              Photos <span className="">(max 5 photos)</span>
             </div>
 
             <div

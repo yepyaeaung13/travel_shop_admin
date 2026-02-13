@@ -120,8 +120,10 @@ export default function CreateCategory() {
         successToast("Suucess", "Main Category created!");
         router.back();
       },
-      onError: () => {
-        errorToast("Failed", "Create category unsuccefully, please try again.");
+      onError: (error: any) => {
+        console.log("Error", error);
+        
+        errorToast("Failed", error?.response?.data?.message || "Create category unsuccefully, please try again.");
         setIsSaving(false);
       },
     });
@@ -233,7 +235,7 @@ export default function CreateCategory() {
                   <div className="space-y-2">
                     <Label
                       htmlFor="category-name"
-                      className="text-base font-medium md:text-lg"
+                      className="text-lg md:text-xl font-medium text-black"
                     >
                       Main category <span className="text-[#FF3333]">*</span>
                     </Label>
@@ -256,7 +258,7 @@ export default function CreateCategory() {
                   <div className="flex items-center justify-between pt-2">
                     <Label
                       htmlFor="has-subcategory"
-                      className="cursor-pointer text-base font-medium md:text-lg"
+                      className="cursor-pointer text-lg md:text-xl font-medium text-black"
                     >
                       Add has sub-category
                     </Label>
@@ -329,7 +331,7 @@ export default function CreateCategory() {
 
               {/* PUBLISH Button - calls the core logic explicitly */}
               <Button
-                type="button"
+                type="submit"
                 onClick={() => handleSubmitWithStatus("active")}
                 disabled={isSaving || disabled}
                 className={cn(

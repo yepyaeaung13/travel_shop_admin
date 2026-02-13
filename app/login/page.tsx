@@ -46,7 +46,7 @@ export default function LoginPage() {
               expires: 7,
               path: "/",
             });
-            window.location.href = "/";
+            window.location.href = "/product";
           } else {
             errorToast("Failed",
               res?.response?.data?.message || res?.error || "Login failed. Please try again."

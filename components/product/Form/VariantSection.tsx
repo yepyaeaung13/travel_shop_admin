@@ -82,6 +82,10 @@ export default function VariantSection({
       indexNo: 0,
     },
   );
+  const [tempProductError, setTempProductError] = useState({
+    name: "",
+    values: "",
+  });
   const [showError, setShowError] = useState("");
   const [showEdit, setShowEdit] = useState(false);
   const [showNew, setShowNew] = useState(false);
@@ -132,6 +136,35 @@ export default function VariantSection({
   const handleAddNew = () => {
     if (newValue !== "") {
       setShowError("Please press Enter for new value.");
+      return;
+    }
+    if (
+      tempProductVarint.name === "" &&
+      tempProductVarint.values.length === 0
+    ) {
+      setTempProductError({
+        name: "Option name is required",
+        values: "Option value is required",
+      });
+      return;
+    }
+    if (tempProductVarint.name === "") {
+      setTempProductError({ name: "Option name is required", values: "" });
+      return;
+    }
+    if (tempProductVarint.values.length === 0) {
+      setTempProductError({ name: "", values: "Option value is required" });
+      return;
+    }
+    if (
+      productVarints.some(
+        (v) => v.name.toLowerCase() === tempProductVarint.name.toLowerCase(),
+      )
+    ) {
+      setTempProductError({
+        name: "Option name must be unique",
+        values: "",
+      });
       return;
     }
     addProductVariant(tempProductVarint);
@@ -215,7 +248,9 @@ export default function VariantSection({
     <>
       <Card className="gap-2">
         <CardHeader>
-          <CardTitle>Variant</CardTitle>
+          <CardTitle className="text-lg md:text-xl font-medium text-[#303030]">
+            Variant
+          </CardTitle>
         </CardHeader>
 
         <CardContent className="space-y-6">
@@ -232,7 +267,12 @@ export default function VariantSection({
                 }}
                 className="hover:bg-gray-100 cursor-pointer border rounded-[10px] border-[#EEEEEE] p-5 flex flex-col gap-2.5"
               >
-                <label htmlFor="">{pv.name}</label>
+                <label
+                  className="text-base md:text-lg font-normal text-[#303030]"
+                  htmlFor=""
+                >
+                  {pv.name}
+                </label>
                 <div className="flex gap-1.5">
                   {pv.values.map((pvv) => (
                     <button
@@ -247,8 +287,17 @@ export default function VariantSection({
             ))}
             {showNew && (
               <div className="border rounded-[10px] border-[#EEEEEE] p-5 flex flex-col gap-2.5">
-                <label htmlFor="">Option name</label>
+                <label
+                  className="text-sm md:text-base font-normal text-[#303030]"
+                  htmlFor=""
+                >
+                  Option name
+                </label>
                 <Input
+                  className={cn(
+                    "placeholder:md:text-base h-12 md:h-14 md:text-base rounded-[10px] font-normal text-[#303030]",
+                    tempProductError.name && "border border-[#FF3333]",
+                  )}
                   placeholder="Option name"
                   value={tempProductVarint.name}
                   onChange={(e) =>
@@ -263,12 +312,23 @@ export default function VariantSection({
                     }
                   }}
                 />
-                <label htmlFor="">Option values</label>
+                {tempProductError.name && (
+                  <p className="text-sm text-[#FF3333] -mt-1">
+                    {tempProductError.name}
+                  </p>
+                )}
+
+                <label
+                  className="text-sm md:text-base font-normal text-[#303030]"
+                  htmlFor=""
+                >
+                  Option values
+                </label>
                 {tempProductVarint.values.map((v, index) => (
                   <div key={index} className="relative flex items-center">
                     <Input
+                      className="pointer-events-none placeholder:md:text-base h-12 md:h-14 md:text-base rounded-[10px] font-normal text-[#303030]"
                       placeholder="Option values"
-                      className="pointer-events-none"
                       defaultValue={v}
                     />
 
@@ -282,6 +342,10 @@ export default function VariantSection({
                   </div>
                 ))}
                 <Input
+                  className={cn(
+                    "placeholder:md:text-base h-12 md:h-14 md:text-base rounded-[10px] font-normal text-[#303030]",
+                    tempProductError.name && "border border-[#FF3333]",
+                  )}
                   type="text"
                   placeholder="Type value and press Enter"
                   value={newValue}
@@ -299,9 +363,14 @@ export default function VariantSection({
                     }
                   }}
                 />
+                {tempProductError.values && (
+                  <p className="text-sm text-[#FF3333] -mt-1">
+                    {tempProductError.values}
+                  </p>
+                )}
 
                 {showError && (
-                  <p className="text-sm text-red-500">{showError}</p>
+                  <p className="text-sm text-[#FF3333] -mt-1">{showError}</p>
                 )}
 
                 <div className="w-full flex justify-between items-center">
@@ -331,8 +400,14 @@ export default function VariantSection({
             >
               <DialogContent className="max-w-[600px] flex flex-col items-center justify-center gap-7 rounded-[10px]">
                 <div className="w-full max-h-[500px] p-5 flex flex-col gap-2.5 overflow-y-auto scrollbar-none">
-                  <label htmlFor="">Option name</label>
+                  <label
+                    className="text-sm md:text-base font-normal text-[#303030]"
+                    htmlFor=""
+                  >
+                    Option name
+                  </label>
                   <Input
+                    className="placeholder:md:text-base h-12 md:h-14 md:text-base rounded-[10px] font-normal text-[#303030]"
                     placeholder="Option name"
                     value={editProductVarint.name}
                     onChange={(e) =>
@@ -342,12 +417,17 @@ export default function VariantSection({
                       })
                     }
                   />
-                  <label htmlFor="">Option values</label>
+                  <label
+                    className="text-sm md:text-base font-normal text-[#303030]"
+                    htmlFor=""
+                  >
+                    Option values
+                  </label>
                   {editProductVarint.values.map((v, index) => (
                     <div key={index} className="relative flex items-center">
                       <Input
+                        className="placeholder:md:text-base h-12 md:h-14 md:text-base rounded-[10px] font-normal text-[#303030] pointer-events-none"
                         placeholder="Option values"
-                        className="pointer-events-none"
                         defaultValue={v}
                       />
 
@@ -361,6 +441,7 @@ export default function VariantSection({
                     </div>
                   ))}
                   <Input
+                    className="placeholder:md:text-base h-12 md:h-14 md:text-base rounded-[10px] font-normal text-[#303030]"
                     type="text"
                     placeholder="Option values"
                     value={newEditValue}
@@ -426,10 +507,16 @@ export default function VariantSection({
               <Table>
                 <TableHeader>
                   <TableRow className="bg-[#EEEEEE]">
-                    <TableHead className="pl-5">Variants</TableHead>
+                    <TableHead className="text-base md:text-lg font-medium py-2 md:py-4 text-[#303030] pl-5">
+                      Variants
+                    </TableHead>
                     {/* <TableHead>Buying price</TableHead> */}
-                    <TableHead>Selling price</TableHead>
-                    <TableHead>Stock</TableHead>
+                    <TableHead className="text-base md:text-lg font-medium py-2 md:py-4 text-[#303030] ">
+                      Selling price
+                    </TableHead>
+                    <TableHead className="text-base md:text-lg font-medium py-2 md:py-4 text-[#303030] ">
+                      Stock
+                    </TableHead>
                     <TableHead />
                   </TableRow>
                 </TableHeader>
@@ -441,7 +528,7 @@ export default function VariantSection({
                     if (productVarints.length === 1) {
                       return group.variantItems.map((item, itemIndex) => (
                         <TableRow key={item.sku}>
-                          <TableCell className="pl-5 flex gap-4">
+                          <TableCell className="pl-5 flex gap-4 text-base md:text-lg font-normal text-[#303030]">
                             <button
                               type="button"
                               onClick={() => {
@@ -521,11 +608,11 @@ export default function VariantSection({
                       <Fragment key={group.name}>
                         {/* GROUP ROW */}
                         <TableRow className="bg-muted/40">
-                          <TableCell className="pl-5 font-semibold capitalize">
+                          <TableCell className="pl-5 pt-3 pb-2 md:pt-5 md:pb-3.5 capitalize text-sm md:text-base font-normal text-[#3C3C3C]">
                             {group.name}
                             <button
                               onClick={() => toggleGroup(group.name)}
-                              className="text-xs text-[#3C3C3CCC] font-normal flex gap-1.5 items-center cursor-pointer"
+                              className="text-xs md:text-sm text-[#3C3C3CCC] font-normal flex gap-1.5 items-center cursor-pointer"
                               type="button"
                             >
                               {group.variantItems.length} Variants{" "}
@@ -538,10 +625,10 @@ export default function VariantSection({
                           </TableCell>
                           <TableCell
                             colSpan={1}
-                            className="text-sm text-muted-foreground"
+                            className="text-sm text-muted-foreground pt-3 pb-2 md:pt-5 md:pb-3.5"
                           >
                             <Input
-                              className="h-8 w-36"
+                              className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] w-36"
                               value={min === max ? min : ""}
                               placeholder={
                                 min === max ? undefined : `${min} – ${max}`
@@ -561,7 +648,7 @@ export default function VariantSection({
                           </TableCell>
                           <TableCell
                             colSpan={4}
-                            className="text-sm text-muted-foreground"
+                            className="text-sm text-muted-foreground pt-3 pb-2 md:pt-5 md:pb-3.5"
                           >
                             <Input
                               value={group.variantItems.reduce(
@@ -569,7 +656,7 @@ export default function VariantSection({
                                 0,
                               )}
                               onChange={() => {}}
-                              className="h-8 w-24 pointer-events-none"
+                              className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] w-36 pointer-events-none"
                             />
                           </TableCell>
                         </TableRow>
@@ -578,7 +665,7 @@ export default function VariantSection({
                         {expanded[group.name] &&
                           group.variantItems.map((item, itemIndex) => (
                             <TableRow key={item.sku}>
-                              <TableCell className="pl-5 flex gap-4">
+                              <TableCell className="pl-5 flex gap-4 text-sm md:text-base items-center pt-4 font-normal text-[#303030]">
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -616,7 +703,7 @@ export default function VariantSection({
                               <TableCell>
                                 <Input
                                   value={item.sellingPrice.toString()}
-                                  className="h-8 w-24"
+                                  className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] w-36"
                                   onChange={(e) => {
                                     const rawValue = e.target.value;
                                     const numericValue = rawValue.replace(
@@ -634,7 +721,7 @@ export default function VariantSection({
                               <TableCell>
                                 <Input
                                   value={item.stock}
-                                  className="h-8 w-20"
+                                  className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] w-36"
                                   onChange={(e) => {
                                     const rawValue = e.target.value;
                                     const numericValue = rawValue.replace(
@@ -682,13 +769,17 @@ export default function VariantSection({
         onOpenChange={() => setSelectedVariant(null)}
       >
         <DialogContent showCloseButton={false}>
-          <DialogTitle>Edit {selectedVariant?.variantItem?.sku}</DialogTitle>
+          <DialogTitle className="text-lg md:text-xl font-medium text-[#303030]">
+            Edit {selectedVariant?.variantItem?.sku}
+          </DialogTitle>
           <div className="w-full space-y-4">
             <div className="w-full flex flex-col gap-2">
-              <label>Price (MMK)</label>
+              <label className="text-sm md:text-base font-normal text-[#303030]">
+                Price (MMK)
+              </label>
               <Input
                 value={selectedVariant?.variantItem?.sellingPrice.toString()}
-                className="h-10"
+                className="placeholder:md:text-base h-12 md:h-14 md:text-base rounded-[10px] font-normal text-[#303030]"
                 onChange={(e) => {
                   const rawValue = e.target.value;
                   const numericValue = rawValue.replace(/[^0-9.]/g, "");
@@ -704,10 +795,12 @@ export default function VariantSection({
             </div>
 
             <div className="flex flex-col gap-2">
-              <label>Stock</label>
+              <label className="text-sm md:text-base font-normal text-[#303030]">
+                Stock
+              </label>
               <Input
                 value={selectedVariant?.variantItem?.stock.toString()}
-                className="h-10"
+                className="placeholder:md:text-base h-12 md:h-14 md:text-base rounded-[10px] font-normal text-[#303030]"
                 onChange={(e) => {
                   const rawValue = e.target.value;
                   const numericValue = rawValue.replace(/[^0-9.]/g, "");
@@ -723,11 +816,13 @@ export default function VariantSection({
             </div>
 
             <div className="flex flex-col gap-2">
-              <label>SKU</label>
+              <label className="text-sm md:text-base font-normal text-[#303030]">
+                SKU
+              </label>
               <Input
                 type="text"
                 value={selectedVariant?.variantItem?.showSKU}
-                className="h-10"
+                className="placeholder:md:text-base h-12 md:h-14 md:text-base rounded-[10px] font-normal text-[#303030]"
                 placeholder="enter sku"
                 onChange={(e) =>
                   setSelectedVariant({
