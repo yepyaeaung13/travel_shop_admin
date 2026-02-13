@@ -206,34 +206,24 @@ function EditCategory() {
     });
   };
 
-  const handleImageChange = (e: any) => {
-    const file = e.target.files[0] as File;
+  const handleImageChange = (file: File) => {
     const MAX_SIZE = 512 * 1024;
     if (file.size > MAX_SIZE) {
-      // show error toast / alert
       errorToast("Image too large", "Image must be under 512 KB");
-      e.target.value = ""; // reset input
       return;
     }
-    if (file) {
-      const preview = URL.createObjectURL(file);
-      setImage({ file, preview });
-    }
+    const preview = URL.createObjectURL(file);
+    setImage({ file, preview });
   };
 
-  const handleBannerImageChange = (e: any) => {
-    const file = e.target.files[0] as File;
+  const handleBannerImageChange = (file: File) => {
     const MAX_SIZE = 1024 * 1024;
     if (file.size > MAX_SIZE) {
-      // show error toast / alert
       errorToast("Image too large", "Image must be under 1 MB");
-      e.target.value = ""; // reset input
       return;
     }
-    if (file) {
-      const preview = URL.createObjectURL(file);
-      setBannerImage({ file, preview });
-    }
+    const preview = URL.createObjectURL(file);
+    setBannerImage({ file, preview });
   };
 
   const handleBannerImageRemove = () => {
@@ -399,7 +389,7 @@ function EditCategory() {
                   imagePreview={bannerImage.preview}
                   onImageChange={handleBannerImageChange}
                   onImageRemove={handleBannerImageRemove}
-                  className={"h-[208px]"}
+                  className={"aspect-[1440/640]"}
                   text={
                     <span>
                       Upload a banner for your category
@@ -408,6 +398,8 @@ function EditCategory() {
                   }
                   title={"Banner"}
                   existingImageUrl={bannerImageUrl}
+                  cropHeight={640}
+                  cropWidth={1440}
                 />
               </div>
               {/* Category Name */}
@@ -503,6 +495,8 @@ function EditCategory() {
                 text="Upload a cover image for your category."
                 title={"Image"}
                 existingImageUrl={imageUrl}
+                cropHeight={1024}
+                cropWidth={1024}
               />
             </div>
           </div>

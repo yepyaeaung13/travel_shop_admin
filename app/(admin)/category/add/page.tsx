@@ -129,34 +129,24 @@ export default function CreateCategory() {
     });
   };
 
-  const handleImageChange = (e: any) => {
-    const file = e.target.files[0] as File;
+  const handleImageChange = (file: File) => {
     const MAX_SIZE = 1024 * 1024;
     if (file.size > MAX_SIZE) {
-      // show error toast / alert
       errorToast("Image too large", "Image must be under 1MB");
-      e.target.value = ""; // reset input
       return;
     }
-    if (file) {
-      const preview = URL.createObjectURL(file);
-      setImage({ file, preview });
-    }
+    const preview = URL.createObjectURL(file);
+    setImage({ file, preview });
   };
 
-  const handleBannerImageChange = (e: any) => {
-    const file = e.target.files[0] as File;
+  const handleBannerImageChange = (file: File) => {
     const MAX_SIZE = 1024 * 1024;
     if (file.size > MAX_SIZE) {
-      // show error toast / alert
       errorToast("Image too large", "Image must be under 1 MB");
-      e.target.value = ""; // reset input
       return;
     }
-    if (file) {
-      const preview = URL.createObjectURL(file);
-      setBannerImage({ file, preview });
-    }
+    const preview = URL.createObjectURL(file);
+    setBannerImage({ file, preview });
   };
 
   const handleImageRemove = () => {
@@ -219,7 +209,7 @@ export default function CreateCategory() {
                   imagePreview={bannerImage.preview}
                   onImageChange={handleBannerImageChange}
                   onImageRemove={handleBannerImageRemove}
-                  className={"h-[208px]"}
+                  className={"aspect-[1440/640]"}
                   text={
                     <span>
                       Upload a banner for your category
@@ -227,6 +217,8 @@ export default function CreateCategory() {
                     </span>
                   }
                   title={"Banner"}
+                  cropHeight={640}
+                  cropWidth={1440}
                 />
               </div>
               {/* Category Name */}
@@ -312,6 +304,8 @@ export default function CreateCategory() {
                 className={"aspect-4/3"}
                 text="Upload a cover image for your category."
                 title={"Image"}
+                cropHeight={1024}
+                cropWidth={1024}
               />
             </div>
 
