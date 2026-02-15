@@ -32,6 +32,7 @@ export default function ConfirmDialog({
 }: Props) {
   return (
     <Dialog open={open} onOpenChange={loading ? () => {} : setOpen}>
+      <DialogTitle></DialogTitle>
       <DialogContent
         className={cn(
           "flex w-[440px] flex-col items-center justify-center p-5 gap-5 rounded-[10px]",

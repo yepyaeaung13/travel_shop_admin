@@ -49,14 +49,14 @@ const PaymentInfo = ({
           <div className="flex justify-between">
             <span className="text-custom-dark-gray">Payment method</span>
             <span className="font-medium">
-              {order?.payment?.paymentMethod?.name}
+              {order?.payment?.methodName}
             </span>
           </div>
-          {order?.payment?.payment?.name && (
+          {order?.payment?.paymentName && (
             <div className="flex justify-between">
               <span className="text-custom-dark-gray">Paid by</span>
               <span className="font-medium">
-                {order?.payment?.payment?.name}
+                {order?.payment?.paymentName}
               </span>
             </div>
           )}

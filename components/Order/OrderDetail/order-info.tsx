@@ -65,7 +65,7 @@ const OrderInfo = ({ order }: { order: any }) => {
                     {item.name}
                   </h4>
                   <p className="text-custom-gray-100 text-base font-normal">
-                    {item.sku.split("-").join(", ")}
+                    {item.variant}
                   </p>
                 </div>
                 {item.isPromote && (

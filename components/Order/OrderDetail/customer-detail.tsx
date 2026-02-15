@@ -55,7 +55,13 @@ const CustomerDetail = ({ order }: { order: any }) => {
             <MapPin className="text-custom-dark-gray mt-0.5 h-5 w-5 flex-shrink-0" />
             <div className="text-custom-dark-gray space-y-1 text-sm">
               <p>
-                 {order?.address?.address}
+                 {order?.deliveryContactPersion}
+              </p>
+              <p>
+                {order?.deliveryContactNumber}
+              </p>
+              <p>
+                 {order?.deliveryAddress}
               </p>
             </div>
           </div>

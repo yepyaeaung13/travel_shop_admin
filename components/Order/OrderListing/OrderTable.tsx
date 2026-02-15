@@ -119,7 +119,7 @@ export default function OrderTable({ orders }: OrderTableProps) {
                   {Number(order.totalAmount).toLocaleString()} Ks
                 </TableCell>
                 <TableCell className="text-center">
-                  {order.payment?.paymentMethod.name || ""}
+                  {order.payment?.methodName || ""}
                 </TableCell>
                 <TableCell>
                   <p
