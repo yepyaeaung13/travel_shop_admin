@@ -1,6 +1,6 @@
 "use client";
 import ImageUpload from "@/assets/icons/upload/ImageUpload";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { WalletPay } from "@/app/(admin)/wallet/page";
@@ -9,24 +9,35 @@ import { CustomSwitch } from "../ui/switch";
 import { ChevronDown } from "lucide-react";
 import ImageUpload2 from "@/assets/icons/upload/ImageUpload2";
 import ConfirmDialog from "../confirm-dialog/confirm-dialog";
+import { useUpdatePayment } from "@/queries/payment";
+import { successToast } from "../toast";
+import { uploadImage } from "@/services/common.service";
 
 type Props = {
+  type: "pay" | "bank";
   wallet: WalletPay;
-  handlePublishStatus: (id: number) => void;
+  handlePublishStatus: (wallet: WalletPay) => void;
 };
 
-const WalletItem = ({ wallet, handlePublishStatus }: Props) => {
+const WalletItem = ({ type, wallet, handlePublishStatus }: Props) => {
   const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [discardModalOpen, setDiscardModalOpen] = useState(false);
 
   const [isSaving, setIsSaving] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(false);
-  const [QRImage, setQRImage] = useState("");
+  const [QRImage, setQRImage] = useState<string>("");
+  const [file, setFile] = useState<File | null>(null);
+  const [originQRImage, setOriginQRImage] = useState("");
+  const [accountName, setAccountName] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+
+  const { mutate: updatePayment, isPending } = useUpdatePayment();
 
   const handleUploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setFile(file);
       const reader = new FileReader();
       reader.onload = () => {
         setQRImage(reader.result as string);
@@ -35,12 +46,58 @@ const WalletItem = ({ wallet, handlePublishStatus }: Props) => {
     }
   };
 
+  const handleDefaultState = () => {
+    const imageUrl = wallet?.qrCode
+      ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${wallet?.qrCode}`
+      : "";
+    setOriginQRImage(imageUrl);
+    setAccountName(wallet.accountName);
+    setAccountNumber(wallet.accountNumber);
+  };
+
+  useEffect(() => {
+    handleDefaultState();
+  }, [wallet]);
+
+  const handleCancel = () => {
+    handleDefaultState();
+    setQRImage("");
+    setFile(null);
+  };
+
+  const handleUpdatePayment = async () => {
+    let cid = wallet.qrCode;
+
+    if (QRImage && file) {
+      const uploadedImage = await uploadImage(file);
+      cid = uploadedImage?.data?.cid;
+    }
+
+    const payload = {
+      id: wallet.id,
+      payload: {
+        name: wallet.name,
+        image: wallet.image,
+        qrCode: cid,
+        accountName: accountName,
+        accountNumber: accountNumber,
+        status: wallet.status,
+      },
+    };
+    updatePayment(payload, {
+      onSuccess: () => {
+        setSaveModalOpen(false);
+        successToast("Updated", "Payment update successfully.");
+      },
+    });
+  };
+
   return (
     <div className="flex flex-col w-full rounded-[10px] bg-white space-y-4">
       <div className="flex justify-between pl-5">
         <div className="flex items-center gap-4 py-5">
           <Image
-            src={wallet.image || "/images/kpay.png"}
+            src={`${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${wallet?.image}`}
             alt="kpay"
             width={50}
             height={50}
@@ -59,7 +116,7 @@ const WalletItem = ({ wallet, handlePublishStatus }: Props) => {
           />
           <CustomSwitch
             checked={wallet.status}
-            onCheckedChange={() => handlePublishStatus(wallet.id)}
+            onCheckedChange={() => handlePublishStatus(wallet)}
           />
           <div
             className={cn(
@@ -76,12 +133,35 @@ const WalletItem = ({ wallet, handlePublishStatus }: Props) => {
       </div>
       {openDropdown && (
         <div className="px-5 pb-5 flex flex-col md:flex-row md:items-start md:justify-between gap-2.5 md:gap-5">
-          {wallet.type === "pay" && (
+          {type === "pay" && (
             <>
               {QRImage ? (
                 <div className="w-[120px] md:w-[161px] shrink-0 aspect-square relative">
                   <Image
                     src={QRImage}
+                    alt="slip"
+                    width={161}
+                    height={161}
+                    className="w-[120px] md:w-[161px] h-[120px] md:h-[161px] rounded-[10px]"
+                  />
+                  <label
+                    htmlFor="qr"
+                    className="cursor-pointer absolute bottom-1.5 right-1.5"
+                  >
+                    <ImageUpload2 />
+                    <input
+                      id="qr"
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      onChange={handleUploadImage}
+                    />
+                  </label>
+                </div>
+              ) : originQRImage ? (
+                <div className="w-[120px] md:w-[161px] shrink-0 aspect-square relative">
+                  <Image
+                    src={originQRImage}
                     alt="slip"
                     width={161}
                     height={161}
@@ -130,6 +210,8 @@ const WalletItem = ({ wallet, handlePublishStatus }: Props) => {
               </span>
               <input
                 placeholder="Account name"
+                value={accountName}
+                onChange={(e) => setAccountName(e.target.value)}
                 className="border rounded-[10px] border-[#3C3C3C]/30 h-[46px] md:h-14 px-5 text-sm md:text-base font-normal"
               />
             </div>
@@ -139,16 +221,18 @@ const WalletItem = ({ wallet, handlePublishStatus }: Props) => {
               </span>
               <input
                 placeholder="Account phone number"
+                value={accountNumber}
+                onChange={(e) => setAccountNumber(e.target.value)}
                 className="border rounded-[10px] border-[#3C3C3C]/30 h-[46px] md:h-14 px-5 text-sm md:text-base font-normal"
               />
             </div>
             <div className="flex items-center justify-center gap-2.5 w-full">
-              {wallet.type === "bank" && (
-                <div className="w-[30%] max-md:hidden" />
-              )}
+              {type === "bank" && <div className="w-[30%] max-md:hidden" />}
               <Button
                 type="button"
-                onClick={() => setDiscardModalOpen(true)}
+                onClick={() => {
+                  setDiscardModalOpen(true);
+                }}
                 disabled={isSaving || disabled}
                 className={cn(
                   "h-12 w-full flex-1 rounded-[10px] bg-[#A1A1A1] py-1.5 text-base font-medium text-white duration-300 hover:bg-[#444444] active:scale-95 md:w-full md:text-lg",
@@ -182,10 +266,8 @@ const WalletItem = ({ wallet, handlePublishStatus }: Props) => {
       <ConfirmDialog
         open={saveModalOpen}
         setOpen={setSaveModalOpen}
-        callback={() => {
-          setSaveModalOpen(false);
-        }}
-        loading={false}
+        callback={handleUpdatePayment}
+        loading={isPending}
         title="Are you sure you want to save your changes?"
         description={""}
         className="w-[450px]"
@@ -196,6 +278,7 @@ const WalletItem = ({ wallet, handlePublishStatus }: Props) => {
         open={discardModalOpen}
         setOpen={setDiscardModalOpen}
         callback={() => {
+          handleCancel();
           setDiscardModalOpen(false);
         }}
         loading={false}

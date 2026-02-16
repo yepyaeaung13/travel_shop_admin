@@ -1,13 +1,11 @@
 "use client";
 
-import ImageUpload from "@/assets/icons/upload/ImageUpload";
 import ConfirmDialog from "@/components/confirm-dialog/confirm-dialog";
-import { Button } from "@/components/ui/button";
-import { CustomSwitch } from "@/components/ui/switch";
+import { successToast } from "@/components/toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WalletItem from "@/components/wallet/wallet-item";
 import { cn } from "@/lib/utils";
-import { ChevronDown } from "lucide-react";
-import Image from "next/image";
+import { useGetPayments, useUpdateStatusPayment } from "@/queries/payment";
 import React, { useEffect, useState } from "react";
 
 export type WalletType = {
@@ -17,153 +15,35 @@ export type WalletType = {
 export type WalletPay = {
   id: number;
   name: string;
+  accountName: string;
+  accountNumber: string;
   image: string;
   status: boolean;
-  type: WalletType["type"];
+  qrCode: string | null;
 };
 
-const walletData: WalletPay[] = [
-  {
-    id: 1,
-    name: "KBZPay",
-    image: "/images/wallet/kpay.png",
-    status: true,
-    type: "pay",
-  },
-  {
-    id: 2,
-    name: "AYAPay Wallet",
-    image: "/images/wallet/ayapay.png",
-    status: true,
-    type: "pay",
-  },
-  {
-    id: 3,
-    name: "WavePay",
-    image: "/images/wallet/wavepay.png",
-    status: true,
-    type: "pay",
-  },
-  {
-    id: 4,
-    name: "CBPay",
-    image: "/images/wallet/cbpay.png",
-    status: false,
-    type: "pay",
-  },
-  {
-    id: 5,
-    name: "UABPay",
-    image: "/images/wallet/uabpay.png",
-    status: false,
-    type: "pay",
-  },
-  {
-    id: 6,
-    name: "Yoma",
-    image: "/images/wallet/yomapay.png",
-    status: false,
-    type: "pay",
-  },
-  {
-    id: 7,
-    name: "KBZ Bank",
-    image: "/images/wallet/kbzbank.png",
-    status: true,
-    type: "bank",
-  },
-  {
-    id: 8,
-    name: "Yoma Bank",
-    image: "/images/wallet/yomapay.png",
-    status: true,
-    type: "bank",
-  },
-  {
-    id: 9,
-    name: "AYA Bank",
-    image: "/images/wallet/ayapay.png",
-    status: true,
-    type: "bank",
-  },
-  {
-    id: 10,
-    name: "A Bank",
-    image: "/images/wallet/abank.png",
-    status: false,
-    type: "bank",
-  },
-  {
-    id: 11,
-    name: "UAB Bank",
-    image: "/images/wallet/uabbank.png",
-    status: false,
-    type: "bank",
-  },
-  {
-    id: 11,
-    name: "CB Bank",
-    image: "/images/wallet/cbpay.png",
-    status: false,
-    type: "bank",
-  },
-];
-
-const walletTypes: WalletType[] = [
-  {
-    name: "Digital Wallet",
-    type: "pay",
-  },
-  {
-    name: "Bank",
-    type: "bank",
-  },
-];
-
 const WalletPage = () => {
-  const [isSaving, setIsSaving] = useState(false);
-  const [disabled, setDisabled] = useState(false);
-
   const [publishModalOpen, setPublishModalOpen] = useState(false);
-  const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [discardModalOpen, setDiscardModalOpen] = useState(false);
+  const [selectedWallet, setSelectedWallet] = useState<WalletPay | null>(null);
 
-  const [selectedWalletId, setSelectedWalletId] = useState(0);
   const [selectedWalletType, setSelectedWalletType] =
     useState<WalletType["type"]>("pay");
-  const [walletPays, setWalletPays] = useState(
-    walletData.filter((wallet) => wallet.type === selectedWalletType),
-  );
-  useEffect(() => {
-    setWalletPays(
-      walletData.filter((wallet) => wallet.type === selectedWalletType),
-    );
-  }, [selectedWalletType]);
 
-  const handlePublishStatus = (id: number) => {
-    setSelectedWalletId(id);
+  const { data: paymentMethods, isLoading } = useGetPayments();
+  const { mutate: updateStatusPayment, isPending } = useUpdateStatusPayment();
+
+  const bankPayments = paymentMethods?.data?.find(
+    (m: any) => m.type === "bank",
+  );
+  const walletPayments = paymentMethods?.data?.find(
+    (m: any) => m.type === "pay",
+  );
+
+  const handlePublishStatus = (wallet: WalletPay) => {
+    setSelectedWallet(wallet);
     setPublishModalOpen(true);
   };
-
-  const handlePublishStatusCallback = () => {
-    setWalletPays((prev) => {
-      return prev.map((wallet) => {
-        if (wallet.id === selectedWalletId) {
-          return {
-            ...wallet,
-            status: !wallet.status,
-          };
-        }
-        return wallet;
-      });
-    });
-    setPublishModalOpen(false);
-  };
-
-  const handleChangeWallet = () => {
-    setSelectedWalletId(0);
-    setDiscardModalOpen(true);
-  }
 
   const handleChangeWalletCallback = () => {
     if (selectedWalletType === "pay") {
@@ -171,7 +51,27 @@ const WalletPage = () => {
     } else {
       setSelectedWalletType("pay");
     }
-    setDiscardModalOpen(false)
+    setDiscardModalOpen(false);
+  };
+
+  const handleUpdatePayment = async () => {
+    if (!selectedWallet) {
+      return;
+    }
+
+    const payload = {
+      id: selectedWallet.id,
+      payload: {
+        status: !selectedWallet.status,
+      },
+    };
+    updateStatusPayment(payload, {
+      onSuccess: () => {
+        setPublishModalOpen(false);
+        setSelectedWallet(null);
+        successToast("Updated", "Payment's status update successfully.");
+      },
+    });
   };
 
   return (
@@ -183,70 +83,95 @@ const WalletPage = () => {
       </div>
 
       <div className="flex items-start gap-7">
-        {walletTypes.map((walletType, index) => (
-          <div
-            key={index}
-            className="flex flex-col space-y-1.5 cursor-pointer"
-            onClick={handleChangeWallet}
-          >
-            <span
+        <Tabs defaultValue="pay" className="w-full">
+          <TabsList className="bg-transparent gap-5">
+            <TabsTrigger
+              value="pay"
               className={cn(
-                "text-base md:text-lg font-medium",
-                walletType.type === selectedWalletType
-                  ? "text-black"
-                  : "text-[#3C3C3C]/50",
+                "text-base md:text-lg font-medium rounded-none border-0 border-b-4 data-[state=active]:shadow-none data-[state=active]:bg-transparent data-[state=active]:text-black data-[state=active]:border-blue-500 text-[#3C3C3C]/50 pb-4",
               )}
             >
-              {walletType.name}
-            </span>
-            <div
+              Digital Wallet
+            </TabsTrigger>
+            <TabsTrigger
+              value="bank"
               className={cn(
-                " h-1 w-full rounded-full",
-                walletType.type === selectedWalletType
-                  ? "bg-[#616FF5]"
-                  : "bg-transparent",
+                "text-base md:text-lg font-medium rounded-none border-0 border-b-4 data-[state=active]:shadow-none data-[state=active]:bg-transparent data-[state=active]:text-black data-[state=active]:border-blue-500 text-[#3C3C3C]/50 pb-4",
               )}
-            />
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-5">
-        <div className="col-span-1 flex flex-col w-full space-y-4">
-          {walletPays
-            .filter(
-              (wallet) => wallet.status && wallet.type === selectedWalletType,
-            )
-            .map((wallet) => (
-              <WalletItem
-                key={wallet.id}
-                wallet={wallet}
-                handlePublishStatus={handlePublishStatus}
-              />
-            ))}
-        </div>
-        <div className="col-span-1 flex flex-col w-full space-y-4">
-          {walletPays
-            .filter(
-              (wallet) => !wallet.status && wallet.type === selectedWalletType,
-            )
-            .map((wallet) => (
-              <WalletItem
-                key={wallet.id}
-                wallet={wallet}
-                handlePublishStatus={handlePublishStatus}
-              />
-            ))}
-        </div>
+            >
+              Bank
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="bank">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-5">
+              <div className="col-span-1 flex flex-col w-full space-y-4">
+                {bankPayments?.payments
+                  .sort((a: any, b: any) => a.name.localeCompare(b.name))
+                  .slice(0, 3)
+                  .map((bank: any) => (
+                    <WalletItem
+                      key={bank.id}
+                      wallet={bank}
+                      type="bank"
+                      handlePublishStatus={handlePublishStatus}
+                    />
+                  ))}
+              </div>
+              <div className="col-span-1 flex flex-col w-full space-y-4">
+                {bankPayments?.payments
+                  .sort((a: any, b: any) => a.name.localeCompare(b.name))
+                  .slice(3, 6)
+                  .map((bank: any) => (
+                    <WalletItem
+                      key={bank.id}
+                      wallet={bank}
+                      type="bank"
+                      handlePublishStatus={handlePublishStatus}
+                    />
+                  ))}
+              </div>
+            </div>
+          </TabsContent>
+          <TabsContent value="pay">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-5">
+              <div className="col-span-1 flex flex-col w-full space-y-4">
+                {walletPayments?.payments
+                  .sort((a: any, b: any) => a.name.localeCompare(b.name))
+                  .slice(0, 3)
+                  .map((wallet: any) => (
+                    <WalletItem
+                      key={wallet.id}
+                      wallet={wallet}
+                      type="pay"
+                      handlePublishStatus={handlePublishStatus}
+                    />
+                  ))}
+              </div>
+              <div className="col-span-1 flex flex-col w-full space-y-4">
+                {walletPayments?.payments
+                  .sort((a: any, b: any) => a.name.localeCompare(b.name))
+                  .slice(3, 6)
+                  .map((wallet: any) => (
+                    <WalletItem
+                      key={wallet.id}
+                      wallet={wallet}
+                      type="pay"
+                      handlePublishStatus={handlePublishStatus}
+                    />
+                  ))}
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
 
       <ConfirmDialog
         open={publishModalOpen}
         setOpen={setPublishModalOpen}
-        callback={handlePublishStatusCallback}
-        loading={false}
+        callback={handleUpdatePayment}
+        loading={isPending}
         title={
-          walletPays.find((wallet) => wallet.id === selectedWalletId)?.status
+          selectedWallet?.status
             ? "Do you want to unpublish this wallet?"
             : "Do you want to publish this wallet?"
         }
