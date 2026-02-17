@@ -2,7 +2,6 @@
 
 import CustomerInfoCard from "./customer-info-card";
 import { OrderTable } from "./OrderTable/order-table";
-import { mockOrders } from "./OrderTable/dummyData";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useGetUserById } from "@/queries/users.queries";
