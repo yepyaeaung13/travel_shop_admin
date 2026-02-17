@@ -49,7 +49,7 @@ export function useCustomerList({ initialFilters = {} }: UseCustomerListProps = 
     searchText: debouncedSearchQuery,
   });
 
-  const customerLists = rawCustomerLists?.data ?? [];
+  const customerLists = rawCustomerLists?.data?.users ?? [];
 
   // Update pagination from API response
   useEffect(() => {
@@ -58,7 +58,7 @@ export function useCustomerList({ initialFilters = {} }: UseCustomerListProps = 
     const { page = 1, take = 10, skip = 0 } = rawCustomerLists.meta;
     const currentPage = Number(page);
     const pageSize = Number(take);
-    const totalItems = Number(skip) + rawCustomerLists.data?.length || 0;
+    const totalItems = rawCustomerLists.data?.total;
     const totalPages = Math.ceil(totalItems / pageSize);
 
     setPagination((prev) => ({
@@ -67,7 +67,7 @@ export function useCustomerList({ initialFilters = {} }: UseCustomerListProps = 
       size: pageSize,
       total: totalItems,
       totalPages,
-      hasNextPage: rawCustomerLists.data?.length === pageSize,
+      hasNextPage: rawCustomerLists.data?.total === pageSize,
       hasPrevPage: currentPage > 1
     }));
   }, [rawCustomerLists]);

@@ -15,65 +15,6 @@ export default function CustomerDetailsPage({
   customerId,
 }: CustomerDetailsPageProps) {
   const router = useRouter();
-  // Mock order data
-  const orderData = {
-    totalOrders: 20,
-    totalSpend: "350,000 MMK",
-    orders: [
-      { id: "ORD-001", date: "2024-05-15" },
-      { id: "ORD-002", date: "2024-05-14" },
-      { id: "ORD-003", date: "2024-05-13" },
-      { id: "ORD-004", date: "2024-05-12" },
-      { id: "ORD-005", date: "2024-05-11" },
-      { id: "ORD-006", date: "2024-05-10" },
-      { id: "ORD-007", date: "2024-05-09" },
-      { id: "ORD-008", date: "2024-05-08" },
-    ],
-  };
-
-  // Mock activity data
-  const activityData = [
-    {
-      id: "1",
-      type: "wishlist" as const,
-      description: "{customerName} added {productName} to wish list.",
-      timestamp: "5/6/2024 at 11:30 AM",
-      customerName: "Customer name",
-      productName: "product name",
-    },
-    {
-      id: "2",
-      type: "wishlist" as const,
-      description: "{customerName} added {productName} to wish list.",
-      timestamp: "5/6/2024 at 11:30 AM",
-      customerName: "Customer name",
-      productName: "product name",
-    },
-    {
-      id: "3",
-      type: "wishlist" as const,
-      description: "{customerName} added {productName} to wish list.",
-      timestamp: "5/6/2024 at 11:30 AM",
-      customerName: "Customer name",
-      productName: "product name",
-    },
-    {
-      id: "4",
-      type: "wishlist" as const,
-      description: "{customerName} added {productName} to wish list.",
-      timestamp: "5/6/2024 at 11:30 AM",
-      customerName: "Customer name",
-      productName: "product name",
-    },
-    {
-      id: "5",
-      type: "wishlist" as const,
-      description: "{customerName} added {productName} to wish list.",
-      timestamp: "5/6/2024 at 11:30 AM",
-      customerName: "Customer name",
-      productName: "product name",
-    },
-  ];
 
   if (!customerId) return null;
 
@@ -106,7 +47,7 @@ const customer = CustomerData.data;
         </div>
 
         <div className="">
-          <OrderTable orders={mockOrders} />
+          <OrderTable orders={customer?.order || []} />
           {/* Order Summary */}
           {/* <OrderSummaryCard
             totalOrders={orderData.totalOrders}

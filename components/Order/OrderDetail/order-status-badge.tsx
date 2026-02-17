@@ -11,7 +11,7 @@ export enum OrderStatus {
   RESTOCKED = "RESTOCKED",
 }
 
-const statusMap: Record<OrderStatus, { label: string; className: string }> = {
+export const statusMap: Record<OrderStatus, { label: string; className: string }> = {
   [OrderStatus.PENDING]: {
     label: "Pending",
     className: "bg-yellow-100 text-yellow-700 hover:bg-yellow-100",

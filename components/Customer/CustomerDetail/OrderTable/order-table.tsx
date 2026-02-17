@@ -6,60 +6,69 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { StatusBadge, StatusType } from "./status-badge";
+import { StatusBadge } from "./status-badge";
 import OrderAction from "./order-action";
-
-export interface Order {
-  id: string;
-  created: string;
-  total: string;
-  products: string;
-  status: StatusType;
-}
+import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
 
 interface OrderTableProps {
-  orders: Order[];
+  orders: any[];
 }
 
 export function OrderTable({ orders }: OrderTableProps) {
+  const router = useRouter();
+
+  const handleOrderDetail = (orderId: number) => {
+    router.push(`/orders/${orderId}`);
+  };
   return (
     <div className="rounded-[20px] bg-white">
       <Table>
         <TableHeader>
           <TableRow className="bg-[#EEEEEE] text-lg">
-            <TableHead className="px-5 py-2.5 text-gray-700 rounded-tl-[20px]">Order ID</TableHead>
+            <TableHead className="px-5 py-2.5 text-gray-700 rounded-tl-[20px]">
+              Order ID
+            </TableHead>
             <TableHead className="px-5 py-2.5 text-gray-700">Created</TableHead>
             <TableHead className="px-5 py-2.5 text-gray-700">Total</TableHead>
-            <TableHead className="px-5 py-2.5 text-gray-700">Purchased product</TableHead>
+            <TableHead className="px-5 py-2.5 text-gray-700">
+              Purchased product
+            </TableHead>
             <TableHead className="px-5 py-2.5 text-gray-700">Status</TableHead>
             <TableHead className="w-12 rounded-tr-[20px]"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {orders.map((order, index) => (
+          {orders.map((order) => (
             <TableRow
-              key={`${order.id}-${index}`}
+              key={order.id}
               className="text-lg font-normal cursor-pointer"
             >
               <TableCell className="px-5 py-2.5 text-gray-600">
-                {order.id}
+                #{order.id.toString().padStart(3, "0")}
               </TableCell>
               <TableCell className="px-5 py-2.5 text-gray-600">
-                {order.created}
+                {dayjs(order.createdAt).format("DD MMM YYYY [at] hh:mm A")}
               </TableCell>
               <TableCell className="px-5 py-2.5 text-gray-600">
-                {order.total}
+                {Number(order.totalAmount).toLocaleString()} Ks
               </TableCell>
               <TableCell className="px-5 py-2.5 text-gray-600">
-                {order.products}
+                {order.items[0]?.name}
                 <br />
-                <span className="text-[#616FF5]">+5 more</span>
+                {order.items.length > 1 && (
+                  <span className="text-[#616FF5]">
+                    +{order.items.length - 1} more
+                  </span>
+                )}
               </TableCell>
               <TableCell className="px-5 py-2.5">
                 <StatusBadge status={order.status} />
               </TableCell>
               <TableCell className="px-5 py-2.5">
-                <OrderAction />
+                <button onClick={() => handleOrderDetail(order.id)}>
+                  <OrderAction />
+                </button>
               </TableCell>
             </TableRow>
           ))}

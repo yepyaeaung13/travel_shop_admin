@@ -76,9 +76,9 @@ export const CustomerTableColumns = (
       cell: ({ row }) => <div>{row.getValue("email")}</div>,
     },
     {
-      accessorKey: "totalOrderCount",
+      accessorKey: "totalOrder",
       header: () => <h3>Total orders</h3>,
-      cell: ({ row }) => <div>{row.getValue("totalOrderCount") || 0}</div>,
+      cell: ({ row }) => <div>{row.getValue("totalOrder") || 0}</div>,
     },
     {
       accessorKey: "status",

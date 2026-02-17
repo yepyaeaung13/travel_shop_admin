@@ -7,7 +7,7 @@ import Locationarrow from "./Locationarrow";
 import { User } from "@/types/users.types";
 
 interface CustomerInfoCardProps {
-  customer: User;
+  customer: any;
 }
 
 export default function CustomerInfoCard({ customer }: CustomerInfoCardProps) {
@@ -20,6 +20,10 @@ export default function CustomerInfoCard({ customer }: CustomerInfoCardProps) {
       SUSPENDED: "bg-red-100 text-red-800",
     }[status] ?? "bg-gray-100 text-gray-800";
 
+  const defaultAddress = customer.userAddress?.find(
+    (address: any) => address.default,
+  );
+
   return (
     <div className="flex flex-col justify-center rounded-[20px] bg-white py-4 text-base text-black font-medium md:flex-row md:justify-start gap-3 md:gap-14 p-4 md:p-10">
       <div className="flex flex-col items-center justify-center gap-5 md:flex-row">
@@ -31,7 +35,7 @@ export default function CustomerInfoCard({ customer }: CustomerInfoCardProps) {
           <AvatarFallback className="bg-gray-600 text-2xl text-white">
             {customer.name
               .split(" ")
-              .map((n) => n[0])
+              .map((n: any) => n[0])
               .join("")
               .toUpperCase()}
           </AvatarFallback>
@@ -46,7 +50,9 @@ export default function CustomerInfoCard({ customer }: CustomerInfoCardProps) {
 
       <div className="flex h-full w-full flex-col justify-between space-y-2 md:w-[449px] md:border-x md:border-[#EEEEEE]">
         <div className="flex items-start justify-between">
-          <span className="text-[#303030] text-lg font-medium">Phone Number</span>
+          <span className="text-[#303030] text-lg font-medium">
+            Phone Number
+          </span>
           <p>{customer?.phoneNumber}</p>
         </div>
         <div className="flex items-start justify-between">
@@ -69,13 +75,11 @@ export default function CustomerInfoCard({ customer }: CustomerInfoCardProps) {
 
       <div className="">
         <span className="text-[#303030]">Address</span>
-        <p>{customer?.address ?? "_"}</p>
-        {customer?.address && (
-          <div className="flex items-start justify-center gap-1 text-[#303030]">
-            <Locationarrow />
-            <span>Near City Mart</span>
-          </div>
-        )}
+        <p>
+          {defaultAddress
+            ? `${defaultAddress?.address}, ${defaultAddress?.township?.name} township, ${defaultAddress?.district?.name} district, ${defaultAddress?.region?.name} `
+            : "_"}
+        </p>
       </div>
     </div>
   );

@@ -28,14 +28,14 @@ export const useRegisterUser = () => {
 export const useUsers = (params?: UseUsersParams) => {
   return useQuery({
     queryKey: ["Users", params],
-    queryFn: ():Promise<getUsersResponse> => getUsers(params),
+    queryFn: () => getUsers(params),
   });
 };
 
 export const useGetUserById = (id: string) => {
   return useQuery({
     queryKey: ["User", id],
-    queryFn: () : Promise<getUserResponse> => getUserById(id),
+    queryFn: () => getUserById(id),
     retry:false,
   });
 };

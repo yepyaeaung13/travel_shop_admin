@@ -1,9 +1,11 @@
+import { OrderStatus } from "@/components/Order/OrderDetail/order-info"
+import { getOrderStatusColor } from "@/components/Order/OrderListing/OrderTable"
 import { Badge } from "@/components/ui/badge"
 
-export type StatusType = "pending" | "completed" | "canceled"
+// export type StatusType = "pending" | "completed" | "canceled"
 
 interface StatusBadgeProps {
-  status: StatusType
+  status: OrderStatus
 }
 
 const statusConfig = {
@@ -22,11 +24,11 @@ const statusConfig = {
 }
 
 export function StatusBadge({ status }: StatusBadgeProps) {
-  const config = statusConfig[status]
+  const className = getOrderStatusColor(status)
 
   return (
-    <Badge variant="secondary" className={`${config.className} font-medium px-2.5 py-1`}>
-      {config.label}
+    <Badge variant="secondary" className={`${className} font-medium px-2.5 py-1`}>
+      {status}
     </Badge>
   )
 }
