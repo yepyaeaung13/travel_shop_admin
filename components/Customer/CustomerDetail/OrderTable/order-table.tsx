@@ -72,6 +72,16 @@ export function OrderTable({ orders }: OrderTableProps) {
               </TableCell>
             </TableRow>
           ))}
+
+          {orders.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={6} className="text-center h-40">
+                 <span className="font-medium text-[#444444]">
+                  No order yet
+                </span>
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </div>
