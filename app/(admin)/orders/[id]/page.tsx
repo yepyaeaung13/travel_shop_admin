@@ -2,14 +2,16 @@
 import React, { Suspense, useState } from "react";
 import { Button } from "@/components/ui/button";
 import OrderInfo from "@/components/Order/OrderDetail/order-info";
-import PaymentInfo from "@/components/Order/OrderDetail/payment-info";
+import PaymentInfo, {
+  PaymentStatus,
+} from "@/components/Order/OrderDetail/payment-info";
 import CustomerDetail from "@/components/Order/OrderDetail/customer-detail";
 import ShippingAddress from "@/components/Order/OrderDetail/shipping-address";
 import OrderHeader from "@/components/Order/OrderDetail/order-header";
 import AcceptRejectModal from "@/components/Order/OrderDetail/accept-reject-modal";
 import SelectOrderStatus from "@/components/Order/OrderDetail/order-status";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   useGetOrderDetail,
   useOrderPaymentStatusChange,
@@ -24,6 +26,7 @@ export default function Page() {
 }
 
 const OrderDetails = () => {
+  const router = useRouter();
   const { id } = useParams();
   const isMobile = useIsMobile();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -107,9 +110,17 @@ const OrderDetails = () => {
               <SelectOrderStatus order={orderDetail?.data} />
               <CustomerDetail order={orderDetail?.data} />
               {/* <ShippingAddress /> */}
-              <Button className="bg-primary hover:bg-primary/90 mt-1 h-10 md:h-12 w-full rounded-[10px] text-lg text-white">
-                View Receipt
-              </Button>
+              {orderDetail?.data?.payment?.status?.toLowerCase() ===
+                PaymentStatus.APPROVED && (
+                <Button
+                  onClick={() =>
+                    router.push(`/orders/${orderDetail?.data?.id}/receipt`)
+                  }
+                  className="bg-primary hover:bg-primary/90 mt-1 h-10 md:h-12 w-full rounded-[10px] text-lg text-white"
+                >
+                  View Receipt
+                </Button>
+              )}
               {isMobile && (
                 <div className=" flex w-full justify-center gap-4 md:gap-8 md:p-5">
                   <Button
