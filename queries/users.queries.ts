@@ -1,4 +1,5 @@
 import {
+  getUserDashboard,
   getDeleteUser,
   getUserById,
   getUsers,
@@ -22,6 +23,13 @@ export const useRegisterUser = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["Users"] });
     },
+  });
+};
+
+export const useGetUserDashboard = () => {
+  return useQuery({
+    queryKey: ["user-dashboard"],
+    queryFn: () => getUserDashboard(),
   });
 };
 

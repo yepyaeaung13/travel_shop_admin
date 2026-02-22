@@ -3,7 +3,11 @@
 import CustomerListHeader from "./customer-list-header";
 import CustomerListFilter from "./customer-list-filter";
 import CustomerTable from "./customer-list-table";
-import { CustomerListFilters, useCustomerList } from "@/hooks/customers/useCustomers";
+import {
+  CustomerListFilters,
+  useCustomerList,
+} from "@/hooks/customers/useCustomers";
+import CustomerDashboard from "./customer-dashboard";
 
 interface CustomerListProps {
   initialFilters?: Partial<CustomerListFilters>;
@@ -22,11 +26,13 @@ export default function CustomerList({ initialFilters }: CustomerListProps) {
 
   return (
     <div className="w-full pb-10">
+      <CustomerDashboard />
+
       <CustomerListHeader />
 
       <CustomerListFilter
         searchQuery={filters.searchQuery}
-        onSearchChange={(value) => handleFilterChange('searchQuery', value)}
+        onSearchChange={(value) => handleFilterChange("searchQuery", value)}
       />
 
       <CustomerTable
