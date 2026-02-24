@@ -1,6 +1,7 @@
 "use client";
 
 import type React from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DropdownMenu,
@@ -13,41 +14,56 @@ import IconImagePlus from "@/utils/icons/IconImagePlus";
 import { cn } from "@/lib/utils";
 import { ProductImage } from "@/store/useProductStore";
 import IconTrash from "@/assets/icons/Trash";
+import { ImageCrop } from "@/components/ImageCrop";
 
 type Props = {
   images: ProductImage[];
   replaceMainImage: (image: ProductImage) => void;
   addImage: (image: ProductImage) => void;
   removeImage: (index: number) => void;
+  cropHeight?: number;
+  cropWidth?: number;
 };
 
 const MAX_IMAGES = 5;
 
-export default function PhotoSection({ images, replaceMainImage, addImage, removeImage }: Props) {
-  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || images.length >= MAX_IMAGES) return;
+export default function PhotoSection({
+  images,
+  replaceMainImage,
+  addImage,
+  removeImage,
+  cropHeight = 500,
+  cropWidth = 500,
+}: Props) {
+  const [cropSlot, setCropSlot] = useState<number | null>(null);
+  const [isMainCrop, setIsMainCrop] = useState(false);
 
-    addImage({
-      file,
-      url: URL.createObjectURL(file),
-      isMain: true,
-    });
-
-    e.target.value = "";
+  const handleUploadClick = (e: React.MouseEvent, slot: number, isMain: boolean) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCropSlot(slot);
+    setIsMainCrop(isMain);
   };
 
-  const handleMainUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    replaceMainImage({
+  const handleCropComplete = (blob: Blob) => {
+    const file = new File([blob], "cropped-image.jpg", { type: "image/jpeg" });
+    const image: ProductImage = {
       file,
       url: URL.createObjectURL(file),
-      isMain: true,
-    });
+      isMain: isMainCrop,
+    };
 
-    e.target.value = "";
+    if (cropSlot === 0 || isMainCrop) {
+      replaceMainImage(image);
+    } else if (cropSlot !== null) {
+      addImage(image);
+    }
+
+    setCropSlot(null);
+  };
+
+  const handleCropCancel = () => {
+    setCropSlot(null);
   };
 
   const renderImage = (image: ProductImage, index: number, isMain = false) => (
@@ -59,14 +75,16 @@ export default function PhotoSection({ images, replaceMainImage, addImage, remov
       )}
     >
       {isMain ? (
-        <label className="cursor-pointer">
+        <div className="relative cursor-pointer" onClick={(e) => handleUploadClick(e, 0, true)}>
           <img
             src={image.url || "/placeholder.svg"}
             alt="Product"
             className="h-full w-full object-cover rounded-[20px]"
           />
-          <input type="file" accept="image/*" hidden onChange={handleMainUpload} />
-        </label>
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-[20px] flex items-center justify-center">
+            <span className="text-white text-sm">Click to change</span>
+          </div>
+        </div>
       ) : (
         <img
           src={image.url || "/placeholder.svg"}
@@ -89,33 +107,19 @@ export default function PhotoSection({ images, replaceMainImage, addImage, remov
     </div>
   );
 
-  const renderUploadSlot = (
-    size: "main" | "other",
-    onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void,
-  ) => (
-    <label
+  const renderUploadSlot = (size: "main" | "other", slot: number) => (
+    <div
       className={cn(
         "flex cursor-pointer items-center justify-center rounded-3xl border-2 border-dashed border-gray-300 bg-gray-50 hover:dark:bg-neutral-800",
         size === "main" ? "h-48 w-full md:w-40" : "size-36 md:size-32",
-        images.length === 0 && size === "other" && "cursor-not-allowed",
+        size === "other" && images.length >= MAX_IMAGES && "cursor-not-allowed opacity-50",
       )}
-      onClick={(e) => {
-        if (images.length === 0 && size === "other") {
-          e.preventDefault();
-        }
-      }}
+      onClick={(e) => handleUploadClick(e, slot, size === "main")}
     >
       <div className="text-center text-gray-400">
         <IconImagePlus className={size === "main" ? "h-8 w-8" : "h-6 w-6"} />
-        <input
-          type="file"
-          accept="image/*"
-          hidden
-          onChange={onUpload}
-          required={size === "main"}
-        />
       </div>
-    </label>
+    </div>
   );
 
   return (
@@ -134,7 +138,7 @@ export default function PhotoSection({ images, replaceMainImage, addImage, remov
 
             {images[0]
               ? renderImage(images[0], 0, true)
-              : renderUploadSlot("main", handleUpload)}
+              : renderUploadSlot("main", 0)}
           </div>
 
           {/* OTHER 4 SLOTS (index 1–4) */}
@@ -156,7 +160,7 @@ export default function PhotoSection({ images, replaceMainImage, addImage, remov
                   renderImage(image, imageIndex)
                 ) : (
                   <div key={slotIndex}>
-                    {renderUploadSlot("other", handleUpload)}
+                    {renderUploadSlot("other", imageIndex)}
                   </div>
                 );
               })}
@@ -164,6 +168,33 @@ export default function PhotoSection({ images, replaceMainImage, addImage, remov
           </div>
         </div>
       </CardContent>
+
+      {/* IMAGE CROP DIALOG */}
+      {cropSlot !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-xl max-w-lg w-full max-h-[90vh] overflow-auto">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-medium">Crop Image</h3>
+              <button
+                type="button"
+                onClick={handleCropCancel}
+                className="p-2 hover:bg-gray-100 rounded-full"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-4">
+              <ImageCrop
+                height={cropHeight}
+                width={cropWidth}
+                onCropComplete={handleCropComplete}
+                onCancel={handleCropCancel}
+                className=""
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </Card>
   );
 }

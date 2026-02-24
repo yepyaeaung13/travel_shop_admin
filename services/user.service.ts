@@ -14,6 +14,11 @@ export const registerUser = async (payload: Partial<User>) => {
   return res.data;
 };
 
+export const getUserDashboard = async () => {
+  const res = await axiosClient.get("/v1/users/dashboard");
+  return res.data;
+};
+
 export const getUsers = async (params?: GetUsersParams) => {
   const res = await axiosClient.get("/v1/users", { params  });
   return res.data;
