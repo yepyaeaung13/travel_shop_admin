@@ -171,7 +171,7 @@ export function ImageCrop({
             </button>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex max-md:flex-col gap-2">
             <button
               type="button"
               onClick={() => {
