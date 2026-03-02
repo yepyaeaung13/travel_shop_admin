@@ -37,6 +37,7 @@ const SelectOrderStatus = ({ order }: { order: any }) => {
   }, [order]);
 
   const handleOrderChange = () => {
+    if(selectedStatus === order.status) return;
     // change order status
     const payload = {
       id: order?.id,

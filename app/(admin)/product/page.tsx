@@ -93,8 +93,6 @@ function ProductList() {
   const { data: dashbaordData, isLoading: dashboardLoading } =
     useGetProductDashboard();
 
-  console.log("data", dashbaordData);
-
   const { data: res, isLoading } = useGetProductListing({
     sortBy: queryArgs.sortBy as any,
     limit: queryArgs.limit,

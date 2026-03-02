@@ -167,8 +167,6 @@ export default function PricingSection({
                     sellingPriceMMK,
                   );
 
-                  console.log("safe", safeValue);
-
                   setField("promoteValue", safeValue);
                 }}
                 className="h-12 md:h-14 placeholder:md:text-base md:text-base rounded-[10px] p-4 pr-12"

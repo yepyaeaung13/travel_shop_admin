@@ -40,7 +40,7 @@ const CustomerTable = ({
   // const { mutate: updateStatus } = useUpdateUserStatus();
   const { mutate: deletedUser } = useDeleteUser();
   const handleBlock = () => {
-    console.log("User blocked!");
+    // console.log("User blocked!");
     setIsModalOpen(false);
     if (!toBlockUser) return;
     deletedUser(String(toBlockUser?.id));

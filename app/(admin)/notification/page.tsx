@@ -1,3 +1,5 @@
+"use client";
+
 import { ChevronRight } from "lucide-react";
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -5,15 +7,25 @@ import {
   AllNotiContainer,
   UnReadNotiContainer,
 } from "@/components/notification/notification-container";
+import { useNotiMarkAsAllRead } from "@/queries/noti";
 
 const NotificationPage = () => {
+  const { mutate: markAsAllRead, isPending } = useNotiMarkAsAllRead();
+
+  const handleMarkAsAllRead = () => {
+    markAsAllRead();
+  };
   return (
     <section className="space-y-5 rounded-[10px] bg-white p-4 md:p-5">
       <div className="flex justify-between items-center max-md:hidden">
         <h2 className="font-medium text-[#000000] md:text-xl">
           All Notifications
         </h2>
-        <button className=" flex cursor-pointer items-center justify-center text-sm font-medium text-[#616FF5] hover:underline md:text-base">
+        <button
+          onClick={handleMarkAsAllRead}
+          disabled={isPending}
+          className=" flex cursor-pointer items-center justify-center text-sm font-medium text-[#616FF5] hover:underline md:text-base"
+        >
           Mark as all read
         </button>
       </div>

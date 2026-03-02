@@ -6,9 +6,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useGetUserDashboard } from "@/queries/users.queries";
 
 const CustomerDashboard = () => {
-
-    const { data: dashbaordData, isLoading: dashboardLoading } =
-        useGetUserDashboard();
+  const { data: dashbaordData, isLoading: dashboardLoading } =
+    useGetUserDashboard();
 
   return (
     <div className="h-auto grid grid-cols-2 md:grid-cols-4 gap-3 pb-1 md:pb-3">
@@ -24,7 +23,7 @@ const CustomerDashboard = () => {
           <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between">
             <div className="space-y-[11px]">
               <h2 className="text-[#1E1E1E] text-[24px] md:text-[28px] font-medium md:font-semibold">
-                {dashbaordData?.data?.total?.toLocaleString()}
+                {dashbaordData?.data?.totalUsers?.toLocaleString()}
               </h2>
               <p className="text-[#303030] max-sm:text-sm">Total users</p>
             </div>
@@ -39,9 +38,12 @@ const CustomerDashboard = () => {
           <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between">
             <div className="space-y-[11px]">
               <h2 className="text-[#1E1E1E] text-[24px] md:text-[28px] font-medium md:font-semibold">
-                {dashbaordData?.data?.totalActive?.toLocaleString()}
+                {dashbaordData?.data?.newUsersLastMonth?.toLocaleString()}
               </h2>
-              <p className="text-[#303030] max-sm:text-sm">New users</p>
+              <p className="text-[#303030] max-sm:text-sm">
+                New users{" "}
+                <span className="text-gray-400 text-xs">in the last month</span>
+              </p>
             </div>
             <span
               className="md:mt-2 rounded-[12px] shadow-[0px_2px_10px_0px_#7C8DB51F]
@@ -54,7 +56,7 @@ const CustomerDashboard = () => {
           <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between">
             <div className="space-y-[11px]">
               <h2 className="text-[#1E1E1E] text-[24px] md:text-[28px] font-medium md:font-semibold">
-                {dashbaordData?.data?.totalInactive?.toLocaleString()}
+                {dashbaordData?.data?.activeUsers?.toLocaleString()}
               </h2>
               <p className="text-[#303030] max-sm:text-sm">Active users</p>
             </div>
@@ -69,7 +71,7 @@ const CustomerDashboard = () => {
           <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between">
             <div className="space-y-[11px]">
               <h2 className="text-[#1E1E1E] text-[24px] md:text-[28px] font-medium md:font-semibold">
-                {dashbaordData?.data?.totalOutStock?.toLocaleString()}
+                {dashbaordData?.data?.inactiveUsers?.toLocaleString()}
               </h2>
               <p className="text-[#303030] max-sm:text-sm">Inactive users</p>
             </div>

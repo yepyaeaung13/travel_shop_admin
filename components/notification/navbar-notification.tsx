@@ -1,7 +1,33 @@
+import IconDeleteAccount from "@/assets/icons/notification/IconDeleteAccount";
 import IconNewAccount from "@/assets/icons/notification/IconNewAccount";
 import IconNewOrder from "@/assets/icons/notification/IconNewOrder";
+import { NotiActionType } from "@/store/useNotiStore";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { useRouter } from "next/navigation";
 
-const NavBarNotification = () => {
+dayjs.extend(relativeTime);
+
+export function formatNotificationDate(dateString: string) {
+  const createdAt = dayjs(dateString);
+
+  if (dayjs().diff(createdAt, "hour") < 24) {
+    return createdAt.fromNow();
+  }
+
+  return createdAt.format("DD MMM YYYY [at] hh:mm a");
+}
+
+const NavBarNotification = ({
+  notiList,
+  setNotificationOpen,
+}: {
+  notiList: any[];
+  setNotificationOpen: (value: boolean) => void;
+}) => {
+  const handleClosePopover = () => {
+    setNotificationOpen(false);
+  }
   return (
     <div className="flex w-full flex-col space-y-4">
       <div className="flex w-full items-center justify-between">
@@ -9,48 +35,20 @@ const NavBarNotification = () => {
       </div>
 
       <div className="flex flex-col space-y-4">
-        <NotiItem
-          type="order"
-          title="New Order!"
-          description="Jared Padalecki made a new order."
-          time="1h ago"
-          isRead={false}
-        />
-        <NotiItem
-          type="account"
-          title="Account created"
-          description="Customer created account “Jensen”"
-          time="1h ago"
-          isRead={false}
-        />
-        <NotiItem
-          type="order"
-          title="New Order!"
-          description="Jared Padalecki made a new order."
-          time="1h ago"
-          isRead={false}
-        />
-        <NotiItem
-          type="account"
-          title="Account created"
-          description="Customer created account “Jensen”"
-          time="1h ago"
-          isRead={false}
-        />
-        <NotiItem
-          type="order"
-          title="New Order!"
-          description="Jared Padalecki made a new order."
-          time="1h ago"
-          isRead={false}
-        />
-        <NotiItem
-          type="account"
-          title="Account created"
-          description="Customer created account “Jensen”"
-          time="1h ago"
-          isRead={false}
-        />
+        {notiList.length > 0 ? (
+          notiList.map((n) => (
+            <NotiItem
+              type={n.action}
+              title={n.title}
+              description={n.description}
+              time={n.createdAt}
+              isRead={n.isSeen}
+              handleClosePopover={handleClosePopover}
+            />
+          ))
+        ) : (
+          <div>Any new noti does not have.</div>
+        )}
       </div>
     </div>
   );
@@ -62,25 +60,39 @@ const NotiItem = ({
   description,
   time,
   isRead,
+  handleClosePopover
 }: {
-  type: "order" | "account";
+  type:
+    | NotiActionType.account_created
+    | NotiActionType.account_deleted
+    | NotiActionType.order_new;
   title: string;
   description: string;
   time: string;
   isRead: boolean;
+  handleClosePopover: () => void;
 }) => {
+  const router = useRouter();
   const getIcon = () => {
     switch (type) {
-      case "order":
+      case NotiActionType.order_new:
         return <IconNewOrder />;
-      case "account":
+      case NotiActionType.account_created:
         return <IconNewAccount />;
+      case NotiActionType.account_deleted:
+        return <IconDeleteAccount />;
       default:
         return <div></div>;
     }
   };
   return (
-    <div className="flex w-full items-start md:items-center justify-between">
+    <div
+      onClick={() => {
+        handleClosePopover();
+        router.push("/notification");
+      }}
+      className="cursor-pointer flex w-full items-start md:items-center justify-between"
+    >
       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1A1A1A]/10">
         {getIcon()}
       </div>
@@ -89,11 +101,11 @@ const NotiItem = ({
         <span className="text-sm font-normal text-[#3C3C3C]/80 line-clamp-1">
           {description}
         </span>
-        <span className="text-xs font-normal text-[#616FF5]">{time}</span>
+        <span className="text-xs font-normal text-[#616FF5]">
+          {formatNotificationDate(time)}
+        </span>
       </div>
-      {!isRead && (
-        <div className="size-[10px] rounded-full bg-[#616FF5]" />
-      )}
+      {!isRead && <div className="size-[10px] rounded-full bg-[#616FF5]" />}
     </div>
   );
 };

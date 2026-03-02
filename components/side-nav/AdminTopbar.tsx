@@ -18,6 +18,7 @@ import {
 import { UnReadNotiContainer } from "@/components/notification/notification-container";
 import NavBarNotification from "../notification/navbar-notification";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useGetNoti } from "@/queries/noti";
 
 const header = (pathname: string) => {
   // Product
@@ -70,6 +71,11 @@ export default function AdminTopbar() {
   const { open, setOpen } = useNavStore();
   const { loginInfo } = useAuthStore();
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const [limit, setLimit] = useState(10);
+  const isSeen = false;
+
+  const { data: notiList, isLoading } = useGetNoti(limit, isSeen);
+
   const toggleOpen = () => {
     setOpen(!open);
   };
@@ -105,15 +111,20 @@ export default function AdminTopbar() {
         <div className="flex w-full flex-1 items-center justify-end">
           <Popover open={notificationOpen} onOpenChange={setNotificationOpen}>
             <PopoverTrigger asChild>
-              <button className="cursor-pointer">
+              <button className="cursor-pointer relative">
                 <IconNotification className="size-6 mr-4" />
+                {notiList?.data?.length > 0 && (
+                  <span className="absolute -top-5 right-1.5 bg-red-500 text-white h-6 w-6 rounded-full text-xs flex justify-center items-center">
+                    {notiList?.data?.length} { notiList?.data?.length >= 10 && "+"}
+                  </span>
+                )}
               </button>
             </PopoverTrigger>
             <PopoverContent
               align="end"
               className="max-md:ml-6 mt-2 w-[350px] h-[523px] overflow-y-scroll hide-scrollbar py-5 px-4 border-none"
             >
-              <NavBarNotification />
+              <NavBarNotification notiList={notiList?.data || []} setNotificationOpen={setNotificationOpen} />
             </PopoverContent>
           </Popover>
           {loginInfo?.picture ? (

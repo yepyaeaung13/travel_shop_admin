@@ -24,7 +24,6 @@ export default function AdminSidebarSmall() {
     Cookies.remove("accessToken");
     Cookies.remove("refreshToken");
     router.replace("/login");
-    console.log("Log out");
     successToast("Logout successfully");
     setLoading(false);
   };

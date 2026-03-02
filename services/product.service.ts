@@ -44,7 +44,6 @@ export const getProductsByCategory = async (
   categoryId: number,
   take: number,
 ) => {
-  console.log("called api");
   const res = await axiosClient.get(`/v1/products/category/${categoryId}`, {
     params: { take },
   });

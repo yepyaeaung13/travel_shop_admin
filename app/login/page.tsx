@@ -57,7 +57,7 @@ export default function LoginPage() {
           }
         },
         onError: (error: any) => {
-          console.log("Login Error: ", error);
+          // console.log("Login Error: ", error);
           toast.error(error.response?.data?.message || "Login failed. Please try again.");
           setLoginError(error.response?.data?.message || "Login failed. Please try again.");
         },

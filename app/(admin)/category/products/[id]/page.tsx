@@ -25,7 +25,7 @@ function ProductByCategoryPage() {
     Number(id),
     take,
   );
-  console.log("data", take);
+
   return (
     <section className="min-h-full space-y-4">
       <div>

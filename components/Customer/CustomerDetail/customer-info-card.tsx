@@ -1,24 +1,20 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useGetUserById } from "@/queries/users.queries";
-import Locationarrow from "./Locationarrow";
-import { User } from "@/types/users.types";
 
 interface CustomerInfoCardProps {
   customer: any;
 }
 
 export default function CustomerInfoCard({ customer }: CustomerInfoCardProps) {
-  const status = customer?.status as "ACTIVE" | "INACTIVE" | "SUSPENDED";
+  const status = customer?.deleted as "ACTIVE" | "INACTIVE" | "SUSPENDED";
 
-  const color =
-    {
-      ACTIVE: "bg-[#E4FFDF] text-[#126D00]",
-      INACTIVE: "bg-yellow-100 text-yellow-800",
-      SUSPENDED: "bg-red-100 text-red-800",
-    }[status] ?? "bg-gray-100 text-gray-800";
+  const color = status ? "bg-yellow-100 text-yellow-800" : "bg-[#E4FFDF] text-[#126D00]";
+    // {
+    //   ACTIVE: "bg-[#E4FFDF] text-[#126D00]",
+    //   INACTIVE: "bg-yellow-100 text-yellow-800",
+    //   SUSPENDED: "bg-red-100 text-red-800",
+    // }[status] ?? "bg-gray-100 text-gray-800";
 
   const defaultAddress = customer.userAddress?.find(
     (address: any) => address.default,
@@ -68,7 +64,7 @@ export default function CustomerInfoCard({ customer }: CustomerInfoCardProps) {
           <span
             className={`inline-block w-24 rounded-full px-3 py-1 text-center text-sm font-normal ${color}`}
           >
-            {customer?.status == "ACTIVE" ? "Active" : "Block"}
+            {customer?.deleted ? "Inactive" : "Active"}
           </span>
         </div>
       </div>

@@ -13,12 +13,10 @@ const UserInfo = () => {
   const { loginInfo, setLoginInfo } = useAuthStore();
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openPasswordModal, setOpenPasswordModal] = useState(false);
-  console.log("loginInfo", loginInfo)
 
   const userInfo = useGetLoginInfo(loginInfo?.id);
 
   useEffect(() => {
-    console.log("userInfo", userInfo);
     if (userInfo.data?.id) {
       setLoginInfo(userInfo.data);
     }

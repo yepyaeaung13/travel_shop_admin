@@ -16,7 +16,6 @@ export const useAdminLogin = () => {
 };
 
 export const useGetLoginInfo = (id: number | undefined) => {
-  console.log("id", id)
   return useQuery({
     queryKey: ["login-user", id],
     queryFn: () => getLoginInfo(id),

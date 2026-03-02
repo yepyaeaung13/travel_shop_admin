@@ -81,24 +81,24 @@ export const CustomerTableColumns = (
       cell: ({ row }) => <div>{row.getValue("totalOrder") || 0}</div>,
     },
     {
-      accessorKey: "status",
+      accessorKey: "deleted",
       header: () => <h3 className="text-center">Status</h3>,
       cell: ({ getValue }) => {
         const status = getValue() as string;
 
-        const color =
-          {
-            ACTIVE: "bg-green-100 text-green-800",
-            INACTIVE: "bg-yellow-100 text-yellow-800",
-            SUSPENDED: "bg-red-100 text-red-800",
-          }[status] ?? "bg-gray-100 text-gray-800";
+        const color = status ? "bg-yellow-100 text-yellow-800" : "bg-green-100 text-green-800"
+          // {
+          //   ACTIVE: "bg-green-100 text-green-800",
+          //   INACTIVE: "bg-yellow-100 text-yellow-800",
+          //   SUSPENDED: "bg-red-100 text-red-800",
+          // }[status] ?? "bg-gray-100 text-gray-800";
 
         return (
           <p className="text-center">
             <span
               className={`inline-block w-24 rounded-full px-3 py-1 text-center text-sm font-normal ${color}`}
             >
-              {status == "ACTIVE" ? "Active" : "Blocked"}
+              {status ? "Inactive" : "Active"}
             </span>
           </p>
         );
