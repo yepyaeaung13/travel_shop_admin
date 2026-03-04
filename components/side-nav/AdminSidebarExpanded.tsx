@@ -56,6 +56,11 @@ export const sidebarItems = [
     label: "Setting",
     path: "/settings",
   },
+  {
+    icon: IconSetting,
+    label: "Store Front",
+    path: "/store-front",
+  },
   // { icon: IconInquiry, label: "Inquiry management", path: "/inquiries" },
   // { icon: IconBlog, label: "Blog management", path: "/blogs" },
   // {
