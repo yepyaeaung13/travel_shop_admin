@@ -244,6 +244,8 @@ export default function VariantSection({
     // }
   }, [productVarints]);
 
+  console.log("variants", variants)
+
   return (
     <>
       <Card className="gap-2">

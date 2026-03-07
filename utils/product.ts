@@ -110,8 +110,9 @@ export function generateGroupedVariantsUpdate(
   // If only 1 variant (e.g. only Size)
   if (otherVariants.length === 0) {
     return baseVariant.values.map((base) => {
-      const sku = base.replace(/\s+/g, "-");
-      const variant = variantItems.find((v) => v.sku === sku);
+      // const sku = base.replace(/\s+/g, "-");
+      const variant = variantItems.find((v) => v.sku === base);
+      console.log("sku", base)
 
       // ❗ If variant was deleted → do NOT recreate it
       let genVariant;
@@ -148,7 +149,7 @@ export function generateGroupedVariantsUpdate(
     variantItems: combinations.map((combo) => {
       const fullValues = [baseValue, ...combo];
       const sku = fullValues
-        .map((v) => v.replace(/\s+/g, "-"))
+        // .map((v) => v.replace(/\s+/g, "-"))
         .join("-");
 
       const variant = variantItems.find((v) => v.sku === sku);
@@ -163,7 +164,7 @@ export function generateGroupedVariantsUpdate(
         genVariant = {
           name: combo.join(" / "),
           sku: fullValues
-            .map((v) => v.replace(/\s+/g, "-"))
+            // .map((v) => v.replace(/\s+/g, "-"))
             .join("-"),
           buyingPrice: 0,
           sellingPrice: 0,
