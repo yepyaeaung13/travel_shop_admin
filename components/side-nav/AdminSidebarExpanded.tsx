@@ -18,6 +18,7 @@ import IconSetting from "@/assets/icons/sidebar/Setting";
 import { useNavStore } from "@/store/useNavStore";
 import { successToast } from "../toast";
 import IconDelivery from "@/assets/icons/sidebar/Delivery";
+import { User, UserRoundPen } from "lucide-react";
 
 export const sidebarItems = [
   { icon: IconProduct, label: "Product management", path: "/product" },
@@ -53,13 +54,13 @@ export const sidebarItems = [
   },
   {
     icon: IconSetting,
-    label: "Setting",
-    path: "/settings",
-  },
-  {
-    icon: IconSetting,
     label: "Store Front",
     path: "/store-front",
+  },
+  {
+    icon: User,
+    label: "Setting",
+    path: "/settings",
   },
   // { icon: IconInquiry, label: "Inquiry management", path: "/inquiries" },
   // { icon: IconBlog, label: "Blog management", path: "/blogs" },
@@ -99,7 +100,7 @@ export default function AdminSidebarExpanded() {
       <div
         className={cn(
           "absolute left-[0px] top-0 z-50 h-full w-[300px] border-r border-gray-200 bg-white shadow-lg transition-transform duration-300 ease-in-out",
-          open ? "translate-x-0" : "-translate-x-full"
+          open ? "translate-x-0" : "-translate-x-full",
         )}
       >
         <div className="py-7">
@@ -118,7 +119,7 @@ export default function AdminSidebarExpanded() {
                       "flex h-[50px] items-center gap-3 px-6 transition-colors md:px-7",
                       isActive
                         ? "bg-primary text-white"
-                        : "text-gray-700 hover:bg-gray-100"
+                        : "text-gray-700 hover:bg-gray-100",
                     )}
                   >
                     <item.icon
