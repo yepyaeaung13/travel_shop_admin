@@ -1,15 +1,195 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import BannerImageUpload from "./BannerImageUpload";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import ConfirmDialog from "../confirm-dialog/confirm-dialog";
+import {
+  BannerType,
+  CreateBannerInput,
+  DeviceType,
+  MediaType,
+  PageType,
+  UpdateBannerInput,
+} from "@/services/web.service";
+import { errorToast, successToast } from "../toast";
+import { uploadImage } from "@/services/common.service";
+import {
+  useCreateBanners,
+  useGetBanners,
+  useUpdateBanners,
+} from "@/queries/web";
 
 const LandingContent = () => {
   const [discardModalOpen, setDiscardModalOpen] = useState(false);
+  const [activePlatform, setActivePlatform] = useState("Website");
+
+  const [loading, setLoading] = useState(false);
+  const [announceText, setAnnounceText] = useState<any>({
+    text: "",
+  });
+  const [landingWebBanners, setLandingWebBanners] = useState<
+    CreateBannerInput | UpdateBannerInput
+  >(
+    Array.from({ length: 5 }, (_, i) => ({
+      image: "",
+      order: i + 1,
+      file: null,
+      pageType: PageType.landing,
+      mediaType: MediaType.image,
+      deviceType: DeviceType.web,
+      bannerType: BannerType.default,
+    })),
+  );
+
+  const [landingMobBanners, setLandingMobBanners] = useState<
+    CreateBannerInput | UpdateBannerInput
+  >(
+    Array.from({ length: 5 }, (_, i) => ({
+      image: "",
+      order: i + 1,
+      file: null,
+      pageType: PageType.landing,
+      mediaType: MediaType.image,
+      deviceType: DeviceType.mobile,
+      bannerType: BannerType.default,
+    })),
+  );
+  const [selectedBanners, setSelectedBanners] =
+    useState<any>(landingWebBanners);
+  const { data: bannersData, isLoading } = useGetBanners();
+  const { mutate: createBanner, isPending: createLoading } = useCreateBanners();
+  const { mutate: updateBanner, isPending: updateLoading } = useUpdateBanners();
+
+  const handleCreateBanners = async () => {
+    setLoading(true);
+
+    const uploadedBanners = await Promise.all(
+      selectedBanners.map(async (ba: any) => {
+        if (!ba.file) return ba;
+
+        const uploadedImage = await uploadImage(ba.file!);
+
+        return {
+          ...ba,
+          image: uploadedImage?.data?.cid,
+        };
+      }),
+    );
+
+    createBanner(
+      { banners: uploadedBanners, announceText },
+      {
+        onSuccess: async (res: any) => {
+          successToast("Suucess", "landing banners created!");
+          setLoading(false);
+        },
+        onError: (error: any) => {
+          errorToast(
+            "Failed",
+            error?.response?.data?.message ||
+              "Create banners unsuccefully, please try again.",
+          );
+          setLoading(false);
+        },
+      },
+    );
+  };
+
+  const handleUpdateBanners = async () => {
+    setLoading(true);
+
+    const uploadedBanners = await Promise.all(
+      selectedBanners.map(async (ba: any) => {
+        if (!ba.file) return ba;
+
+        const uploadedImage = await uploadImage(ba.file!);
+
+        const { file, ...withoutFileData } = ba;
+
+        return {
+          ...withoutFileData,
+          image: uploadedImage?.data?.cid,
+        };
+      }),
+    );
+
+    updateBanner(
+      { banners: uploadedBanners, announceText },
+      {
+        onSuccess: async (res: any) => {
+          successToast("Suucess", "landing banners updated!");
+          setLoading(false);
+        },
+        onError: (error: any) => {
+          errorToast(
+            "Failed",
+            error?.response?.data?.message ||
+              "Create banners unsuccefully, please try again.",
+          );
+          setLoading(false);
+        },
+      },
+    );
+  };
+
+  const handleSubmit = () => {
+    if (selectedBanners[0].id) {
+      handleUpdateBanners();
+    } else {
+      handleCreateBanners();
+    }
+  };
+
+  const handleFileChange = (order: number, file: File) => {
+    setSelectedBanners((prev: any) => {
+      return prev.map((pv: any) => (pv.order === order ? { ...pv, file } : pv));
+    });
+  };
+
+  const handleDeleteImage = (order: number) => {
+    setSelectedBanners((prev: any) => {
+      return prev.map((pv: any) =>
+        pv.order === order ? { ...pv, image: null } : pv,
+      );
+    });
+  };
+
+  useEffect(() => {
+    if (bannersData?.data?.landing.length > 0) {
+      const webCategoryBanners = bannersData?.data?.landing?.filter(
+        (b: any) => b.deviceType === DeviceType.web,
+      );
+      const mobCategoryBanners = bannersData?.data?.landing?.filter(
+        (b: any) => b.deviceType === DeviceType.mobile,
+      );
+
+      const announcement = bannersData?.data?.announcement[0] ?? announceText;
+
+      setAnnounceText(announcement);
+
+      setLandingWebBanners(
+        webCategoryBanners.length > 0 ? webCategoryBanners : landingWebBanners,
+      );
+      setLandingMobBanners(
+        mobCategoryBanners.length > 0 ? mobCategoryBanners : landingMobBanners,
+      );
+    }
+  }, [bannersData]);
+
+  useEffect(() => {
+    if (!bannersData?.data?.landing) return;
+
+    if (activePlatform === "Website") {
+      setSelectedBanners(landingWebBanners);
+    } else {
+      setSelectedBanners(landingMobBanners);
+    }
+  }, [landingWebBanners, landingMobBanners, activePlatform]);
+
   return (
     <>
       <Card className="p-4 rounded-[10px] bg-white gap-5!">
@@ -24,6 +204,10 @@ const LandingContent = () => {
             <div className="relative">
               <Textarea
                 placeholder="e.g, 10% off today"
+                value={announceText.text}
+                onChange={(e) =>
+                  setAnnounceText({ ...announceText, text: e.target.value })
+                }
                 className="text-base placeholder:text-base font-normal rounded-[10px] border h-[130px] md:h-[90px] resize-none border-[#3C3C3C]/30 placeholder:font-normal placeholder:text-[#3C3C3C]/50 text-black"
               />
               <p className="text-base backdrop-blur-3xl rounded-full font-normal text-[#3C3C3C]/50 bottom-4 right-5 absolute">
@@ -32,7 +216,11 @@ const LandingContent = () => {
             </div>
           </div>
           <div className="space-y-2.5">
-            <Tabs defaultValue="Website">
+            <Tabs
+              defaultValue="Website"
+              value={activePlatform}
+              onValueChange={setActivePlatform}
+            >
               <div className="flex items-center justify-between">
                 <p className="md:text-xl text-base font-normal md:font-medium">
                   Banners
@@ -51,24 +239,98 @@ const LandingContent = () => {
               </div>
               <TabsContent value="Website">
                 <div className="space-y-4">
-                  <BannerImageUpload isImage={true} isVideo={true} />
-                  <BannerImageUpload isImage={true} isVideo={true} />
+                  {selectedBanners.slice(0, 2).map((b: any) => (
+                    <BannerImageUpload
+                      key={b.order}
+                      onImageUpload={(va) => handleFileChange(b.order, va)}
+                      handleDeleteImage={() => handleDeleteImage(b.order)}
+                      isImage={true}
+                      isVideo={true}
+                      imageUrl={
+                        b.image
+                          ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
+                          : null
+                      }
+                    />
+                  ))}
                   <div className="flex max-md:flex-col max-md:h-[360px] items-center justify-center gap-4 md:gap-5">
-                    <BannerImageUpload isImage={true} isVideo={true} />
-                    <BannerImageUpload isImage={true} isVideo={true} />
+                    {selectedBanners.slice(2, 4).map((b: any) => (
+                      <BannerImageUpload
+                        key={b.order}
+                        onImageUpload={(va) => handleFileChange(b.order, va)}
+                        handleDeleteImage={() => handleDeleteImage(b.order)}
+                        isImage={true}
+                        isVideo={true}
+                        imageUrl={
+                          b.image
+                            ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
+                            : null
+                        }
+                      />
+                    ))}
                   </div>
-                  <BannerImageUpload isImage={true} isVideo={true} />
+                  {selectedBanners.slice(4, 5).map((b: any) => (
+                    <BannerImageUpload
+                      key={b.order}
+                      onImageUpload={(va) => handleFileChange(b.order, va)}
+                      handleDeleteImage={() => handleDeleteImage(b.order)}
+                      isImage={true}
+                      isVideo={true}
+                      imageUrl={
+                        b.image
+                          ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
+                          : null
+                      }
+                    />
+                  ))}
                 </div>
               </TabsContent>
               <TabsContent value="Mobile">
                 <div className="space-y-4">
-                  <BannerImageUpload isImage={true} isVideo={true} />
-                  <BannerImageUpload isImage={true} isVideo={true} />
+                  {selectedBanners.slice(0, 2).map((b: any) => (
+                    <BannerImageUpload
+                      key={b.order}
+                      onImageUpload={(va) => handleFileChange(b.order, va)}
+                      handleDeleteImage={() => handleDeleteImage(b.order)}
+                      isImage={true}
+                      isVideo={true}
+                      imageUrl={
+                        b.image
+                          ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
+                          : null
+                      }
+                    />
+                  ))}
                   <div className="flex max-md:flex-col max-md:h-[360px] items-center justify-center gap-4 md:gap-5">
-                    <BannerImageUpload isImage={true} isVideo={true} />
-                    <BannerImageUpload isImage={true} isVideo={true} />
+                    {selectedBanners.slice(2, 4).map((b: any) => (
+                      <BannerImageUpload
+                        key={b.order}
+                        onImageUpload={(va) => handleFileChange(b.order, va)}
+                        handleDeleteImage={() => handleDeleteImage(b.order)}
+                        isImage={true}
+                        isVideo={true}
+                        imageUrl={
+                          b.image
+                            ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
+                            : null
+                        }
+                      />
+                    ))}
                   </div>
-                  <BannerImageUpload isImage={true} isVideo={true} />
+                  {selectedBanners.slice(4, 5).map((b: any) => (
+                    <BannerImageUpload
+                      key={b.order}
+                      onImageUpload={(va) => handleFileChange(b.order, va)}
+                      handleDeleteImage={() => handleDeleteImage(b.order)}
+                      isImage={true}
+                      isVideo={true}
+                      imageUrl={
+                        b.image
+                          ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
+                          : null
+                      }
+                    />
+                  ))}
                 </div>
               </TabsContent>
             </Tabs>
@@ -80,16 +342,17 @@ const LandingContent = () => {
               type="button"
               className="h-[41px] max-md:flex-1 w-full md:w-[195px] rounded-[10px] bg-[#A1A1A1] text-lg text-white hover:opacity-90 md:h-[47px]"
               onClick={() => setDiscardModalOpen(true)}
-              disabled={false}
+              disabled={loading || isLoading}
             >
               Cancel
             </Button>
             <Button
-              type="submit"
+              type="button"
+              onClick={handleSubmit}
               className="bg-primary max-md:flex-1 w-full h-[41px] md:w-[195px] rounded-[10px] text-lg text-white hover:opacity-90 md:h-[47px]"
-              disabled={false}
+              disabled={loading || isLoading}
             >
-              {false ? "Saving..." : "Save"}
+              {loading ? "Saving..." : "Save"}
             </Button>
           </div>
         </CardFooter>

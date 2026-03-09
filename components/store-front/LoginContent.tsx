@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import BannerImageUpload from "./BannerImageUpload";
 import { Button } from "../ui/button";
@@ -20,7 +20,6 @@ import {
 } from "@/services/web.service";
 import { uploadImage } from "@/services/common.service";
 import { errorToast, successToast } from "../toast";
-import { file } from "zod";
 
 const LoginContent = () => {
   const [discardModalOpen, setDiscardModalOpen] = useState(false);
@@ -65,8 +64,8 @@ const LoginContent = () => {
 
     const uploadedBanners = await Promise.all(
       banners.map(async (ba) => {
-        if(!ba.file) return ba;
-        
+        if (!ba.file) return ba;
+
         const uploadedImage = await uploadImage(ba.file!);
 
         return {
@@ -76,52 +75,68 @@ const LoginContent = () => {
       }),
     );
 
-    createBanner(uploadedBanners, {
-      onSuccess: async (res: any) => {
-        successToast("Suucess", "Login banners created!");
-        setLoading(false);
+    createBanner(
+      { banners: uploadedBanners },
+      {
+        onSuccess: async (res: any) => {
+          successToast("Suucess", "Login banners created!");
+          setLoading(false);
+        },
+        onError: (error: any) => {
+          errorToast(
+            "Failed",
+            error?.response?.data?.message ||
+              "Create banners unsuccefully, please try again.",
+          );
+          setLoading(false);
+        },
       },
-      onError: (error: any) => {
-        errorToast(
-          "Failed",
-          error?.response?.data?.message ||
-            "Create banners unsuccefully, please try again.",
-        );
-        setLoading(false);
-      },
-    });
+    );
   };
 
-   const handleUpdateBanners = async () => {
+  const handleUpdateBanners = async () => {
     setLoading(true);
 
     const uploadedBanners = await Promise.all(
-      banners.map(async (ba) => {
-        if(!ba.file) return ba;
-        
+      banners.map(async (ba: any) => {
+        if (!ba.file) return ba;
+
         const uploadedImage = await uploadImage(ba.file!);
 
+        const { file, ...withoutFileData } = ba;
+
         return {
-          ...ba,
+          ...withoutFileData,
           image: uploadedImage?.data?.cid,
         };
       }),
     );
 
-    updateBanner(uploadedBanners, {
-      onSuccess: async (res: any) => {
-        successToast("Suucess", "Login banners created!");
-        setLoading(false);
+    updateBanner(
+      { banners: uploadedBanners },
+      {
+        onSuccess: async (res: any) => {
+          successToast("Suucess", "Login banners created!");
+          setLoading(false);
+        },
+        onError: (error: any) => {
+          errorToast(
+            "Failed",
+            error?.response?.data?.message ||
+              "Create banners unsuccefully, please try again.",
+          );
+          setLoading(false);
+        },
       },
-      onError: (error: any) => {
-        errorToast(
-          "Failed",
-          error?.response?.data?.message ||
-            "Create banners unsuccefully, please try again.",
-        );
-        setLoading(false);
-      },
-    });
+    );
+  };
+
+  const handleSubmit = () => {
+    if (bannersData?.data?.login?.length > 0) {
+      handleUpdateBanners();
+    } else {
+      handleCreateBanners();
+    }
   };
 
   const handleFileChange = (order: number, file: File) => {
@@ -130,13 +145,21 @@ const LoginContent = () => {
     });
   };
 
-  const renderBanners = useMemo(() => {
-    if (!bannersData) return banners;
+  const handleDeleteImage = (order: number) => {
+    setBanners((prev) => {
+      return prev.map((pv) =>
+        pv.order === order ? { ...pv, image: null } : pv,
+      );
+    });
+  };
 
-    return bannersData.data.login;
+  useEffect(() => {
+    if (bannersData?.data?.login.length > 0) {
+      setBanners(bannersData.data.login);
+    }
   }, [bannersData]);
 
-  console.log("data", renderBanners);
+  // console.log("data", banners);
   return (
     <>
       <Card className="p-4 rounded-[10px] bg-white gap-5!">
@@ -149,10 +172,11 @@ const LoginContent = () => {
               Banners
             </p>
             <div className="flex items-center justify-center gap-4 md:gap-5 max-md:flex-col max-md:h-[550px]">
-              {renderBanners.map((b: any) => (
+              {banners.map((b: any) => (
                 <BannerImageUpload
                   key={b.order}
                   onImageUpload={(va) => handleFileChange(b.order, va)}
+                  handleDeleteImage={() => handleDeleteImage(b.order)}
                   isImage={true}
                   isVideo={false}
                   imageUrl={
@@ -177,7 +201,7 @@ const LoginContent = () => {
             </Button>
             <Button
               type="button"
-              onClick={handleCreateBanners}
+              onClick={handleSubmit}
               className="bg-primary max-md:flex-1 w-full h-[41px] md:w-[195px] rounded-[10px] text-lg text-white hover:opacity-90 md:h-[47px]"
               disabled={false}
             >

@@ -112,7 +112,7 @@ export function generateGroupedVariantsUpdate(
     return baseVariant.values.map((base) => {
       // const sku = base.replace(/\s+/g, "-");
       const variant = variantItems.find((v) => v.sku === base);
-      console.log("sku", base)
+      // console.log("sku", base)
 
       // ❗ If variant was deleted → do NOT recreate it
       let genVariant;

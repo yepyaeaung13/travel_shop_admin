@@ -4,6 +4,7 @@ export enum PageType {
   login = "login",
   home = "home",
   category = "category",
+  landing = "landing",
 }
 
 export enum DeviceType {
@@ -28,7 +29,7 @@ export enum LandingDataType {
 }
 
 export type CreateBannerInput = {
-  image: string;
+  image: string | null;
   order: number;
   file?: File | null;
   pageType: PageType;
@@ -39,7 +40,7 @@ export type CreateBannerInput = {
 
 export type UpdateBannerInput = {
   id: number;
-  image: string;
+  image: string | null;
   order: number;
   file?: File | null;
   pageType: PageType;
@@ -89,32 +90,27 @@ export const getBanners = async () => {
   return res.data;
 };
 
-export const createBanners = async (payload: CreateBannerInput) => {
-  const res = await axiosClient.post("/v1/web/banners", { banners: payload });
-  return res.data;
-};
-
-export const updateBanners = async (payload: UpdateBannerInput) => {
-  const res = await axiosClient.put("/v1/web/banners", { banners: payload });
-  return res.data;
-};
-
-export const getLandingAssets = async () => {
-  const res = await axiosClient.get("/v1/web/landing-assets");
-  return res.data;
-};
-
-export const createLandingAssets = async (payload: CreateLandingInput) => {
-  const res = await axiosClient.post("/v1/web/landing-assets", {
-    assets: payload,
+export const createBanners = async (
+  banners: CreateBannerInput,
+  announceText?: {
+    text: string;
+  },
+) => {
+  const res = await axiosClient.post("/v1/web/banners", {
+    announceText,
+    banners,
   });
   return res.data;
 };
 
-export const updateLandingAssets = async (payload: UpdateLandingInput) => {
-  const res = await axiosClient.put("/v1/web/landing-assets", {
-    assets: payload,
-  });
+export const updateBanners = async (
+  banners: UpdateBannerInput,
+  announceText?: {
+    text: string;
+    id: number;
+  },
+) => {
+  const res = await axiosClient.put("/v1/web/banners", { announceText, banners });
   return res.data;
 };
 

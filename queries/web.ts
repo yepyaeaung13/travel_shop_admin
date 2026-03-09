@@ -1,17 +1,12 @@
 import {
   CreateBannerInput,
   createBanners,
-  createLandingAssets,
-  CreateLandingInput,
   createPolicy,
   CreatePolicyInput,
   getBanners,
-  getLandingAssets,
   getPolicy,
   UpdateBannerInput,
   updateBanners,
-  updateLandingAssets,
-  UpdateLandingInput,
   updatePolicy,
   UpdatePolicyInput,
 } from "@/services/web.service";
@@ -27,7 +22,10 @@ export const useGetBanners = () => {
 export const useCreateBanners = () => {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: (payload: CreateBannerInput) => createBanners(payload),
+    mutationFn: (payload: {
+      banners: CreateBannerInput;
+      announceText?: { text: string };
+    }) => createBanners(payload.banners, payload.announceText),
     onSuccess: () => {
       client.invalidateQueries({
         queryKey: ["banners"],
@@ -40,43 +38,13 @@ export const useCreateBanners = () => {
 export const useUpdateBanners = () => {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: (payload: UpdateBannerInput) => updateBanners(payload),
+    mutationFn: (payload: {
+      banners: UpdateBannerInput;
+      announceText?: { text: string; id: number };
+    }) => updateBanners(payload.banners, payload.announceText),
     onSuccess: () => {
       client.invalidateQueries({
         queryKey: ["banners"],
-        refetchType: "active",
-      });
-    },
-  });
-};
-
-export const useGetLanding = () => {
-  return useQuery({
-    queryKey: ["landing"],
-    queryFn: () => getLandingAssets(),
-  });
-};
-
-export const useCreateLanding = () => {
-  const client = useQueryClient();
-  return useMutation({
-    mutationFn: (payload: CreateLandingInput) => createLandingAssets(payload),
-    onSuccess: () => {
-      client.invalidateQueries({
-        queryKey: ["landing"],
-        refetchType: "active",
-      });
-    },
-  });
-};
-
-export const useUpdateLanding = () => {
-  const client = useQueryClient();
-  return useMutation({
-    mutationFn: (payload: UpdateLandingInput) => updateLandingAssets(payload),
-    onSuccess: () => {
-      client.invalidateQueries({
-        queryKey: ["landing"],
         refetchType: "active",
       });
     },

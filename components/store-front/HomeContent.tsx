@@ -1,32 +1,293 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import BannerImageUpload from "./BannerImageUpload";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import ConfirmDialog from "../confirm-dialog/confirm-dialog";
+import { errorToast, successToast } from "../toast";
+import { uploadImage } from "@/services/common.service";
+import {
+  useCreateBanners,
+  useGetBanners,
+  useUpdateBanners,
+} from "@/queries/web";
+import {
+  BannerType,
+  CreateBannerInput,
+  DeviceType,
+  MediaType,
+  PageType,
+  UpdateBannerInput,
+} from "@/services/web.service";
 
 const HomeContent = () => {
   const [discardModalOpen, setDiscardModalOpen] = useState(false);
   const [activeBanner, setActiveBanner] = useState("Hero");
   const [activePlatform, setActivePlatform] = useState("Website");
 
-  const renderBannerContent = (bannerType: string, platform: string) => (
+  const [loading, setLoading] = useState(false);
+  const [heroWebBanners, setHeroWebBanners] = useState<
+    CreateBannerInput | UpdateBannerInput
+  >(
+    Array.from({ length: 5 }, (_, i) => ({
+      image: "",
+      order: i + 1,
+      file: null,
+      pageType: PageType.home,
+      mediaType: MediaType.image,
+      deviceType: DeviceType.web,
+      bannerType: BannerType.hero,
+    })),
+  );
+
+  const [heroMobBanners, setHeroMobBanners] = useState<
+    CreateBannerInput | UpdateBannerInput
+  >(
+    Array.from({ length: 5 }, (_, i) => ({
+      image: "",
+      order: i + 1,
+      file: null,
+      pageType: PageType.home,
+      mediaType: MediaType.image,
+      deviceType: DeviceType.mobile,
+      bannerType: BannerType.hero,
+    })),
+  );
+
+  const [adsWebBanners, setAdsWebBanners] = useState<
+    CreateBannerInput | UpdateBannerInput
+  >(
+    Array.from({ length: 5 }, (_, i) => ({
+      image: "",
+      order: i + 1,
+      file: null,
+      pageType: PageType.home,
+      mediaType: MediaType.image,
+      deviceType: DeviceType.web,
+      bannerType: BannerType.ads,
+    })),
+  );
+
+  const [adsMobBanners, setAdsMobBanners] = useState<
+    CreateBannerInput | UpdateBannerInput
+  >(
+    Array.from({ length: 5 }, (_, i) => ({
+      image: "",
+      order: i + 1,
+      file: null,
+      pageType: PageType.home,
+      mediaType: MediaType.image,
+      deviceType: DeviceType.mobile,
+      bannerType: BannerType.ads,
+    })),
+  );
+  const [selectedBanners, setSelectedBanners] = useState<any>(heroWebBanners);
+  const { data: bannersData, isLoading } = useGetBanners();
+  const { mutate: createBanner, isPending: createLoading } = useCreateBanners();
+  const { mutate: updateBanner, isPending: updateLoading } = useUpdateBanners();
+
+  const handleCreateBanners = async () => {
+    setLoading(true);
+
+    const uploadedBanners = await Promise.all(
+      selectedBanners.map(async (ba: any) => {
+        if (!ba.file) return ba;
+
+        const uploadedImage = await uploadImage(ba.file!);
+
+        return {
+          ...ba,
+          image: uploadedImage?.data?.cid,
+        };
+      }),
+    );
+
+    createBanner(
+      { banners: uploadedBanners },
+      {
+        onSuccess: async (res: any) => {
+          successToast("Suucess", "home banners created!");
+          setLoading(false);
+        },
+        onError: (error: any) => {
+          errorToast(
+            "Failed",
+            error?.response?.data?.message ||
+              "Create banners unsuccefully, please try again.",
+          );
+          setLoading(false);
+        },
+      },
+    );
+  };
+
+  const handleUpdateBanners = async () => {
+    setLoading(true);
+
+    const uploadedBanners = await Promise.all(
+      selectedBanners.map(async (ba: any) => {
+        if (!ba.file) return ba;
+
+        const uploadedImage = await uploadImage(ba.file!);
+
+        const { file, ...withoutFileData } = ba;
+
+        return {
+          ...withoutFileData,
+          image: uploadedImage?.data?.cid,
+        };
+      }),
+    );
+
+    updateBanner(
+      { banners: uploadedBanners },
+      {
+        onSuccess: async (res: any) => {
+          successToast("Suucess", "home banners updated!");
+          setLoading(false);
+        },
+        onError: (error: any) => {
+          errorToast(
+            "Failed",
+            error?.response?.data?.message ||
+              "Create banners unsuccefully, please try again.",
+          );
+          setLoading(false);
+        },
+      },
+    );
+  };
+
+  const handleSubmit = () => {
+    if (selectedBanners[0].id) {
+      handleUpdateBanners();
+    } else {
+      handleCreateBanners();
+    }
+  };
+
+  const handleFileChange = (order: number, file: File) => {
+    setSelectedBanners((prev: any) => {
+      return prev.map((pv: any) => (pv.order === order ? { ...pv, file } : pv));
+    });
+  };
+
+  const handleDeleteImage = (order: number) => {
+    setSelectedBanners((prev: any) => {
+      return prev.map((pv: any) =>
+        pv.order === order ? { ...pv, image: null } : pv,
+      );
+    });
+  };
+
+  useEffect(() => {
+    if (bannersData?.data?.home.length > 0) {
+      const webHeroBanners = bannersData?.data?.home?.filter(
+        (b: any) =>
+          b.deviceType === DeviceType.web && b.bannerType === BannerType.hero,
+      );
+      const mobHeroBanners = bannersData?.data?.home?.filter(
+        (b: any) =>
+          b.deviceType === DeviceType.mobile &&
+          b.bannerType === BannerType.hero,
+      );
+
+      const webAdsBanners = bannersData?.data?.home?.filter(
+        (b: any) =>
+          b.deviceType === DeviceType.web && b.bannerType === BannerType.ads,
+      );
+
+      const mobAdsBanners = bannersData?.data?.home?.filter(
+        (b: any) =>
+          b.deviceType === DeviceType.mobile && b.bannerType === BannerType.ads,
+      );
+
+      setHeroWebBanners(
+        webHeroBanners.length > 0 ? webHeroBanners : heroWebBanners,
+      );
+      setHeroMobBanners(
+        mobHeroBanners.length > 0 ? mobHeroBanners : heroMobBanners,
+      );
+      setAdsWebBanners(
+        webAdsBanners.length > 0 ? webAdsBanners : adsWebBanners,
+      );
+      setAdsMobBanners(
+        mobAdsBanners.length > 0 ? mobAdsBanners : adsMobBanners,
+      );
+    }
+  }, [bannersData]);
+
+  const renderBannerContent = (
+    banners: any,
+    bannerType: string,
+    platform: string,
+  ) => (
     <div className="space-y-4">
       <div className="flex items-center justify-center gap-5 max-md:flex-col max-md:h-[550px]">
-        <BannerImageUpload isImage={true} isVideo={true} />
-        <BannerImageUpload isImage={true} isVideo={false} />
-        <BannerImageUpload isImage={true} isVideo={false} />
+        {banners.slice(0, 3).map((b: any) => (
+          <BannerImageUpload
+            key={b.order}
+            onImageUpload={(va) => handleFileChange(b.order, va)}
+            handleDeleteImage={() => handleDeleteImage(b.order)}
+            isImage={true}
+            isVideo={b.order === 1 ? true : false}
+            imageUrl={
+              b.image
+                ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
+                : null
+            }
+          />
+        ))}
       </div>
       <div className="flex items-center justify-center gap-5 max-md:flex-col max-md:h-[360px]">
-        <BannerImageUpload isImage={true} isVideo={false} />
-        <BannerImageUpload isImage={true} isVideo={false} />
+        {banners.slice(3, 5).map((b: any) => (
+          <BannerImageUpload
+            key={b.order}
+            onImageUpload={(va) => handleFileChange(b.order, va)}
+            handleDeleteImage={() => handleDeleteImage(b.order)}
+            isImage={true}
+            isVideo={false}
+            imageUrl={
+              b.image !== ""
+                ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
+                : null
+            }
+          />
+        ))}
         <div className="h-[200px] w-full flex-1 max-md:hidden" />
       </div>
     </div>
   );
+
+  useEffect(() => {
+    if (!bannersData?.data?.home) return;
+
+    if (activeBanner === "Ads") {
+      if (activePlatform === "Website") {
+        setSelectedBanners(adsWebBanners);
+      } else {
+        setSelectedBanners(adsMobBanners);
+      }
+    } else {
+      if (activePlatform === "Website") {
+        setSelectedBanners(heroWebBanners);
+      } else {
+        setSelectedBanners(heroMobBanners);
+      }
+    }
+  }, [
+    heroWebBanners,
+    heroMobBanners,
+    adsWebBanners,
+    adsMobBanners,
+    activeBanner,
+    activePlatform,
+  ]);
+
+  // console.log("selectedNBanners", selectedBanners);
 
   return (
     <>
@@ -75,10 +336,14 @@ const HomeContent = () => {
                     </TabsList>
                   </div>
                   <TabsContent value="Website">
-                    {renderBannerContent(bannerType, "Website")}
+                    {renderBannerContent(
+                      selectedBanners,
+                      bannerType,
+                      "Website",
+                    )}
                   </TabsContent>
                   <TabsContent value="Mobile">
-                    {renderBannerContent(bannerType, "Mobile")}
+                    {renderBannerContent(selectedBanners, bannerType, "Mobile")}
                   </TabsContent>
                 </Tabs>
               </div>
@@ -91,16 +356,17 @@ const HomeContent = () => {
               type="button"
               className="h-[41px] max-md:flex-1 w-full md:w-[195px] rounded-[10px] bg-[#A1A1A1] text-lg text-white hover:opacity-90 md:h-[47px]"
               onClick={() => setDiscardModalOpen(true)}
-              disabled={false}
+              disabled={isLoading || loading}
             >
               Cancel
             </Button>
             <Button
-              type="submit"
+              type="button"
+              onClick={handleSubmit}
               className="bg-primary max-md:flex-1 w-full h-[41px] md:w-[195px] rounded-[10px] text-lg text-white hover:opacity-90 md:h-[47px]"
-              disabled={false}
+              disabled={isLoading || loading}
             >
-              {false ? "Saving..." : "Save"}
+              {loading ? "Saving..." : "Save"}
             </Button>
           </div>
         </CardFooter>

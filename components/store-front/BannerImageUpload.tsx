@@ -10,6 +10,7 @@ type Props = {
   isImage: boolean;
   isVideo: boolean;
   onImageUpload?: (blob: File) => void;
+  handleDeleteImage: () => void;
   onVideoUpload?: (file: File) => void;
   imageUrl: string | null;
 };
@@ -18,6 +19,7 @@ const BannerImageUpload = ({
   isImage,
   isVideo,
   onImageUpload,
+  handleDeleteImage,
   onVideoUpload,
   imageUrl,
 }: Props) => {
@@ -32,9 +34,7 @@ const BannerImageUpload = ({
   const videoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (imageUrl) {
-      setUploadedImage(imageUrl);
-    }
+    setUploadedImage(imageUrl);
   }, [imageUrl]);
 
   const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -112,6 +112,9 @@ const BannerImageUpload = ({
     if (deleteType === "image" && uploadedImage) {
       URL.revokeObjectURL(uploadedImage);
       setUploadedImage(null);
+      if (imageUrl) {
+        handleDeleteImage();
+      }
     } else if (deleteType === "video" && uploadedVideo) {
       URL.revokeObjectURL(uploadedVideo);
       setUploadedVideo(null);
