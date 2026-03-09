@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ImageCrop } from "../ImageCrop";
 import { X } from "lucide-react";
 import { Button } from "../ui/button";
@@ -9,8 +9,9 @@ import IconTrash from "@/assets/icons/Trash";
 type Props = {
   isImage: boolean;
   isVideo: boolean;
-  onImageUpload?: (blob: Blob) => void;
+  onImageUpload?: (blob: File) => void;
   onVideoUpload?: (file: File) => void;
+  imageUrl: string | null;
 };
 
 const BannerImageUpload = ({
@@ -18,6 +19,7 @@ const BannerImageUpload = ({
   isVideo,
   onImageUpload,
   onVideoUpload,
+  imageUrl,
 }: Props) => {
   const [showCropDialog, setShowCropDialog] = useState(false);
   const [tempImagePreview, setTempImagePreview] = useState<string | null>(null);
@@ -28,6 +30,12 @@ const BannerImageUpload = ({
   const [uploadedVideo, setUploadedVideo] = useState<string | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (imageUrl) {
+      setUploadedImage(imageUrl);
+    }
+  }, [imageUrl]);
 
   const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -73,7 +81,10 @@ const BannerImageUpload = ({
     const imageUrl = URL.createObjectURL(blob);
     setUploadedImage(imageUrl);
     if (onImageUpload) {
-      onImageUpload(blob);
+      const file = new File([blob], "image.jpg", {
+        type: blob.type,
+      });
+      onImageUpload(file);
     }
     setShowCropDialog(false);
     setTempImagePreview(null);
@@ -234,7 +245,9 @@ const BannerImageUpload = ({
     <>
       <div className="h-[170px] md:h-[200px] w-full flex-1">
         <div className="w-full h-full flex flex-col items-center justify-center border border-dashed rounded-[16px] border-[#A1A1A1]">
-          <span className="text-base md:text-lg font-medium text-black pb-2.5">Upload</span>
+          <span className="text-base md:text-lg font-medium text-black pb-2.5">
+            Upload
+          </span>
           <div className="text-sm md:text-base text-center font-normal text-[#3C3C3C]/50">
             {isVideo && <p>Video must be under 5 seconds. </p>}
             {isImage && <p>Image size: 1440 × 661 px.</p>}
