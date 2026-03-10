@@ -124,7 +124,7 @@ export default function OrderList({ onImport, onExport }: OrderListProps) {
                   placeholder="Search with Order Id or Customer Name"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-44 border-[#44444480] pl-10 md:w-96 md:text-lg md:placeholder:text-lg"
+                  className="w-44 border-[#44444480] rounded-[20px] pl-10 md:w-96 md:text-lg md:placeholder:text-lg"
                 />
               </div>
             </div>

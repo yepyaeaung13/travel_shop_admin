@@ -56,7 +56,7 @@ export function SortByDate() {
         </div>
         <p
           className={cn(
-            "w-full md:w-52",
+            "w-full md:w-56",
             open || dateRange?.from || dateRange?.to ? "" : "hidden",
           )}
         >

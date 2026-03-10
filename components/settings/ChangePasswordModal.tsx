@@ -40,31 +40,53 @@ const inputFields = [
 
 const schema = z
   .object({
-    oldPassword: z.string().optional(),
+    oldPassword: z
+      .string()
+      .min(1, "Old password is required")
+      .refine(
+        (val) => /[A-Z]/.test(val),
+        "Password must contain at least one uppercase letter",
+      )
+      .refine(
+        (val) => /[a-z]/.test(val),
+        "Password must contain at least one lowercase letter",
+      )
+      .refine(
+        (val) => /[0-9]/.test(val),
+        "Password must contain at least one number",
+      )
+      .refine(
+        (val) => /[^A-Za-z0-9]/.test(val),
+        "Password must contain at least one special character",
+      )
+      .refine(
+        (val) => val.length >= 8,
+        "Password must be at least 8 characters",
+      ),
     newPassword: z
       .string()
-      .optional()
+      .min(1, "New password is required")
       .refine(
-        (val) => !val || /[A-Z]/.test(val),
-        "Password must contain at least one uppercase letter"
+        (val) => /[A-Z]/.test(val),
+        "Password must contain at least one uppercase letter",
       )
       .refine(
-        (val) => !val || /[a-z]/.test(val),
-        "Password must contain at least one lowercase letter"
+        (val) => /[a-z]/.test(val),
+        "Password must contain at least one lowercase letter",
       )
       .refine(
-        (val) => !val || /[0-9]/.test(val),
-        "Password must contain at least one number"
+        (val) => /[0-9]/.test(val),
+        "Password must contain at least one number",
       )
       .refine(
-        (val) => !val || /[^A-Za-z0-9]/.test(val),
-        "Password must contain at least one special character"
+        (val) => /[^A-Za-z0-9]/.test(val),
+        "Password must contain at least one special character",
       )
       .refine(
-        (val) => !val || val.length >= 8,
-        "Password must be at least 8 characters"
+        (val) => val.length >= 8,
+        "Password must be at least 8 characters",
       ),
-    confirmPassword: z.string().optional(),
+    confirmPassword: z.string().min(1, "Please confirm your password"),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match",
@@ -84,7 +106,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
     watch,
     reset: resetForm,
   } = useForm<FormValues>({
@@ -94,6 +116,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
       newPassword: "",
       confirmPassword: "",
     },
+    mode: "onChange",
   });
 
   useEffect(() => {
@@ -136,7 +159,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
           onOpen?.();
           console.error(err);
         },
-      }
+      },
     );
   };
 
@@ -200,7 +223,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
               <Button
                 type="submit"
                 className="bg-primary h-[41px] w-full flex-1 rounded-[10px] text-lg text-white hover:opacity-90 md:h-[47px]"
-                disabled={isPending}
+                disabled={isPending || !isValid || Object.keys(errors).length > 0}
               >
                 {isPending ? "Saving..." : "Save"}
               </Button>

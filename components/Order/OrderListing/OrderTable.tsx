@@ -56,15 +56,15 @@ export default function OrderTable({ orders }: OrderTableProps) {
     <Table className="table-fixed md:table-auto">
       <TableHeader className="bg-[#4444441A]">
         <TableRow className="md:text-lg h-14">
-          <TableHead className="text-[#303030] w-10 pl-5 md:w-16 md:pl-6">
+          <TableHead className="text-[#303030] max-md:text-start pl-5 w-24 md:w-16 md:pl-6">
             <p>ID</p>
           </TableHead>
           <TableHead
-            className={cn("w-[150px] text-[#303030] cursor-pointer md:w-72 2xl:w-96")}
+            className={cn("w-44 text-[#303030] cursor-pointer md:w-72 2xl:w-96")}
           >
             Customer name
           </TableHead>
-          <TableHead className="w-[100px] text-[#303030] text-center">Date</TableHead>
+          <TableHead className="w-32 text-[#303030] text-center">Date</TableHead>
           <TableHead className="w-[150px] text-[#303030] text-center">Qty</TableHead>
           <TableHead className="w-[150px] text-[#303030] text-center">Total</TableHead>
           <TableHead className="w-[200px] text-[#303030] text-center">
@@ -86,7 +86,7 @@ export default function OrderTable({ orders }: OrderTableProps) {
                 className="border-none md:text-lg cursor-pointer text-[#303030]"
               >
                 <TableCell className="pl-5 md:pl-6">
-                  <p className="text-center">
+                  <p className="text-start md:text-center">
                     #{order.id.toString().padStart(3, "0")}
                   </p>
                 </TableCell>

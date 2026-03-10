@@ -117,7 +117,7 @@ export default function ProductTable({
     if (product.promoteValue == 0) {
       return originalPrice;
     } else {
-      if (product?.promoteType == "PERCENTAGE") {
+      if (product?.promoteType == "PERCENT") {
         return originalPrice - (originalPrice * product.promoteValue) / 100;
       } else {
         return originalPrice - product.promoteValue;
