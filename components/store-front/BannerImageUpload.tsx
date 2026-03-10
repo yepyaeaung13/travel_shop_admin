@@ -64,7 +64,7 @@ const BannerImageUpload = ({
 
       video.onloadedmetadata = () => {
         window.URL.revokeObjectURL(video.src);
-        if (video.duration > 35) {
+        if (video.duration > 5) {
           setShowVideoErrorDialog(true);
         } else {
           const videoUrl = URL.createObjectURL(file);
@@ -363,7 +363,7 @@ const BannerImageUpload = ({
                 />
               </div>
               <p className="text-gray-600 mb-4">
-                Video must be under 35 seconds
+                Video must be under 5 seconds
               </p>
               <Button
                 type="submit"
