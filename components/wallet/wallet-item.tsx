@@ -222,7 +222,10 @@ const WalletItem = ({ type, wallet, handlePublishStatus }: Props) => {
               <input
                 placeholder="Account phone number"
                 value={accountNumber}
-                onChange={(e) => setAccountNumber(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, "");
+                  setAccountNumber(value);
+                }}
                 className="border rounded-[10px] border-[#3C3C3C]/30 h-[46px] md:h-14 px-5 text-sm md:text-base font-normal"
               />
             </div>

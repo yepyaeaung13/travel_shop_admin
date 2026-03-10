@@ -340,10 +340,10 @@ function ProductList() {
             >
               <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
               <Input
-                placeholder="Search category"
+                placeholder="Search product"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-48 border-[#44444480] pl-10 md:w-80 md:text-lg md:placeholder:text-lg"
+                className="w-48 border-[#44444480] rounded-[20px] pl-10 md:w-80 md:text-lg md:placeholder:text-lg"
               />
             </div>
           </div>

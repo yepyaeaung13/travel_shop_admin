@@ -21,45 +21,48 @@ export const CustomerTableColumns = (
   // };
 
   return [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <div className="pl-2">
-          <Checkbox
-            checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && "indeterminate")
-            }
-            onCheckedChange={(value) =>
-              table.toggleAllPageRowsSelected(!!value)
-            }
-            aria-label="Select all"
-            className="text-[#303030]"
-          />
-        </div>
-      ),
-      cell: ({ row }) => (
-        <div className="pl-2">
-          <Checkbox
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Select row"
-            className="text-[#303030]"
-          />
-        </div>
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
+    // {
+    //   id: "select",
+    //   size: 50,
+    //   header: ({ table }) => (
+    //     <div className="pl-2">
+    //       <Checkbox
+    //         checked={
+    //           table.getIsAllPageRowsSelected() ||
+    //           (table.getIsSomePageRowsSelected() && "indeterminate")
+    //         }
+    //         onCheckedChange={(value) =>
+    //           table.toggleAllPageRowsSelected(!!value)
+    //         }
+    //         aria-label="Select all"
+    //         className="text-[#303030]"
+    //       />
+    //     </div>
+    //   ),
+    //   cell: ({ row }) => (
+    //     <div className="pl-2">
+    //       <Checkbox
+    //         checked={row.getIsSelected()}
+    //         onCheckedChange={(value) => row.toggleSelected(!!value)}
+    //         aria-label="Select row"
+    //         className="text-[#303030]"
+    //       />
+    //     </div>
+    //   ),
+    //   enableSorting: false,
+    //   enableHiding: false,
+    // },
     {
       accessorKey: "id",
-      header: () => <h3>ID</h3>,
+      size: 80,
+      header: () => <h3 className="pl-2">ID</h3>,
       cell: ({ row }) => (
-        <div className="font-medium">#{Number(row.getValue("id")).toString().padStart(4, "0")}</div>
+        <div className="font-medium pl-2">#{Number(row.getValue("id")).toString().padStart(4, "0")}</div>
       ),
     },
     {
       accessorKey: "name",
+      size: 180,
       header: () => <h3>Name</h3>,
       cell: ({ row }) => (
         <div className="font-medium">{row.getValue("name")}</div>
@@ -67,21 +70,25 @@ export const CustomerTableColumns = (
     },
     {
       accessorKey: "phoneNumber",
+      size: 150,
       header: () => <h3>Phone Number</h3>,
       cell: ({ row }) => <div>{row.getValue("phoneNumber")}</div>,
     },
     {
       accessorKey: "email",
+      size: 220,
       header: () => <h3>Email</h3>,
       cell: ({ row }) => <div>{row.getValue("email")}</div>,
     },
     {
       accessorKey: "totalOrder",
-      header: () => <h3>Total orders</h3>,
+      size: 120,
+      header: () => <h3 className="whitespace-nowrap">Total orders</h3>,
       cell: ({ row }) => <div>{row.getValue("totalOrder") || 0}</div>,
     },
     {
       accessorKey: "deleted",
+      size: 120,
       header: () => <h3 className="text-center">Status</h3>,
       cell: ({ getValue }) => {
         const status = getValue() as string;
@@ -106,6 +113,7 @@ export const CustomerTableColumns = (
     },
     {
       id: "actions",
+      size: 100,
       header: () => <h3 className="text-center">Action</h3>,
       enableHiding: false,
       cell: ({ row }) => {

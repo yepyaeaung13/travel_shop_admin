@@ -84,7 +84,9 @@ const SelectOrderStatus = ({ order }: { order: any }) => {
               position="popper"
               className="rounded-[10px] [&>div:nth-child(2)]:p-0"
             >
-              {orderStatus.map((option) => {
+              {orderStatus
+                .filter((status) => status !== OrderStatus.Pending)
+                .map((option) => {
                 return (
                   <SelectItem
                     key={option}

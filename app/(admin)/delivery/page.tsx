@@ -588,13 +588,19 @@ const DeliveryPage = () => {
                               className="text-start text-base md:text-lg font-medium py-2 cursor-pointer"
                               onClick={() => toggleDistrict(district.id)}
                             >
-                              <div className="w-[100px] flex items-center gap-2">
-                                {isExpanded ? (
-                                  <ChevronUp className="size-4" />
-                                ) : (
-                                  <ChevronDown className="size-4" />
-                                )}
-                                {district.name}
+                              <div className="flex flex-col space-y-1 w-[100px]">
+                                <p>{district.name}</p>
+                                <div className=" flex items-center gap-2 text-xs font-normal text-[#3C3C3C]/80">
+                                  {district.townships.length}{" "}
+                                  {district.townships.length > 1
+                                    ? " Townships"
+                                    : " Township"}
+                                  {isExpanded ? (
+                                    <ChevronUp className="size-4" />
+                                  ) : (
+                                    <ChevronDown className="size-4" />
+                                  )}
+                                </div>
                               </div>
                             </div>
 
@@ -751,13 +757,19 @@ const DeliveryPage = () => {
                                 className="w-1/3 text-start text-base md:text-lg font-medium py-2 px-5 cursor-pointer"
                                 onClick={() => toggleDistrict(district.id)}
                               >
-                                <div className="flex items-center gap-2">
-                                  {isExpanded ? (
-                                    <ChevronUp className="size-4" />
-                                  ) : (
-                                    <ChevronDown className="size-4" />
-                                  )}
-                                  {district.name}
+                                <div className="flex flex-col space-y-1">
+                                  <p>{district.name}</p>
+                                  <div className=" flex items-center gap-2 text-xs font-normal text-[#3C3C3C]/80">
+                                    {district.townships.length}{" "}
+                                    {district.townships.length > 1
+                                      ? " Townships"
+                                      : " Township"}
+                                    {isExpanded ? (
+                                      <ChevronUp className="size-4" />
+                                    ) : (
+                                      <ChevronDown className="size-4" />
+                                    )}
+                                  </div>
                                 </div>
                               </td>
 

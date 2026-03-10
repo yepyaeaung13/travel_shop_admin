@@ -31,7 +31,11 @@ const TableWrapper = ({ table, columns, loading }: Props) => {
               className="h-auto bg-[#EEEEEE] py-4 text-lg text-[#3C3C3C] hover:bg-[#EEEEEE]"
             >
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} className="">
+                <TableHead
+                  key={header.id}
+                  style={{ width: header.getSize() }}
+                  className=""
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -66,7 +70,11 @@ const TableWrapper = ({ table, columns, loading }: Props) => {
                 )}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="py-4">
+                  <TableCell
+                    key={cell.id}
+                    style={{ width: cell.column.getSize() }}
+                    className="py-4"
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
