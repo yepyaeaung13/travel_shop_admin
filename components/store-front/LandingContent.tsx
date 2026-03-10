@@ -145,9 +145,19 @@ const LandingContent = () => {
   };
 
   const handleFileChange = (order: number, file: File) => {
-    setSelectedBanners((prev: any) => {
-      return prev.map((pv: any) => (pv.order === order ? { ...pv, file } : pv));
-    });
+    if (file.type === "video/mp4") {
+      setSelectedBanners((prev: any) => {
+        return prev.map((pv: any) =>
+          pv.order === order ? { ...pv, file, mediaType: MediaType.video } : pv,
+        );
+      });
+    } else {
+      setSelectedBanners((prev: any) => {
+        return prev.map((pv: any) =>
+          pv.order === order ? { ...pv, file } : pv,
+        );
+      });
+    }
   };
 
   const handleDeleteImage = (order: number) => {
@@ -243,11 +253,19 @@ const LandingContent = () => {
                     <BannerImageUpload
                       key={b.order}
                       onImageUpload={(va) => handleFileChange(b.order, va)}
+                      onVideoUpload={(file: File) =>
+                        handleFileChange(b.order, file)
+                      }
                       handleDeleteImage={() => handleDeleteImage(b.order)}
                       isImage={true}
                       isVideo={true}
                       imageUrl={
-                        b.image
+                        b.image && b.mediaType === MediaType.image
+                          ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
+                          : null
+                      }
+                      videoUrl={
+                        b.image && b.mediaType === MediaType.video
                           ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
                           : null
                       }
@@ -258,11 +276,19 @@ const LandingContent = () => {
                       <BannerImageUpload
                         key={b.order}
                         onImageUpload={(va) => handleFileChange(b.order, va)}
+                        onVideoUpload={(file: File) =>
+                          handleFileChange(b.order, file)
+                        }
                         handleDeleteImage={() => handleDeleteImage(b.order)}
                         isImage={true}
                         isVideo={true}
                         imageUrl={
-                          b.image
+                          b.image && b.mediaType === MediaType.image
+                            ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
+                            : null
+                        }
+                        videoUrl={
+                          b.image && b.mediaType === MediaType.video
                             ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
                             : null
                         }
@@ -273,11 +299,19 @@ const LandingContent = () => {
                     <BannerImageUpload
                       key={b.order}
                       onImageUpload={(va) => handleFileChange(b.order, va)}
+                      onVideoUpload={(file: File) =>
+                        handleFileChange(b.order, file)
+                      }
                       handleDeleteImage={() => handleDeleteImage(b.order)}
                       isImage={true}
                       isVideo={true}
                       imageUrl={
-                        b.image
+                        b.image && b.mediaType === MediaType.image
+                          ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
+                          : null
+                      }
+                      videoUrl={
+                        b.image && b.mediaType === MediaType.video
                           ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
                           : null
                       }
@@ -291,11 +325,19 @@ const LandingContent = () => {
                     <BannerImageUpload
                       key={b.order}
                       onImageUpload={(va) => handleFileChange(b.order, va)}
+                      onVideoUpload={(file: File) =>
+                        handleFileChange(b.order, file)
+                      }
                       handleDeleteImage={() => handleDeleteImage(b.order)}
                       isImage={true}
                       isVideo={true}
                       imageUrl={
-                        b.image
+                        b.image && b.mediaType === MediaType.image
+                          ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
+                          : null
+                      }
+                      videoUrl={
+                        b.image && b.mediaType === MediaType.video
                           ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
                           : null
                       }
@@ -306,11 +348,19 @@ const LandingContent = () => {
                       <BannerImageUpload
                         key={b.order}
                         onImageUpload={(va) => handleFileChange(b.order, va)}
+                        onVideoUpload={(file: File) =>
+                          handleFileChange(b.order, file)
+                        }
                         handleDeleteImage={() => handleDeleteImage(b.order)}
                         isImage={true}
                         isVideo={true}
                         imageUrl={
-                          b.image
+                          b.image && b.mediaType === MediaType.image
+                            ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
+                            : null
+                        }
+                        videoUrl={
+                          b.image && b.mediaType === MediaType.video
                             ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
                             : null
                         }
@@ -321,11 +371,19 @@ const LandingContent = () => {
                     <BannerImageUpload
                       key={b.order}
                       onImageUpload={(va) => handleFileChange(b.order, va)}
+                      onVideoUpload={(file: File) =>
+                        handleFileChange(b.order, file)
+                      }
                       handleDeleteImage={() => handleDeleteImage(b.order)}
                       isImage={true}
                       isVideo={true}
                       imageUrl={
-                        b.image
+                        b.image && b.mediaType === MediaType.image
+                          ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
+                          : null
+                      }
+                      videoUrl={
+                        b.image && b.mediaType === MediaType.video
                           ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
                           : null
                       }

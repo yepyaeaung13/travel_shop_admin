@@ -184,6 +184,7 @@ const LoginContent = () => {
                       ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
                       : null
                   }
+                  videoUrl={null}
                 />
               ))}
             </div>

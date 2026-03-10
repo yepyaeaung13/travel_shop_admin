@@ -142,9 +142,19 @@ const CategoryContent = () => {
   };
 
   const handleFileChange = (order: number, file: File) => {
-    setSelectedBanners((prev: any) => {
-      return prev.map((pv: any) => (pv.order === order ? { ...pv, file } : pv));
-    });
+    if (file.type === "video/mp4") {
+      setSelectedBanners((prev: any) => {
+        return prev.map((pv: any) =>
+          pv.order === order ? { ...pv, file, mediaType: MediaType.video } : pv,
+        );
+      });
+    } else {
+      setSelectedBanners((prev: any) => {
+        return prev.map((pv: any) =>
+          pv.order === order ? { ...pv, file } : pv,
+        );
+      });
+    }
   };
 
   const handleDeleteImage = (order: number) => {
@@ -190,11 +200,17 @@ const CategoryContent = () => {
           <BannerImageUpload
             key={b.order}
             onImageUpload={(va) => handleFileChange(b.order, va)}
+            onVideoUpload={(file: File) => handleFileChange(b.order, file)}
             handleDeleteImage={() => handleDeleteImage(b.order)}
             isImage={true}
             isVideo={b.order === 1 ? true : false}
             imageUrl={
-              b.image
+              b.image && b.mediaType === MediaType.image
+                ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
+                : null
+            }
+            videoUrl={
+              b.image && b.mediaType === MediaType.video
                 ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
                 : null
             }
@@ -214,6 +230,7 @@ const CategoryContent = () => {
                 ? `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${b.image}`
                 : null
             }
+            videoUrl={null}
           />
         ))}
         <div className="h-[200px] w-full flex-1 max-md:hidden" />

@@ -13,6 +13,7 @@ type Props = {
   handleDeleteImage: () => void;
   onVideoUpload?: (file: File) => void;
   imageUrl: string | null;
+  videoUrl: string | null;
 };
 
 const BannerImageUpload = ({
@@ -22,6 +23,7 @@ const BannerImageUpload = ({
   handleDeleteImage,
   onVideoUpload,
   imageUrl,
+  videoUrl,
 }: Props) => {
   const [showCropDialog, setShowCropDialog] = useState(false);
   const [tempImagePreview, setTempImagePreview] = useState<string | null>(null);
@@ -35,7 +37,8 @@ const BannerImageUpload = ({
 
   useEffect(() => {
     setUploadedImage(imageUrl);
-  }, [imageUrl]);
+    setUploadedVideo(videoUrl);
+  }, [imageUrl, videoUrl]);
 
   const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -61,7 +64,7 @@ const BannerImageUpload = ({
 
       video.onloadedmetadata = () => {
         window.URL.revokeObjectURL(video.src);
-        if (video.duration > 5) {
+        if (video.duration > 35) {
           setShowVideoErrorDialog(true);
         } else {
           const videoUrl = URL.createObjectURL(file);
@@ -118,6 +121,9 @@ const BannerImageUpload = ({
     } else if (deleteType === "video" && uploadedVideo) {
       URL.revokeObjectURL(uploadedVideo);
       setUploadedVideo(null);
+      if (videoUrl) {
+        handleDeleteImage();
+      }
     }
     setShowDeleteConfirmDialog(false);
     setDeleteType(null);
@@ -287,7 +293,7 @@ const BannerImageUpload = ({
       <input
         ref={videoInputRef}
         type="file"
-        accept="video/*"
+        accept="video/mp4"
         onChange={handleVideoFileChange}
         className="hidden"
       />
@@ -357,7 +363,7 @@ const BannerImageUpload = ({
                 />
               </div>
               <p className="text-gray-600 mb-4">
-                Video must be under 5 seconds
+                Video must be under 35 seconds
               </p>
               <Button
                 type="submit"
