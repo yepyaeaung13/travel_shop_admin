@@ -215,13 +215,14 @@ const LandingContent = () => {
               <Textarea
                 placeholder="e.g, 10% off today"
                 value={announceText.text}
+                maxLength={20}
                 onChange={(e) =>
                   setAnnounceText({ ...announceText, text: e.target.value })
                 }
                 className="text-base placeholder:text-base font-normal rounded-[10px] border h-[130px] md:h-[90px] resize-none border-[#3C3C3C]/30 placeholder:font-normal placeholder:text-[#3C3C3C]/50 text-black"
               />
               <p className="text-base backdrop-blur-3xl rounded-full font-normal text-[#3C3C3C]/50 bottom-4 right-5 absolute">
-                0/20
+                {announceText.text.length}/{20}
               </p>
             </div>
           </div>

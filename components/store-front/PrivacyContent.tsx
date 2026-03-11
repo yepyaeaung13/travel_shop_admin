@@ -86,13 +86,14 @@ const PrivacyContent = () => {
               <Textarea
                 placeholder="Title"
                 value={policy.title}
+                maxLength={20}
                 onChange={(e) =>
                   setPolicy({ ...policy, title: e.target.value })
                 }
                 className="text-base placeholder:text-base font-normal rounded-[10px] border h-[90px] resize-none border-[#3C3C3C]/30 placeholder:font-normal placeholder:text-[#3C3C3C]/50 text-black"
               />
               <p className="text-base backdrop-blur-3xl rounded-full font-normal text-[#3C3C3C]/50 bottom-4 right-5 absolute">
-                0/20
+              {policy.title.length}/{20}
               </p>
             </div>
           </div>
