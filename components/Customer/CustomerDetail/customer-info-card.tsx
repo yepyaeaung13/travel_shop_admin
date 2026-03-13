@@ -25,7 +25,7 @@ export default function CustomerInfoCard({ customer }: CustomerInfoCardProps) {
       <div className="flex flex-col items-center justify-center gap-5 md:flex-row">
         <Avatar className="h-28 w-28">
           <AvatarImage
-            src={customer.picture || "/placeholder.svg"}
+            src={customer.picture}
             alt={customer.name}
           />
           <AvatarFallback className="bg-gray-600 text-2xl text-white">
@@ -36,8 +36,8 @@ export default function CustomerInfoCard({ customer }: CustomerInfoCardProps) {
               .toUpperCase()}
           </AvatarFallback>
         </Avatar>
-        <div className="flex flex-col justify-center gap-y-1 text-center md:items-start">
-          <p className="text-lg font-medium">{customer?.name}</p>
+        <div className="flex flex-col justify-center gap-y-1 md:items-start">
+          <p className="text-lg font-medium min-w-[152px]">{customer?.name}</p>
           <span className="text-sm text-[#3C3C3C]">
             #{customer?.id.toString().padStart(4, "0")}
           </span>

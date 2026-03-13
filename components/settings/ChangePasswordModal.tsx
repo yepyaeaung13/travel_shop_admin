@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
-import { X } from "lucide-react";
+import { Eye, EyeOff, X } from "lucide-react";
 import { useChangeSellerPassword, useUpdateProfile } from "@/queries/auth";
 
 import { useForm } from "react-hook-form";
@@ -101,6 +101,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
   onClose,
   onOpen,
 }) => {
+  const [showPassword, setShowPassword] = useState<string[]>([]);
   const { mutate: updatePassword, isPending } = useChangeSellerPassword();
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const {
@@ -163,6 +164,15 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
     );
   };
 
+  const handleShowPassword = (name: string) => {
+    const isName = showPassword.find((p) => p === name);
+    if (isName) {
+      setShowPassword((prev) => prev.filter((p) => p !== name));
+    } else {
+      setShowPassword([...showPassword, name]);
+    }
+  };
+
   return (
     <>
       <Dialog
@@ -195,19 +205,36 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                 <label className="text-sm font-normal capitalize text-[#303030] md:text-lg">
                   {field.label}
                 </label>
-                <input
-                  type="password"
-                  placeholder={field.placeholder}
-                  className={
-                    "h-14 rounded-[10px] border border-[#A1A1A1] px-4 text-base font-normal text-[#303030] placeholder:text-[#A1A1A1]"
-                  }
-                  {...register(field.name as keyof FormValues)}
-                />
-                {errors[field.name as keyof FormValues] && (
-                  <p className="text-sm text-red-500">
-                    {errors[field.name as keyof FormValues]?.message}
-                  </p>
-                )}
+                <div>
+                  <div className="relative flex items-center">
+                    <input
+                      type={
+                        showPassword.includes(field.name) ? "text" : "password"
+                      }
+                      placeholder={field.placeholder}
+                      className={
+                        "h-14 w-full rounded-[10px] border border-[#A1A1A1] px-4 text-base font-normal text-[#303030] placeholder:text-[#A1A1A1]"
+                      }
+                      {...register(field.name as keyof FormValues)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleShowPassword(field.name)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 transform"
+                    >
+                      {showPassword.includes(field.name) ? (
+                        <Eye className="size-4" />
+                      ) : (
+                        <EyeOff className="size-4" />
+                      )}
+                    </button>
+                  </div>
+                  {errors[field.name as keyof FormValues] && (
+                    <p className="text-sm text-red-500">
+                      {errors[field.name as keyof FormValues]?.message}
+                    </p>
+                  )}
+                </div>
               </div>
             ))}
 
@@ -223,7 +250,9 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
               <Button
                 type="submit"
                 className="bg-primary h-[41px] w-full flex-1 rounded-[10px] text-lg text-white hover:opacity-90 md:h-[47px]"
-                disabled={isPending || !isValid || Object.keys(errors).length > 0}
+                disabled={
+                  isPending || !isValid || Object.keys(errors).length > 0
+                }
               >
                 {isPending ? "Saving..." : "Save"}
               </Button>

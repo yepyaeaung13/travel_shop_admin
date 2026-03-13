@@ -13,6 +13,7 @@ import {
 } from "@tanstack/react-table";
 import { User } from "@/types/users.types";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 interface Props {
   table: ReactTable<User>;
@@ -21,6 +22,10 @@ interface Props {
 }
 
 const TableWrapper = ({ table, columns, loading }: Props) => {
+  const router = useRouter();
+  const handleRowClick = (rowData: any) => {
+    router.push(`/customers/${rowData.id}`)
+  };
   return (
     <div className="min-h-80 bg-white rounded-b-[20px]">
       <Table>
@@ -63,6 +68,7 @@ const TableWrapper = ({ table, columns, loading }: Props) => {
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                onClick={() => handleRowClick(row.original)}
                 className={cn(
                   "cursor-pointer bg-white text-lg font-normal text-[#303030]",
                   table.getRowModel().rows.length - 1 === index &&

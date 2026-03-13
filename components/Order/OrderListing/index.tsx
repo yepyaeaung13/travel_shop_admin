@@ -138,7 +138,7 @@ export default function OrderList({ onImport, onExport }: OrderListProps) {
               </div>
             )}
 
-            {orders !== undefined && showNoOrderYet && orders?.length === 0 && (
+            {!isLoading && orders !== undefined && showNoOrderYet && orders?.length === 0 && (
               <div className="flex w-full flex-col items-center justify-center gap-5 pb-16 pt-24">
                 <IconNoYet className="h-[149px] w-[200px] md:h-[225px] md:w-[300px]" />
                 <span className="text-xl font-medium text-[#444444]">

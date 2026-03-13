@@ -24,7 +24,7 @@ const OrderInfo = ({ order }: { order: any }) => {
             Order ID - {order?.id?.toString().padStart(3, "0")}
           </h2>
           <p className="text-custom-gray-100 text-sm">
-            ordered time at {" "}
+            ordered time at{" "}
             {dayjs(order?.createdAt).format("DD MMM YYYY [at] hh:mm A")}
           </p>
         </div>
@@ -80,7 +80,12 @@ const OrderInfo = ({ order }: { order: any }) => {
             </div>
             <div className="order-3 col-span-3 flex items-center justify-between md:order-2">
               <div className="w-16 md:hidden"></div>
-              <div className="text-center">
+              <div className="text-center relative">
+                {Number(item.originalPrice) !== Number(item.price) && (
+                  <p className="text-muted-foreground text-base line-through">
+                    {Number(item.originalPrice).toLocaleString()} Ks
+                  </p>
+                )}
                 <p className="text-custom-dark-gray text-base font-medium">
                   {Number(item.price).toLocaleString()} Ks
                 </p>

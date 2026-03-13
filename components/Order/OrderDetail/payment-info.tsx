@@ -96,7 +96,7 @@ const PaymentInfo = ({
             </button>
 
             <Image
-              src={KPaySlip}
+              src={`${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${order?.payment?.slip}`}
               alt="Payment screenshot"
               width={1000}
               height={1000}
@@ -106,7 +106,7 @@ const PaymentInfo = ({
         </Dialog>
       </div>
       {order?.payment?.status?.toLowerCase() === PaymentStatus.REJECTED && (
-        <div className="flex-1 space-y-2.5 md:space-y-5 rounded-md border border-[#FF3333] bg-[#FF333333] p-4 md:p-5">
+        <div className="space-y-2.5 md:space-y-5 rounded-md border border-[#FF3333] bg-[#FF333333] p-4 md:p-5 h-auto">
           <div className="space-y-1 md:space-y-2.5">
             <h3 className="text-foreground text-xl font-medium">
               Payment rejected
@@ -125,7 +125,7 @@ const PaymentInfo = ({
         </div>
       )}
       {order?.payment?.status?.toLowerCase() === PaymentStatus.APPROVED && (
-        <div className="flex-1 space-y-2.5 md:space-y-5 rounded-md border border-[#126D00] bg-[#126D00]/20 p-4 md:p-5">
+        <div className="space-y-2.5 md:space-y-5 rounded-md border border-[#126D00] bg-[#126D00]/20 p-4 md:p-5 h-auto">
           <div className="space-y-1 md:space-y-2.5">
             <h3 className="text-xl font-medium">
               Payment verified and approved

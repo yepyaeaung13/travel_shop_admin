@@ -96,7 +96,7 @@ const Pagination = ({
               <Button
                 variant={page === pageNum ? "default" : "outline"}
                 size="icon"
-                className="h-8 w-8 text-white"
+                className="h-8 w-8"
                 onClick={() => onPageChange(pageNum as number)}
               >
                 {pageNum}

@@ -65,7 +65,7 @@ const OrderDetails = () => {
             {/* Left 2/3 */}
             <div className="col-span-1 flex flex-col gap-4 md:col-span-2">
               <OrderInfo order={orderDetail?.data} />
-              <div className="bg-card flex-1 space-y-2.5 md:space-y-5 rounded-md p-4 md:p-5">
+              <div className="bg-card h-auto space-y-2.5 md:space-y-5 rounded-md p-4 md:p-5">
                 <h3 className="text-foreground text-xl font-medium">
                   Order summary
                 </h3>

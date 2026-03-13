@@ -6,9 +6,10 @@ import { User } from "@/types/users.types";
 import { useRouter } from "next/navigation";
 // import { useDeleteUser } from "@/queries/users.queries";
 import { ActionIcon } from "@/assets/icons/customer/action";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const CustomerTableColumns = (
-  handleBlockOpen: (user: User) => void
+  handleBlockOpen: (user: User) => void,
 ): ColumnDef<User>[] => {
   const router = useRouter();
   // const { mutate: deleteUser } = useDeleteUser();
@@ -21,43 +22,14 @@ export const CustomerTableColumns = (
   // };
 
   return [
-    // {
-    //   id: "select",
-    //   size: 50,
-    //   header: ({ table }) => (
-    //     <div className="pl-2">
-    //       <Checkbox
-    //         checked={
-    //           table.getIsAllPageRowsSelected() ||
-    //           (table.getIsSomePageRowsSelected() && "indeterminate")
-    //         }
-    //         onCheckedChange={(value) =>
-    //           table.toggleAllPageRowsSelected(!!value)
-    //         }
-    //         aria-label="Select all"
-    //         className="text-[#303030]"
-    //       />
-    //     </div>
-    //   ),
-    //   cell: ({ row }) => (
-    //     <div className="pl-2">
-    //       <Checkbox
-    //         checked={row.getIsSelected()}
-    //         onCheckedChange={(value) => row.toggleSelected(!!value)}
-    //         aria-label="Select row"
-    //         className="text-[#303030]"
-    //       />
-    //     </div>
-    //   ),
-    //   enableSorting: false,
-    //   enableHiding: false,
-    // },
     {
       accessorKey: "id",
       size: 80,
       header: () => <h3 className="pl-2">ID</h3>,
       cell: ({ row }) => (
-        <div className="font-medium pl-2">#{Number(row.getValue("id")).toString().padStart(4, "0")}</div>
+        <div className="font-medium pl-2">
+          #{Number(row.getValue("id")).toString().padStart(4, "0")}
+        </div>
       ),
     },
     {
@@ -65,7 +37,16 @@ export const CustomerTableColumns = (
       size: 180,
       header: () => <h3>Name</h3>,
       cell: ({ row }) => (
-        <div className="font-medium">{row.getValue("name")}</div>
+        <div className="font-medium flex gap-2.5 items-center">
+          <Avatar className="h-12 w-12">
+            <AvatarImage
+              src={`${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${row.getValue("picture")}`}
+              alt="user"
+            />
+            <AvatarFallback>{(row.getValue("name") as string)?.slice(0, 2)}</AvatarFallback>
+          </Avatar>
+          {row.getValue("name")}
+        </div>
       ),
     },
     {
@@ -93,12 +74,9 @@ export const CustomerTableColumns = (
       cell: ({ getValue }) => {
         const status = getValue() as string;
 
-        const color = status ? "bg-yellow-100 text-yellow-800" : "bg-green-100 text-green-800"
-          // {
-          //   ACTIVE: "bg-green-100 text-green-800",
-          //   INACTIVE: "bg-yellow-100 text-yellow-800",
-          //   SUSPENDED: "bg-red-100 text-red-800",
-          // }[status] ?? "bg-gray-100 text-gray-800";
+        const color = status
+          ? "bg-yellow-100 text-yellow-800"
+          : "bg-green-100 text-green-800";
 
         return (
           <p className="text-center">
@@ -128,69 +106,9 @@ export const CustomerTableColumns = (
             >
               <ActionIcon />
             </Button>
-            {/* <Button
-              variant="ghost"
-              size="icon"
-              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-[#F6F1F4] transition-all duration-300 hover:scale-105 hover:bg-[#EEEEEE]"
-              onClick={() => handleBlockOpen(user)}
-            >
-              <BanIcon className="h-4 w-4 rotate-90 text-[#FF3333]" />
-            </Button> */}
           </div>
         );
       },
     },
   ];
 };
-
-// const SortableHeaderV1 = ({
-//   title,
-//   sortName,
-//   sortOptions,
-//   handleSortChange,
-// }: {
-//   title: string;
-//   sortName: string;
-//   handleSortChange: (value: UserSortOption) => void;
-//   sortOptions: {
-//     label: string;
-//     value: UserSortOption;
-//   }[];
-// }) => {
-//   const options = sortOptions.filter((sort) =>
-//     sort.label.toLowerCase().includes(sortName),
-//   );
-//   const [show, setShow] = useState<boolean>(false);
-//   const sortChange = (option: { label: string; value: UserSortOption }) => {
-//     handleSortChange(option.value);
-//     setShow(false);
-//   };
-//   return (
-//     <div className="relative">
-//       <Button
-//         variant="ghost"
-//         onClick={() => setShow(!show)}
-//         className="h-auto cursor-pointer p-0 font-medium"
-//       >
-//         {title}
-//         <ArrowUpDown className="ml-2 h-4 w-4" />
-//       </Button>
-//       {show && (
-//         <div className="absolute top-5 flex translate-x-1/2 flex-col rounded-[10px] bg-gray-200 shadow">
-//           {options.map((option, index) => (
-//             <p
-//               className={cn(
-//                 "cursor-pointer p-2",
-//                 (index + 1) % 2 !== 0 && "border-b border-amber-50",
-//               )}
-//               key={index}
-//               onClick={() => sortChange(option)}
-//             >
-//               {option.label}
-//             </p>
-//           ))}
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
