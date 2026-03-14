@@ -45,7 +45,7 @@ function ProductCreatePage() {
     Number(id) as number,
   );
 
-  console.log("product", product);
+  // console.log("product", product);
   const {
     categories,
     categoryVariantGroups,
@@ -290,7 +290,6 @@ function ProductCreatePage() {
               sellingPriceMMK={sellingPriceMMK}
               sellingPriceUSD={sellingPriceUSD}
               sellingPriceCNY={sellingPriceCNY}
-              disablePromotion={false}
             />
             {isMobile && (
               <VisibilityInventorySection
@@ -332,6 +331,7 @@ function ProductCreatePage() {
         setOpen={setOpen}
         loading={deleteLoading}
         callback={handleDelete}
+        type={"product"}
       />
 
       <ConfirmDialog

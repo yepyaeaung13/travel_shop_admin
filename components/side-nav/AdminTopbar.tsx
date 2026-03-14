@@ -19,6 +19,7 @@ import { UnReadNotiContainer } from "@/components/notification/notification-cont
 import NavBarNotification from "../notification/navbar-notification";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useGetNoti } from "@/queries/noti";
+import IconNavbar from "@/assets/icons/sidebar/IconNavbar";
 
 const header = (pathname: string) => {
   // Product
@@ -90,12 +91,12 @@ export default function AdminTopbar() {
         <button
           onClick={toggleOpen}
           className={cn(
-            "flex h-[40px] w-[40px] md:mr-10 items-center justify-center rounded-full",
-            open && "bg-[#E4E6FF]",
+            "flex h-[40px] w-[40px] md:mr-10 items-center justify-center rounded-full"
           )}
         >
-          <GripVertical
-            className={cn(open ? "text-primary" : "text-[#444444]")}
+          <IconNavbar
+            fill={open ? "#616ff5" : "#E4E6FF"}
+            fill2={open ? "#fff" : "#3C3C3C"}
           />
         </button>
         <div className="flex items-center space-x-2 py-2 max-md:hidden md:space-x-4">
@@ -115,7 +116,8 @@ export default function AdminTopbar() {
                 <IconNotification className="size-6 mr-4" />
                 {notiList?.data?.length > 0 && (
                   <span className="absolute -top-5 right-1.5 bg-red-500 text-white h-6 w-6 rounded-full text-xs flex justify-center items-center">
-                    {notiList?.data?.length} { notiList?.data?.length >= 10 && "+"}
+                    {notiList?.data?.length}{" "}
+                    {notiList?.data?.length >= 10 && "+"}
                   </span>
                 )}
               </button>
@@ -124,7 +126,10 @@ export default function AdminTopbar() {
               align="end"
               className="max-md:ml-6 mt-2 w-[350px] h-[523px] overflow-y-scroll hide-scrollbar py-5 px-4 border-none"
             >
-              <NavBarNotification notiList={notiList?.data || []} setNotificationOpen={setNotificationOpen} />
+              <NavBarNotification
+                notiList={notiList?.data || []}
+                setNotificationOpen={setNotificationOpen}
+              />
             </PopoverContent>
           </Popover>
           {loginInfo?.picture ? (

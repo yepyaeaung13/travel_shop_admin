@@ -9,6 +9,7 @@ import {
 import { Button } from "../ui/button";
 import IconDeleteConfirm from "../DeleteConfirm";
 import IconLoading from "../Loading";
+import IconDeleteProductConfirm from "@/assets/icons/product/DeleteProductConfirm";
 
 type Props = {
   open: boolean;
@@ -17,6 +18,7 @@ type Props = {
   callback: () => void;
   title?: string;
   description?: string;
+  type?: "product" | "category";
 };
 export default function ConfirmDeleteDialog({
   open,
@@ -25,13 +27,18 @@ export default function ConfirmDeleteDialog({
   callback,
   title = "Are you sure you want to delete?",
   description = "This action cannot be undone",
+  type = "category",
 }: Props) {
   return (
     <Dialog open={open} onOpenChange={loading ? () => {} : setOpen}>
       <DialogContent className="flex w-[440px] flex-col items-center justify-center gap-7 rounded-[10px]">
         <DialogHeader className="gap-1">
-          <div className="mb-7 flex justify-center">
-            <IconDeleteConfirm className="" />
+          <div className="my-7 flex justify-center">
+            {type === "category" ? (
+              <IconDeleteConfirm className="" />
+            ) : (
+              <IconDeleteProductConfirm />
+            )}
           </div>
           <DialogTitle className="text-lg font-semibold text-[#1E1E1E] md:text-xl">
             {title}

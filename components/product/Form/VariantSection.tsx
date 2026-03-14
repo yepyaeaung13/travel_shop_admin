@@ -35,6 +35,7 @@ import {
   generateGroupedVariants,
   generateGroupedVariantsUpdate,
 } from "@/utils/product";
+import { Switch } from "@/components/ui/switch";
 
 interface Props {
   isEdit: boolean;
@@ -135,7 +136,7 @@ export default function VariantSection({
 
   const handleAddNew = () => {
     if (newValue !== "") {
-      setShowError("Please press Enter for new value.");
+      setShowError("Please enter a value or remove the existing one");
       return;
     }
     if (
@@ -175,7 +176,7 @@ export default function VariantSection({
 
   const handleUpdate = () => {
     if (newEditValue !== "") {
-      setShowError("Please press Enter for new value.");
+      setShowError("Please enter a value or remove the existing one");
       return;
     }
     updateProductVariant(editProductVarint.indexNo, {
@@ -244,7 +245,7 @@ export default function VariantSection({
     // }
   }, [productVarints]);
 
-  console.log("variants", variants)
+  // console.log("variants", variants)
 
   return (
     <>
@@ -346,7 +347,7 @@ export default function VariantSection({
                 <Input
                   className={cn(
                     "placeholder:md:text-base h-12 md:h-14 md:text-base rounded-[10px] font-normal text-[#303030]",
-                    tempProductError.name && "border border-[#FF3333]",
+                    tempProductError.name || showError && "border border-[#FF3333]",
                   )}
                   type="text"
                   placeholder="Type value and press Enter"
@@ -443,7 +444,7 @@ export default function VariantSection({
                     </div>
                   ))}
                   <Input
-                    className="placeholder:md:text-base h-12 md:h-14 md:text-base rounded-[10px] font-normal text-[#303030]"
+                    className={cn("placeholder:md:text-base h-12 md:h-14 md:text-base rounded-[10px] font-normal text-[#303030]", showError && "border border-[#FF3333]")}
                     type="text"
                     placeholder="Option values"
                     value={newEditValue}
@@ -514,7 +515,7 @@ export default function VariantSection({
                     </TableHead>
                     {/* <TableHead>Buying price</TableHead> */}
                     <TableHead className="text-base md:text-lg font-medium py-2 md:py-4 text-[#303030] ">
-                      Selling price
+                      Price
                     </TableHead>
                     <TableHead className="text-base md:text-lg font-medium py-2 md:py-4 text-[#303030] ">
                       Stock
@@ -530,10 +531,10 @@ export default function VariantSection({
                     if (productVarints.length === 1) {
                       return group.variantItems.map((item, itemIndex) => (
                         <TableRow key={item.sku}>
-                          <TableCell className="pl-5 flex gap-4 text-base md:text-lg font-normal text-[#303030]">
-                            <button
-                              type="button"
-                              onClick={() => {
+                          <TableCell className="pl-5 flex items-center gap-4 text-base md:text-lg font-normal text-[#303030]">
+                            <Switch
+                              checked={item.status === "active"}
+                              onCheckedChange={(checked) => {
                                 updateVariantItem(groupIndex, itemIndex, {
                                   ...item,
                                   status:
@@ -542,20 +543,14 @@ export default function VariantSection({
                                       : "active",
                                 });
                               }}
-                            >
-                              {item.status === "active" ? (
-                                <ToggleRight className="text-primary" />
-                              ) : (
-                                <ToggleLeft />
-                              )}
-                            </button>
+                            />
                             {item.name}
                           </TableCell>
 
                           <TableCell>
                             <Input
-                              value={item.sellingPrice.toString()}
-                              className="h-8 w-24"
+                              value={item.sellingPrice.toLocaleString()}
+                              className="h-8 max-w-60"
                               onChange={(e) => {
                                 const rawValue = e.target.value;
                                 const numericValue = rawValue.replace(
@@ -568,6 +563,7 @@ export default function VariantSection({
                                 });
                               }}
                             />
+                            <span className="text-[#3C3C3C] pl-2.5">Ks</span>
                           </TableCell>
 
                           <TableCell>
@@ -630,10 +626,12 @@ export default function VariantSection({
                             className="text-sm text-muted-foreground pt-3 pb-2 md:pt-5 md:pb-3.5"
                           >
                             <Input
-                              className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] w-36"
-                              value={min === max ? min : ""}
+                              className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] max-w-60"
+                              value={min === max ? min.toLocaleString() : ""}
                               placeholder={
-                                min === max ? undefined : `${min} – ${max}`
+                                min === max
+                                  ? undefined
+                                  : `${min.toLocaleString()} – ${max.toLocaleString()}`
                               }
                               onChange={(e) => {
                                 const rawValue = e.target.value;
@@ -647,6 +645,7 @@ export default function VariantSection({
                                 );
                               }}
                             />
+                            <span className="text-[#3C3C3C] pl-2.5">Ks</span>
                           </TableCell>
                           <TableCell
                             colSpan={4}
@@ -668,9 +667,9 @@ export default function VariantSection({
                           group.variantItems.map((item, itemIndex) => (
                             <TableRow key={item.sku}>
                               <TableCell className="pl-5 flex gap-4 text-sm md:text-base items-center pt-4 font-normal text-[#303030]">
-                                <button
-                                  type="button"
-                                  onClick={() => {
+                                <Switch
+                                  checked={item.status === "active"}
+                                  onCheckedChange={(checked) => {
                                     updateVariantItem(groupIndex, itemIndex, {
                                       ...item,
                                       status:
@@ -679,33 +678,14 @@ export default function VariantSection({
                                           : "active",
                                     });
                                   }}
-                                >
-                                  {item.status === "active" ? (
-                                    <ToggleRight className="text-primary" />
-                                  ) : (
-                                    <ToggleLeft />
-                                  )}
-                                </button>
+                                />
                                 {item.name}
                               </TableCell>
 
-                              {/* <TableCell>
-                              <Input
-                                value={item.buyingPrice}
-                                className="h-8 w-24"
-                                onChange={(e) =>
-                                  updateVariantItem(groupIndex, itemIndex, {
-                                    ...item,
-                                    buyingPrice: Number(e.target.value),
-                                  })
-                                }
-                              />
-                            </TableCell> */}
-
                               <TableCell>
                                 <Input
-                                  value={item.sellingPrice.toString()}
-                                  className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] w-36"
+                                  value={item.sellingPrice.toLocaleString()}
+                                  className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] max-w-60"
                                   onChange={(e) => {
                                     const rawValue = e.target.value;
                                     const numericValue = rawValue.replace(
@@ -718,6 +698,9 @@ export default function VariantSection({
                                     });
                                   }}
                                 />
+                                <span className="text-[#3C3C3C] pl-2.5">
+                                  Ks
+                                </span>
                               </TableCell>
 
                               <TableCell>
@@ -776,6 +759,7 @@ export default function VariantSection({
           </DialogTitle>
           <div className="w-full space-y-4">
             <div className="w-full flex flex-col gap-2">
+              <h2 className="text-black font-medium text-lg">Pricing</h2>
               <label className="text-sm md:text-base font-normal text-[#303030]">
                 Price (MMK)
               </label>
@@ -796,7 +780,8 @@ export default function VariantSection({
               />
             </div>
 
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 pt-4">
+              <h2 className="text-black font-medium text-lg">Inventory</h2>
               <label className="text-sm md:text-base font-normal text-[#303030]">
                 Stock
               </label>

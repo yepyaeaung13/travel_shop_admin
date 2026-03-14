@@ -36,18 +36,23 @@ export const CustomerTableColumns = (
       accessorKey: "name",
       size: 180,
       header: () => <h3>Name</h3>,
-      cell: ({ row }) => (
-        <div className="font-medium flex gap-2.5 items-center">
-          <Avatar className="h-12 w-12">
-            <AvatarImage
-              src={`${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${row.getValue("picture")}`}
-              alt="user"
-            />
-            <AvatarFallback>{(row.getValue("name") as string)?.slice(0, 2)}</AvatarFallback>
-          </Avatar>
-          {row.getValue("name")}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const { name, picture } = row.original;
+        return (
+          <div className="font-medium flex gap-2.5 items-center">
+            <Avatar className="h-12 w-12">
+              <AvatarImage
+                src={`${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${picture}`}
+                alt="user"
+              />
+              <AvatarFallback>
+                {(name as string)?.slice(0, 2)}
+              </AvatarFallback>
+            </Avatar>
+            {name}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "phoneNumber",

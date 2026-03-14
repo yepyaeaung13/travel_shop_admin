@@ -414,9 +414,16 @@ function EditCategory() {
                     </Label>
                     <Input
                       id="category-name"
-                      placeholder="Category name"
+                      placeholder="Main category name"
                       value={categoryName}
-                      onChange={(e) => setCategoryName(e.target.value)}
+                      onChange={(e) => {
+                        const value = e.target.value;
+
+                        // allow only english letters
+                        if (/^[A-Za-z]*$/.test(value)) {
+                          setCategoryName(value);
+                        }
+                      }}
                       className="h-12 text-sm md:h-14 md:text-base border-border rounded-[10px]"
                       required
                     />
@@ -433,7 +440,7 @@ function EditCategory() {
                       htmlFor="has-subcategory"
                       className="cursor-pointer text-base font-medium md:text-lg"
                     >
-                      Add has sub-category{" "}
+                      Add sub-category <span className="text-[#FF3333]">*</span>
                       <span className="md:text-xs">(Maximun 10)</span>
                     </Label>
                   </div>

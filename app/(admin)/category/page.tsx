@@ -26,6 +26,7 @@ import { CategoryResponse } from "@/types/category.types";
 import {
   useDeleteCategory,
   useGetCategories,
+  useGetUnCategorized,
   useToggleStatus,
 } from "@/queries/category.queries";
 import { getToggleCategoryStatus } from "@/utils/commonHelper";
@@ -104,6 +105,8 @@ function CategoryList() {
   const { mutate: toggleStatusMutation, isPending: loading } =
     useToggleStatus();
   const { mutate: deleteMutation, isPending } = useDeleteCategory();
+  const { data: unCategorized, isLoading: unCategorizedLoading } =
+    useGetUnCategorized();
 
   // --- SELECT ALL LOGIC ---
   const isAllSelected =
@@ -197,9 +200,9 @@ function CategoryList() {
   };
 
   // --- RENDER LOGIC ---
-  const showNoCategoryYet = totalItems === 1 && !debouncedSearch;
-  const showNoResult = totalItems === 1 && debouncedSearch;
-  const defaultCategory = categories.find((cat) => cat.id === 1);
+  const showNoCategoryYet = totalItems === 0 && !debouncedSearch;
+  const showNoResult = totalItems === 0 && debouncedSearch;
+  const defaultCategory = unCategorized?.data;
 
   // ------------------------------------
   // --- JSX RENDER ---
@@ -229,7 +232,7 @@ function CategoryList() {
         </Button>
       </div>
 
-      {isLoading ? (
+      {unCategorizedLoading ? (
         <Skeleton className="bg-gray-300 h-10" />
       ) : (
         <div className="bg-white rounded-xl px-5 py-3 flex justify-between">
@@ -272,7 +275,7 @@ function CategoryList() {
         </CardHeader>
         <CardContent className="px-0">
           <CategoryTable
-            categories={categories.filter((cat) => cat.id !== 1) as any[]}
+            categories={categories as any[]}
             selectCategory={selectedCategory}
             handleSelectCategory={handleSelectCategory as (id: number) => void}
             handleSetDeleteCategory={

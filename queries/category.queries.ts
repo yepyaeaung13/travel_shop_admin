@@ -10,6 +10,7 @@ import {
   getCategoryById,
   UpdateCategoryRequest,
   deleteSubCategory,
+  getUnCategorized,
 } from "@/services/category.service";
 import {
   CategoryGetResponse,
@@ -96,5 +97,12 @@ export const useDeleteSubCategory = () => {
     onSuccess() {
       qr.invalidateQueries({ queryKey: ["Categories"] });
     },
+  });
+};
+
+export const useGetUnCategorized = () => {
+  return useQuery({
+    queryKey: ["un-categorized"],
+    queryFn: () => getUnCategorized(),
   });
 };

@@ -35,7 +35,6 @@ export default function PricingSection({
   sellingPriceMMK,
   sellingPriceUSD,
   sellingPriceCNY,
-  disablePromotion = false,
 }: PricingSectionProps) {
   const { variants } = useCreateProductStore.getState();
 
@@ -62,7 +61,7 @@ export default function PricingSection({
     if (value < 0) return 0;
 
     if (promoteType === PromoteType.PERCENT) {
-      return Math.min(value, 100);
+      return Math.min(value, 99);
     }
 
     if (variantItems.length > 0) {
@@ -89,8 +88,8 @@ export default function PricingSection({
           >
             <PriceField
               name="sellingPriceMMK"
-              label="Selling Price"
-              placeholder="Selling price"
+              label="Price (MMK)"
+              placeholder="Price in MMK"
               unit="Ks"
               isRequired={true}
               value={sellingPriceMMK.toString()}
@@ -101,8 +100,8 @@ export default function PricingSection({
           </div>
           <PriceField
             name="sellingPriceUSD"
-            label="Selling Price (USD)"
-            placeholder="Selling Price in Dollar"
+            label="Price (USD)"
+            placeholder="Price in Dollar"
             unit="$"
             isRequired={false}
             value={sellingPriceUSD.toString()}
@@ -112,8 +111,8 @@ export default function PricingSection({
           />
           <PriceField
             name="sellingPriceCNY"
-            label="Selling Price (CNY)"
-            placeholder="Selling Price in Yuan"
+            label="Price (CNY)"
+            placeholder="Price in Yuan"
             unit="¥"
             isRequired={false}
             value={sellingPriceCNY.toString()}
@@ -124,12 +123,11 @@ export default function PricingSection({
         </div>
 
         <div className="space-y-4 md:space-y-2">
-          <div className="flex justify-between items-center space-x-2">
-            <label className="text-base md:text-lg font-medium text-[#303030]">
+          <div className="flex md:justify-between justify-end items-center max-sm:flex-row-reverse space-x-2">
+            <label className="text-lg font-medium text-[#303030]">
               Discount
             </label>
             <Switch
-              disabled={disablePromotion}
               checked={isPromote}
               onCheckedChange={(checked) => {
                 setField("isPromote", checked);
@@ -144,7 +142,7 @@ export default function PricingSection({
 
           <div
             className={cn(
-              "space-y-4 pl-4 md:pl-0",
+              "space-y-4 md:pl-0 flex flex-col max-sm:flex-col-reverse max-sm:gap-3",
               !isPromote && "pointer-events-none opacity-50",
             )}
           >
@@ -188,7 +186,7 @@ export default function PricingSection({
                   <RadioGroupItem value="PERCENT" id="discount-percentage" />
                   <Label
                     htmlFor="discount-percentage"
-                    className="cursor-pointer md:text-lg font-normal"
+                    className="cursor-pointer text-lg font-normal"
                   >
                     Percentage
                   </Label>
@@ -197,7 +195,7 @@ export default function PricingSection({
                   <RadioGroupItem value="AMOUNT" id="discount-amount" />
                   <Label
                     htmlFor="discount-amount"
-                    className="cursor-pointer md:text-lg font-normal"
+                    className="cursor-pointer text-lg font-normal"
                   >
                     Amount
                   </Label>

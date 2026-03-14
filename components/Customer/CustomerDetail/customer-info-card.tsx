@@ -9,12 +9,14 @@ interface CustomerInfoCardProps {
 export default function CustomerInfoCard({ customer }: CustomerInfoCardProps) {
   const status = customer?.deleted as "ACTIVE" | "INACTIVE" | "SUSPENDED";
 
-  const color = status ? "bg-yellow-100 text-yellow-800" : "bg-[#E4FFDF] text-[#126D00]";
-    // {
-    //   ACTIVE: "bg-[#E4FFDF] text-[#126D00]",
-    //   INACTIVE: "bg-yellow-100 text-yellow-800",
-    //   SUSPENDED: "bg-red-100 text-red-800",
-    // }[status] ?? "bg-gray-100 text-gray-800";
+  const color = status
+    ? "bg-yellow-100 text-yellow-800"
+    : "bg-[#E4FFDF] text-[#126D00]";
+  // {
+  //   ACTIVE: "bg-[#E4FFDF] text-[#126D00]",
+  //   INACTIVE: "bg-yellow-100 text-yellow-800",
+  //   SUSPENDED: "bg-red-100 text-red-800",
+  // }[status] ?? "bg-gray-100 text-gray-800";
 
   const defaultAddress = customer.userAddress?.find(
     (address: any) => address.default,
@@ -25,7 +27,7 @@ export default function CustomerInfoCard({ customer }: CustomerInfoCardProps) {
       <div className="flex flex-col items-center justify-center gap-5 md:flex-row">
         <Avatar className="h-28 w-28">
           <AvatarImage
-            src={customer.picture}
+            src={`${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${customer.picture}`}
             alt={customer.name}
           />
           <AvatarFallback className="bg-gray-600 text-2xl text-white">

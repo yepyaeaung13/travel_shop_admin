@@ -33,14 +33,18 @@ export default function SubCategoryItem({
   cropHeight = 300,
   cropWidth = 300,
 }: Props) {
-
   if (!subCategory) return null;
 
   const [showCropDialog, setShowCropDialog] = useState(false);
   const [tempImagePreview, setTempImagePreview] = useState<string | null>(null);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateSubCategory(indexNo, e.target.value, subCategory.image);
+    const value = e.target.value;
+
+    // allow only english letters
+    if (/^[A-Za-z]*$/.test(value)) {
+      updateSubCategory(indexNo, value, subCategory.image);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,7 +124,7 @@ export default function SubCategoryItem({
               value={subCategory.name}
               onChange={handleNameChange}
               className={cn(
-                "h-12 w-full rounded-[10px] text-sm md:h-14 md:max-w-[344px] md:text-base border-[#3C3C3C4D]"
+                "h-12 w-full rounded-[10px] text-sm md:h-14 md:max-w-[344px] md:text-base border-[#3C3C3C4D]",
               )}
             />
           </div>

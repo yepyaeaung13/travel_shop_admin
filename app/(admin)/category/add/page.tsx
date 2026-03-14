@@ -45,7 +45,7 @@ export default function CreateCategory() {
       ...prev,
       {
         name: "",
-        image: ""
+        image: "",
       },
     ]);
   };
@@ -60,7 +60,7 @@ export default function CreateCategory() {
     indexNo: number,
     name?: string,
     image?: string,
-    file?: File
+    file?: File,
   ) => {
     const subCategoriesName = subCategories
       .filter((sub, index) => indexNo !== index)
@@ -79,8 +79,8 @@ export default function CreateCategory() {
               image: image ?? sub.image,
               file: file ?? sub.file,
             }
-          : sub
-      )
+          : sub,
+      ),
     );
   };
 
@@ -103,7 +103,7 @@ export default function CreateCategory() {
             ...cat,
             image: uploadedImage?.data?.cid,
           };
-        })
+        }),
       );
     }
 
@@ -122,8 +122,12 @@ export default function CreateCategory() {
       },
       onError: (error: any) => {
         console.log("Error", error);
-        
-        errorToast("Failed", error?.response?.data?.message || "Create category unsuccefully, please try again.");
+
+        errorToast(
+          "Failed",
+          error?.response?.data?.message ||
+            "Create category unsuccefully, please try again.",
+        );
         setIsSaving(false);
       },
     });
@@ -233,9 +237,16 @@ export default function CreateCategory() {
                     </Label>
                     <Input
                       id="category-name"
-                      placeholder="Category name"
+                      placeholder="Main category name"
                       value={categoryName}
-                      onChange={(e) => setCategoryName(e.target.value)}
+                      onChange={(e) => {
+                        const value = e.target.value;
+
+                        // allow only english letters
+                        if (/^[A-Za-z]*$/.test(value)) {
+                          setCategoryName(value);
+                        }
+                      }}
                       className="h-12 rounded-[10px] text-sm md:h-14 md:text-base border-[#3C3C3C4D]"
                       required
                     />
@@ -252,7 +263,7 @@ export default function CreateCategory() {
                       htmlFor="has-subcategory"
                       className="cursor-pointer text-lg md:text-xl font-medium text-black"
                     >
-                      Add has sub-category
+                      Add sub-category <span className="text-[#FF3333]">*</span>
                     </Label>
                   </div>
 
@@ -317,7 +328,7 @@ export default function CreateCategory() {
                 disabled={isSaving || disabled}
                 className={cn(
                   "h-auto w-[47%] rounded-[10px] bg-[#444444] py-1.5 text-base font-medium text-white duration-300 hover:bg-[#444444] active:scale-95 md:w-[190px] md:text-lg",
-                  disabled && "bg-[#444444]/50"
+                  disabled && "bg-[#444444]/50",
                 )}
               >
                 {isSaving ? "..." : "Unpublish"}
@@ -330,7 +341,7 @@ export default function CreateCategory() {
                 disabled={isSaving || disabled}
                 className={cn(
                   "bg-primary h-auto w-[47%] rounded-[10px] py-1.5 text-base font-medium text-white duration-300 active:scale-95 md:w-[190px] md:text-lg",
-                  disabled && "bg-primary/50"
+                  disabled && "bg-primary/50",
                 )}
               >
                 {isSaving ? "..." : "Publish"}

@@ -24,6 +24,7 @@ import EditIcon2 from "@/assets/icons/EditIcon2";
 import Image from "next/image";
 import dayjs from "dayjs";
 import { Product } from "@/types/product.types";
+import { useRouter } from "next/navigation";
 
 export enum SortOptionValue {
   NEWEST = "newest",
@@ -72,6 +73,7 @@ export default function ProductTable({
   isIndeterminate,
   handleSelectAll,
 }: Props) {
+  const router = useRouter();
   const { setParam, getParam, deleteParam } = useQueryParams();
 
   const handleSortNameChange = () => {
@@ -125,6 +127,10 @@ export default function ProductTable({
     }
   };
 
+  const handleGoProductDetail = (id: number) => {
+    router.push(`/product/${id}`);
+  };
+
   return (
     <Table className="table-fixed md:table-auto">
       <TableHeader className="bg-[#4444441A]">
@@ -148,7 +154,7 @@ export default function ProductTable({
           {/* SORTABLE: Category Name */}
           <TableHead
             className={cn(
-              "w-[150px] cursor-pointer md:w-72 2xl:w-96 text-base md:text-lg py-2 md:py-4",
+              "w-[300px] cursor-pointer md:w-72 2xl:w-96 text-base md:text-lg py-2 md:py-4",
             )}
             onClick={handleSortNameChange}
           >
@@ -204,7 +210,11 @@ export default function ProductTable({
         {products.length > 0 &&
           products.map((product: any) => {
             return (
-              <TableRow key={product.id} className="border-none md:text-lg">
+              <TableRow
+                onClick={() => handleGoProductDetail(product.id)}
+                key={product.id}
+                className="border-none md:text-lg cursor-pointer"
+              >
                 <TableCell className="pl-5 md:pl-6">
                   <Checkbox
                     checked={selectProduct.includes(product.id)}

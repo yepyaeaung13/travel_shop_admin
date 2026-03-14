@@ -240,7 +240,7 @@ function ProductList() {
                 <h2 className="text-[#1E1E1E] text-[24px] md:text-[28px] font-medium md:font-semibold">
                   {dashbaordData?.data?.totalActive?.toLocaleString()}
                 </h2>
-                <p className="text-[#303030] max-sm:text-sm">Total products</p>
+                <p className="text-[#303030] max-sm:text-sm">Published products</p>
               </div>
               <span
                 className="md:mt-2 rounded-[12px] shadow-[0px_2px_10px_0px_#7C8DB51F]
@@ -255,7 +255,7 @@ function ProductList() {
                 <h2 className="text-[#1E1E1E] text-[24px] md:text-[28px] font-medium md:font-semibold">
                   {dashbaordData?.data?.totalInactive?.toLocaleString()}
                 </h2>
-                <p className="text-[#303030] max-sm:text-sm">Total products</p>
+                <p className="text-[#303030] max-sm:text-sm">Unpublished products</p>
               </div>
               <span
                 className="md:mt-2 rounded-[12px] shadow-[0px_2px_10px_0px_#7C8DB51F]
@@ -270,7 +270,7 @@ function ProductList() {
                 <h2 className="text-[#1E1E1E] text-[24px] md:text-[28px] font-medium md:font-semibold">
                   {dashbaordData?.data?.totalOutStock?.toLocaleString()}
                 </h2>
-                <p className="text-[#303030] max-sm:text-sm">Total products</p>
+                <p className="text-[#303030] max-sm:text-sm">Out of stock products</p>
               </div>
 
               <span
@@ -408,6 +408,7 @@ function ProductList() {
         setOpen={setOpen}
         loading={isPending}
         callback={handleDelete}
+        type={"product"}
       />
       {/* Status Change Dialog */}
       <ConfirmChangeDialog

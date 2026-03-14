@@ -110,8 +110,8 @@ export default function PhotoSection({
   const renderUploadSlot = (size: "main" | "other", slot: number) => (
     <div
       className={cn(
-        "flex cursor-pointer items-center justify-center rounded-3xl border-2 border-dashed border-gray-300 bg-gray-50 hover:dark:bg-neutral-800",
-        size === "main" ? "h-48 w-full md:w-40" : "size-36 md:size-32",
+        "flex cursor-pointer items-center justify-center rounded-3xl border-2 border-dashed border-gray-300 hover:dark:bg-neutral-800",
+        size === "main" ? "h-48 w-full md:w-40" : "h-[144px] w-full md:size-32",
         size === "other" && images.length >= MAX_IMAGES && "cursor-not-allowed opacity-50",
       )}
       onClick={(e) => handleUploadClick(e, slot, size === "main")}

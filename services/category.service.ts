@@ -90,3 +90,8 @@ export const deleteSubCategory = async (id: number) => {
   const res = await axiosClient.delete(`/v1/categories/subcategory/${id}`);
   return res.data;
 };
+
+export const getUnCategorized = async () => {
+  const res = await axiosClient.get(`/v1/categories/un-categorized`);
+  return res.data;
+};

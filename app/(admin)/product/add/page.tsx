@@ -15,9 +15,11 @@ import { useCreateProduct } from "@/queries/product";
 import { uploadImage } from "@/services/common.service";
 import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function ProductCreatePage() {
   const router = useRouter();
+  const isMobile = useIsMobile();
   const [loading, setLoading] = useState(false);
   const {
     categories,
@@ -176,6 +178,14 @@ export default function ProductCreatePage() {
               addImage={addImage}
               removeImage={removeImage}
             />
+            {isMobile && (
+              <VisibilityInventorySection
+                sku={sku}
+                stock={stock}
+                setField={setField}
+                variants={variants}
+              />
+            )}
             <PricingSection
               promoteType={promoteType}
               promoteValue={promoteValue}
@@ -200,12 +210,14 @@ export default function ProductCreatePage() {
             />
           </div>
 
-          <VisibilityInventorySection
-            sku={sku}
-            stock={stock}
-            setField={setField}
-            variants={variants}
-          />
+          {!isMobile && (
+            <VisibilityInventorySection
+              sku={sku}
+              stock={stock}
+              setField={setField}
+              variants={variants}
+            />
+          )}
         </div>
 
         <div className="flex justify-end gap-4">
