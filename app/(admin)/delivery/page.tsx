@@ -17,7 +17,7 @@ import {
 } from "@/queries/delivery";
 import { ChevronDown, ChevronLeft, ChevronUp, Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
 
 const regions = [
   "Ayeyarwady",
@@ -56,6 +56,7 @@ const DeliveryPage = () => {
   const [disabled, setDisabled] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchDisctrict, setsSearchDisctrict] = useState("");
   const [selectedRegion, setSelectedRegion] = useState<{
     id: number;
     name: string;
@@ -174,6 +175,13 @@ const DeliveryPage = () => {
     setExpandedDistricts((prev) =>
       prev.includes(id) ? prev.filter((d) => d !== id) : [...prev, id],
     );
+  };
+
+  const expandedAddDistrict = (id: number) => {
+    const isInclude = expandedDistricts.find((d: any) => d.id === id);
+    if (!isInclude) {
+      setExpandedDistricts((prev) => [...prev, id]);
+    }
   };
 
   const getDistrictFeeRange = (townships: { fee: number }[]) => {
@@ -376,6 +384,38 @@ const DeliveryPage = () => {
     setSelectedRegion(region);
   };
 
+  const filterRegions = useMemo(() => {
+    if (deliveryRegionData?.data?.length === 0) return [];
+
+    const text = searchTerm.trim().toLowerCase();
+
+    return deliveryRegionData?.data?.filter((r: any) =>
+      r.name.toLowerCase().includes(text),
+    );
+  }, [searchTerm, deliveryRegionData]);
+
+  const filterDisctricts = useMemo(() => {
+    if (regionState?.districts?.length === 0) return [];
+
+    const textDiestrict = searchDisctrict.trim().toLowerCase();
+
+    return regionState?.districts?.filter((d: any) => {
+      const isIncludes = d.name.toLowerCase().includes(textDiestrict);
+      const isTownshipsIncludes = d.townships.filter((t: any) =>
+        t.name.toLowerCase().includes(textDiestrict),
+      );
+
+      if (isIncludes || isTownshipsIncludes.length > 0) {
+        return true;
+      } else {
+        toggleDistrict(d.id);
+        return false;
+      }
+    });
+  }, [searchDisctrict, regionState]);
+
+  console.log("expand", expandedDistricts);
+
   return (
     <section className="flex flex-col gap-5 w-full">
       <div className="hidden md:flex items-center justify-between w-full">
@@ -431,7 +471,7 @@ const DeliveryPage = () => {
               {isLoading ? (
                 <p className="text-center">loading...</p>
               ) : (
-                deliveryRegionData?.data?.map((region: any) => (
+                filterRegions?.map((region: any) => (
                   <div
                     key={region.id}
                     onClick={() => handleSelectRegion(region)}
@@ -554,14 +594,14 @@ const DeliveryPage = () => {
                 <Search className="text-[#A1A1A1] size-6 absolute top-1/2 -translate-y-1/2 left-4" />
                 <Input
                   placeholder="Search"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  value={searchDisctrict}
+                  onChange={(e) => setsSearchDisctrict(e.target.value)}
                   className=" border-[#44444480] pl-12 h-10 rounded-full w-full md:w-[340px] md:text-lg md:placeholder:text-lg"
                 />
               </div>
               {isMobile ? (
                 <div className="space-y-4">
-                  {regionState?.districts.map(
+                  {filterDisctricts?.map(
                     (district: {
                       id: number;
                       name: string;
@@ -712,174 +752,188 @@ const DeliveryPage = () => {
                       );
                     },
                   )}
+                   {filterDisctricts?.length === 0 && (
+                    <div className="w-full h-52 flex justify-center items-center">
+                      <p className="text-center text-gray-400">no result found.</p>
+                    </div>
+                  )}
                 </div>
               ) : (
-                <table className="w-[calc(100%+40px)] table-fixed -translate-x-5 overflow-visible">
-                  <thead className="bg-[#EEEEEE]">
-                    <tr>
-                      <th className="w-1/3 text-start py-4 px-5 text-base md:text-lg font-medium">
-                        Township
-                      </th>
-                      <th className="w-1/3 text-center py-4 px-5 text-base md:text-lg font-medium">
-                        Amount
-                      </th>
-                      <th className="w-1/3 text-end py-4 px-5 text-base md:text-lg font-medium">
-                        Delivery availability
-                      </th>
-                    </tr>
-                  </thead>
+                <>
+                  <table className="w-[calc(100%+40px)] table-fixed -translate-x-5 overflow-visible">
+                    <thead className="bg-[#EEEEEE]">
+                      <tr>
+                        <th className="w-1/3 text-start py-4 px-5 text-base md:text-lg font-medium">
+                          Township
+                        </th>
+                        <th className="w-1/3 text-center py-4 px-5 text-base md:text-lg font-medium">
+                          Amount
+                        </th>
+                        <th className="w-1/3 text-end py-4 px-5 text-base md:text-lg font-medium">
+                          Delivery availability
+                        </th>
+                      </tr>
+                    </thead>
 
-                  <tbody>
-                    {regionState?.districts.map(
-                      (district: {
-                        id: number;
-                        name: string;
-                        status: string;
-                        townships: {
+                    <tbody>
+                      {filterDisctricts?.map(
+                        (district: {
                           id: number;
                           name: string;
-                          fee: number;
                           status: string;
-                        }[];
-                      }) => {
-                        const isExpanded = expandedDistricts.includes(
-                          district.id,
-                        );
-                        const { min, max } = getDistrictFeeRange(
-                          district.townships,
-                        );
+                          townships: {
+                            id: number;
+                            name: string;
+                            fee: number;
+                            status: string;
+                          }[];
+                        }) => {
+                          const isExpanded = expandedDistricts.includes(
+                            district.id,
+                          );
+                          const { min, max } = getDistrictFeeRange(
+                            district.townships,
+                          );
 
-                        return (
-                          <React.Fragment key={district.id}>
-                            {/* 🔹 DISTRICT ROW */}
-                            <tr className="">
-                              <td
-                                className="w-1/3 text-start text-base md:text-lg font-medium py-2 px-5 cursor-pointer"
-                                onClick={() => toggleDistrict(district.id)}
-                              >
-                                <div className="flex flex-col space-y-1">
-                                  <p>{district.name}</p>
-                                  <div className=" flex items-center gap-2 text-xs font-normal text-[#3C3C3C]/80">
-                                    {district.townships.length}{" "}
-                                    {district.townships.length > 1
-                                      ? " Townships"
-                                      : " Township"}
-                                    {isExpanded ? (
-                                      <ChevronUp className="size-4" />
-                                    ) : (
-                                      <ChevronDown className="size-4" />
-                                    )}
+                          return (
+                            <React.Fragment key={district.id}>
+                              {/* 🔹 DISTRICT ROW */}
+                              <tr className="">
+                                <td
+                                  className="w-1/3 text-start text-base md:text-lg font-medium py-2 px-5 cursor-pointer"
+                                  onClick={() => toggleDistrict(district.id)}
+                                >
+                                  <div className="flex flex-col space-y-1">
+                                    <p>{district.name}</p>
+                                    <div className=" flex items-center gap-2 text-xs font-normal text-[#3C3C3C]/80">
+                                      {district.townships.length}{" "}
+                                      {district.townships.length > 1
+                                        ? " Townships"
+                                        : " Township"}
+                                      {isExpanded ? (
+                                        <ChevronUp className="size-4" />
+                                      ) : (
+                                        <ChevronDown className="size-4" />
+                                      )}
+                                    </div>
                                   </div>
-                                </div>
-                              </td>
+                                </td>
 
-                              <td className="w-1/3 text-center py-2 px-5">
-                                <div className="w-full flex items-center justify-center">
-                                  <div className="w-[242px] h-12 rounded-[10px] border border-[#3C3C3C]/30 relative">
-                                    <Input
-                                      key={district.id}
-                                      className="pl-4 pr-10 h-12 rounded-[10px] w-[242px]"
-                                      value={min === max ? min : ""}
-                                      placeholder={
-                                        min === max
-                                          ? undefined
-                                          : `${min} – ${max}`
-                                      }
-                                      onChange={(e) => {
-                                        const rawValue = e.target.value;
-                                        const numericValue = rawValue.replace(
-                                          /[^0-9]/g,
-                                          "",
-                                        );
+                                <td className="w-1/3 text-center py-2 px-5">
+                                  <div className="w-full flex items-center justify-center">
+                                    <div className="w-[242px] h-12 rounded-[10px] border border-[#3C3C3C]/30 relative">
+                                      <Input
+                                        key={district.id}
+                                        className="pl-4 pr-10 h-12 rounded-[10px] w-[242px]"
+                                        value={min === max ? min : ""}
+                                        placeholder={
+                                          min === max
+                                            ? undefined
+                                            : `${min} – ${max}`
+                                        }
+                                        onChange={(e) => {
+                                          const rawValue = e.target.value;
+                                          const numericValue = rawValue.replace(
+                                            /[^0-9]/g,
+                                            "",
+                                          );
 
-                                        updateDistrictTownshipFee(
+                                          updateDistrictTownshipFee(
+                                            district.id,
+                                            Number(numericValue),
+                                          );
+                                        }}
+                                      />
+                                      <span className="absolute top-1/2 -translate-y-1/2 right-4">
+                                        Ks
+                                      </span>
+                                    </div>
+                                  </div>
+                                </td>
+
+                                <td className="w-1/3 py-2 px-5">
+                                  <div className="flex justify-end pr-14">
+                                    <CustomSwitch
+                                      checked={district.status === "ACTIVE"}
+                                      onCheckedChange={(v) => {
+                                        const status = v
+                                          ? "ACTIVE"
+                                          : "INACTIVE";
+
+                                        updateDistrictField(
                                           district.id,
-                                          Number(numericValue),
+                                          "status",
+                                          status,
+                                        );
+                                        updateDistrictTownshipStatus(
+                                          district.id,
+                                          status,
                                         );
                                       }}
                                     />
-                                    <span className="absolute top-1/2 -translate-y-1/2 right-4">
-                                      Ks
-                                    </span>
                                   </div>
-                                </div>
-                              </td>
+                                </td>
+                              </tr>
 
-                              <td className="w-1/3 py-2 px-5">
-                                <div className="flex justify-end pr-14">
-                                  <CustomSwitch
-                                    checked={district.status === "ACTIVE"}
-                                    onCheckedChange={(v) => {
-                                      const status = v ? "ACTIVE" : "INACTIVE";
+                              {/* 🔸 TOWNSHIP ROWS */}
+                              {isExpanded &&
+                                district.townships.map((ts) => (
+                                  <tr key={ts.id} className="bg-white">
+                                    <td className="pl-14 pt-3 pb-3 text-sm md:text-base">
+                                      {ts.name}
+                                    </td>
 
-                                      updateDistrictField(
-                                        district.id,
-                                        "status",
-                                        status,
-                                      );
-                                      updateDistrictTownshipStatus(
-                                        district.id,
-                                        status,
-                                      );
-                                    }}
-                                  />
-                                </div>
-                              </td>
-                            </tr>
+                                    <td className="text-center pt-3 pb-3">
+                                      <div className="flex justify-center">
+                                        <div className="w-[242px] h-10 rounded-[8px] border border-[#3C3C3C]/30 relative">
+                                          <Input
+                                            value={ts.fee}
+                                            onChange={(e) =>
+                                              updateTownshipField(
+                                                district.id,
+                                                ts.id,
+                                                "fee",
+                                                Number(e.target.value),
+                                              )
+                                            }
+                                            className="pl-4 pr-10 h-10 rounded-[8px]"
+                                          />
+                                          <span className="absolute top-1/2 -translate-y-1/2 right-4 text-sm">
+                                            Ks
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </td>
 
-                            {/* 🔸 TOWNSHIP ROWS */}
-                            {isExpanded &&
-                              district.townships.map((ts) => (
-                                <tr key={ts.id} className="bg-white">
-                                  <td className="pl-14 pt-3 pb-3 text-sm md:text-base">
-                                    {ts.name}
-                                  </td>
-
-                                  <td className="text-center pt-3 pb-3">
-                                    <div className="flex justify-center">
-                                      <div className="w-[242px] h-10 rounded-[8px] border border-[#3C3C3C]/30 relative">
-                                        <Input
-                                          value={ts.fee}
-                                          onChange={(e) =>
+                                    <td className="pt-3 pb-3">
+                                      <div className="flex justify-end pr-18">
+                                        <CustomSwitch
+                                          checked={ts.status === "ACTIVE"}
+                                          onCheckedChange={(v) =>
                                             updateTownshipField(
                                               district.id,
                                               ts.id,
-                                              "fee",
-                                              Number(e.target.value),
+                                              "status",
+                                              v ? "ACTIVE" : "INACTIVE",
                                             )
                                           }
-                                          className="pl-4 pr-10 h-10 rounded-[8px]"
                                         />
-                                        <span className="absolute top-1/2 -translate-y-1/2 right-4 text-sm">
-                                          Ks
-                                        </span>
                                       </div>
-                                    </div>
-                                  </td>
-
-                                  <td className="pt-3 pb-3">
-                                    <div className="flex justify-end pr-18">
-                                      <CustomSwitch
-                                        checked={ts.status === "ACTIVE"}
-                                        onCheckedChange={(v) =>
-                                          updateTownshipField(
-                                            district.id,
-                                            ts.id,
-                                            "status",
-                                            v ? "ACTIVE" : "INACTIVE",
-                                          )
-                                        }
-                                      />
-                                    </div>
-                                  </td>
-                                </tr>
-                              ))}
-                          </React.Fragment>
-                        );
-                      },
-                    )}
-                  </tbody>
-                </table>
+                                    </td>
+                                  </tr>
+                                ))}
+                            </React.Fragment>
+                          );
+                        },
+                      )}
+                    </tbody>
+                  </table>
+                  {filterDisctricts?.length === 0 && (
+                    <div className="w-full h-52 flex justify-center items-center">
+                      <p className="text-center text-gray-400">no result found.</p>
+                    </div>
+                  )}
+                </>
               )}
             </CardContent>
           )}
