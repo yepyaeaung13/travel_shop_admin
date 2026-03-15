@@ -8,11 +8,11 @@ export default function Home(): React.ReactElement {
       <div className="max-md:hidden">
         <h2 className="text-2xl">Account Settings</h2>
       </div>
-      <div className="bg-white space-y-2.5 px-4 rounded-[20px]">
+      <div className="bg-white space-y-2.5 md:px-4 rounded-[20px]">
         <UserInfo />
       </div>
 
-      <div className="block md:hidden">
+      <div className="block md:hidden px-4">
         <LogoutButton />
       </div>
     </div>

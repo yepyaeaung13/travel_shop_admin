@@ -137,6 +137,9 @@ const WalletItem = ({ type, wallet, handlePublishStatus }: Props) => {
             <>
               {QRImage ? (
                 <div className="w-[120px] md:w-[161px] shrink-0 aspect-square relative">
+                  <p className="text-base md:text-lg text-[#303030]">
+                    QR photo <span className="text-[#FF3333]">*</span>
+                  </p>
                   <Image
                     src={QRImage}
                     alt="slip"
@@ -160,6 +163,9 @@ const WalletItem = ({ type, wallet, handlePublishStatus }: Props) => {
                 </div>
               ) : originQRImage ? (
                 <div className="w-[120px] md:w-[161px] shrink-0 aspect-square relative">
+                  <p className="text-base md:text-lg text-[#303030]">
+                    QR photo <span className="text-[#FF3333]">*</span>
+                  </p>
                   <Image
                     src={originQRImage}
                     alt="slip"

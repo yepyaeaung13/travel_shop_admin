@@ -215,7 +215,7 @@ export default function ProductTable({
                 key={product.id}
                 className="border-none md:text-lg cursor-pointer"
               >
-                <TableCell className="pl-5 md:pl-6">
+                <TableCell onClick={(e) => e.stopPropagation()} className="pl-5 md:pl-6">
                   <Checkbox
                     checked={selectProduct.includes(product.id)}
                     onCheckedChange={() => handleSelectProduct(product.id)}
@@ -290,6 +290,7 @@ export default function ProductTable({
                           }}
                         >
                           <SelectTrigger
+                            onClick={(e) => e.stopPropagation()}
                             className={cn(
                               "w-[128px] justify-center rounded-[10px] text-sm px-0 focus-visible:ring-0",
                               product?.status === "active"
@@ -325,12 +326,16 @@ export default function ProductTable({
                 <TableCell>
                   <div className="flex h-full items-center justify-center gap-5">
                     <Link href={`/product/${product.id}`} passHref>
-                      <button className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-[#44444414]">
+                      <button
+                        onClick={(e) => e.stopPropagation()}
+                        className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-[#44444414]"
+                      >
                         <EditIcon2 />
                       </button>
                     </Link>
                     <button
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         handleSetDeleteProduct(product.id);
                       }}
                       className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-[#44444414]"

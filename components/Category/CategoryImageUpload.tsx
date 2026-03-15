@@ -73,29 +73,38 @@ export default function CategoryImageUpload({
           {categoryImage || existingImageUrl ? (
             <div className={cn("relative", className)}>
               <Image
-                src={imagePreview || `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${existingImageUrl}` || "/placeholder.svg"}
+                src={
+                  imagePreview ||
+                  `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${existingImageUrl}` ||
+                  "/placeholder.svg"
+                }
                 alt="Category"
                 width={400}
                 height={200}
                 className="w-full h-full object-cover rounded-lg border border-primary"
               />
-              <button
-                type="button"
-                onClick={onImageRemove}
-                className="absolute top-5 right-5 p-2 rounded-[10px] bg-background hover:opacity-90 shadow-md"
-              >
-                <IconTrash className="w-5 h-5 text-destructive" />
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setTempImagePreview(imagePreview || `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${existingImageUrl}`);
-                  setShowCropDialog(true);
-                }}
-                className="absolute top-5 right-14 p-2 rounded-[10px] bg-background hover:opacity-90 shadow-md"
-              >
-                <IconUpload className="w-5 h-5 text-primary" />
-              </button>
+              <div className="absolute top-5 right-5 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTempImagePreview(
+                      imagePreview ||
+                        `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${existingImageUrl}`,
+                    );
+                    setShowCropDialog(true);
+                  }}
+                  className="p-2 rounded-[10px] bg-background hover:opacity-90 shadow-md"
+                >
+                  <IconUpload className="w-5 h-5 text-primary" />
+                </button>
+                <button
+                  type="button"
+                  onClick={onImageRemove}
+                  className=" p-2 rounded-[10px] bg-background hover:opacity-90 shadow-md"
+                >
+                  <IconTrash className="w-5 h-5 text-destructive" />
+                </button>
+              </div>
             </div>
           ) : (
             <div className="bg-[#616FF514]">
@@ -103,7 +112,7 @@ export default function CategoryImageUpload({
                 <div
                   className={cn(
                     "rounded-lg w-full flex flex-col space-y-3 items-center justify-center bg-primary/5 hover:bg-primary/10 transition-colors border border-primary",
-                    className
+                    className,
                   )}
                 >
                   <IconPhoto />

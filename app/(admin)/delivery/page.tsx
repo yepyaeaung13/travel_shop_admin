@@ -53,7 +53,7 @@ const DeliveryPage = () => {
   const router = useRouter();
   const isMobile = useIsMobile();
 
-  const [disabled, setDisabled] = useState(false);
+  const [disabled, setDisabled] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchDisctrict, setsSearchDisctrict] = useState("");
@@ -84,6 +84,10 @@ const DeliveryPage = () => {
 
   const [regionState, setRegionState] = useState<any | null>(null);
   const [showDetail, setShowDetail] = useState(false);
+
+  useEffect(() => {
+    setDisabled(true);
+  }, [selectedRegion])
 
   useEffect(() => {
     if (regionDetail?.data) {
@@ -308,6 +312,7 @@ const DeliveryPage = () => {
       },
       onCancel: resetDialogModal,
     });
+    setDisabled(false);
   };
 
   const handleTurnOnPerTownship = (checked: boolean) => {
@@ -324,6 +329,7 @@ const DeliveryPage = () => {
       },
       onCancel: resetDialogModal,
     });
+    setDisabled(false);
   };
 
   const handleTurnOnAllTownship = (checked: boolean) => {
@@ -340,6 +346,7 @@ const DeliveryPage = () => {
       },
       onCancel: resetDialogModal,
     });
+    setDisabled(false);
   };
 
   const handleDisableDelivery = (id: number, checked: boolean) => {
@@ -528,9 +535,10 @@ const DeliveryPage = () => {
                       id={method.name}
                       className="size-5"
                       checked={regionState?.paymentMethods?.includes(method.id)}
-                      onCheckedChange={(checked) =>
-                        togglePaymentMethod(method.id, Boolean(checked))
-                      }
+                      onCheckedChange={(checked) => {
+                        togglePaymentMethod(method.id, Boolean(checked));
+                        setDisabled(false);
+                      }}
                     />
                     <label
                       htmlFor={method.name}
@@ -665,6 +673,7 @@ const DeliveryPage = () => {
                                         district.id,
                                         Number(numericValue),
                                       );
+                                      setDisabled(false);
                                     }}
                                   />
                                   <span className="absolute top-1/2 -translate-y-1/2 right-4">
@@ -690,6 +699,8 @@ const DeliveryPage = () => {
                                       district.id,
                                       status,
                                     );
+
+                                    setDisabled(false);
                                   }}
                                 />
                               </div>
@@ -712,14 +723,15 @@ const DeliveryPage = () => {
                                     <div className="w-[150px] h-10 rounded-[8px] border border-[#3C3C3C]/30 relative">
                                       <Input
                                         value={ts.fee}
-                                        onChange={(e) =>
+                                        onChange={(e) => {
                                           updateTownshipField(
                                             district.id,
                                             ts.id,
                                             "fee",
                                             Number(e.target.value),
-                                          )
-                                        }
+                                          );
+                                          setDisabled(false);
+                                        }}
                                         className="h-10 rounded-[8px]"
                                       />
                                       <span className="absolute top-1/2 -translate-y-1/2 right-4 text-sm">
@@ -733,14 +745,15 @@ const DeliveryPage = () => {
                                   <div className="flex justify-end">
                                     <CustomSwitch
                                       checked={ts.status === "ACTIVE"}
-                                      onCheckedChange={(v) =>
+                                      onCheckedChange={(v) => {
                                         updateTownshipField(
                                           district.id,
                                           ts.id,
                                           "status",
                                           v ? "ACTIVE" : "INACTIVE",
-                                        )
-                                      }
+                                        );
+                                        setDisabled(false);
+                                      }}
                                     />
                                   </div>
                                 </div>
@@ -750,9 +763,11 @@ const DeliveryPage = () => {
                       );
                     },
                   )}
-                   {filterDisctricts?.length === 0 && (
+                  {filterDisctricts?.length === 0 && (
                     <div className="w-full h-52 flex justify-center items-center">
-                      <p className="text-center text-gray-400">no result found.</p>
+                      <p className="text-center text-gray-400">
+                        no result found.
+                      </p>
                     </div>
                   )}
                 </div>
@@ -840,6 +855,7 @@ const DeliveryPage = () => {
                                             district.id,
                                             Number(numericValue),
                                           );
+                                          setDisabled(false);
                                         }}
                                       />
                                       <span className="absolute top-1/2 -translate-y-1/2 right-4">
@@ -867,6 +883,7 @@ const DeliveryPage = () => {
                                           district.id,
                                           status,
                                         );
+                                        setDisabled(false);
                                       }}
                                     />
                                   </div>
@@ -886,14 +903,15 @@ const DeliveryPage = () => {
                                         <div className="w-[242px] h-10 rounded-[8px] border border-[#3C3C3C]/30 relative">
                                           <Input
                                             value={ts.fee}
-                                            onChange={(e) =>
+                                            onChange={(e) => {
                                               updateTownshipField(
                                                 district.id,
                                                 ts.id,
                                                 "fee",
                                                 Number(e.target.value),
-                                              )
-                                            }
+                                              );
+                                              setDisabled(false);
+                                            }}
                                             className="pl-4 pr-10 h-10 rounded-[8px]"
                                           />
                                           <span className="absolute top-1/2 -translate-y-1/2 right-4 text-sm">
@@ -907,14 +925,15 @@ const DeliveryPage = () => {
                                       <div className="flex justify-end pr-18">
                                         <CustomSwitch
                                           checked={ts.status === "ACTIVE"}
-                                          onCheckedChange={(v) =>
+                                          onCheckedChange={(v) => {
                                             updateTownshipField(
                                               district.id,
                                               ts.id,
                                               "status",
                                               v ? "ACTIVE" : "INACTIVE",
-                                            )
-                                          }
+                                            );
+                                            setDisabled(false);
+                                          }}
                                         />
                                       </div>
                                     </td>
@@ -928,7 +947,9 @@ const DeliveryPage = () => {
                   </table>
                   {filterDisctricts?.length === 0 && (
                     <div className="w-full h-52 flex justify-center items-center">
-                      <p className="text-center text-gray-400">no result found.</p>
+                      <p className="text-center text-gray-400">
+                        no result found.
+                      </p>
                     </div>
                   )}
                 </>

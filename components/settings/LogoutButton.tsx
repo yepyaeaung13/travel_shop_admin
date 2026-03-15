@@ -10,7 +10,7 @@ const LogoutButton = () => {
     <>
         <Button
           onClick={() => setOpenLogoutModal(true)}
-          className="bg-[#FFDBDB] text-[#FF3333] hover:bg-[#FF3333] hover:text-white w-full md:w-[200px] h-[47px] md:text-lg rounded-xl"
+          className="bg-[#FFDBDB] text-[#FF3333] hover:bg-[#FF3333] hover:text-white w-full md:w-[200px] h-11 md:h-[47px] md:text-lg rounded-xl"
         >
           Log Out
         </Button>

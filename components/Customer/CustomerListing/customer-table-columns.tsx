@@ -45,9 +45,7 @@ export const CustomerTableColumns = (
                 src={`${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${picture}`}
                 alt="user"
               />
-              <AvatarFallback>
-                {(name as string)?.slice(0, 2)}
-              </AvatarFallback>
+              <AvatarFallback>{(name as string)?.slice(0, 2)}</AvatarFallback>
             </Avatar>
             {name}
           </div>
@@ -58,13 +56,28 @@ export const CustomerTableColumns = (
       accessorKey: "phoneNumber",
       size: 150,
       header: () => <h3>Phone Number</h3>,
-      cell: ({ row }) => <div>{row.getValue("phoneNumber")}</div>,
+      cell: ({ row }) => {
+        const phone = row.getValue("phoneNumber") as string;
+        return (
+          <div>{phone ? phone : "-"}</div>
+        )
+      },
     },
     {
       accessorKey: "email",
       size: 220,
       header: () => <h3>Email</h3>,
-      cell: ({ row }) => <div>{row.getValue("email")}</div>,
+      cell: ({ row }) => {
+        const email = row.getValue("email") as string;
+        const [name, domain] = email.split("@");
+
+        return (
+          <div className="leading-tight">
+            <div>{name}</div>
+            <div>@{domain}</div>
+          </div>
+        );
+      },
     },
     {
       accessorKey: "totalOrder",

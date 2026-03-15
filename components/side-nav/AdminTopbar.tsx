@@ -118,7 +118,7 @@ export default function AdminTopbar() {
               <button className="cursor-pointer relative">
                 <IconNotification className="size-6 mr-4" />
                 {notiList?.data?.length > 0 && (
-                  <span className="absolute -top-5 right-1.5 bg-red-500 text-white h-6 w-6 rounded-full text-xs flex justify-center items-center">
+                  <span className="absolute -top-3 md:-top-5 right-1.5 bg-red-500 text-white h-6 w-6 rounded-full text-[10px] flex justify-center items-center">
                     {notiList?.data?.length}{" "}
                     {notiList?.data?.length >= 10 && "+"}
                   </span>

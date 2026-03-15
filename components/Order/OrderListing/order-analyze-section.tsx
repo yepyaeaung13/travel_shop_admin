@@ -40,18 +40,25 @@ const OrderAnalyzeSection = () => {
   };
 
   useEffect(() => {
-    scrollbarRef.current?.addEventListener("scroll", checkScroll);
-    return () => {
-      scrollbarRef.current?.removeEventListener("scroll", checkScroll);
-    };
-  }, []);
+    const el = scrollbarRef.current;
+    if (!el) return;
 
+    checkScroll(); // ✅ check on first render
+
+    el.addEventListener("scroll", checkScroll);
+    window.addEventListener("resize", checkScroll);
+
+    return () => {
+      el.removeEventListener("scroll", checkScroll);
+      window.removeEventListener("resize", checkScroll);
+    };
+  }, [dashboardLoading]);
 
   return (
-    <div className="relative">
+    <div className="relative overflow-visible">
       <div
         ref={scrollbarRef}
-        className="hide-scrollbar grid grid-cols-2 gap-x-5 gap-y-2.5 md:flex md:w-full md:gap-2.5 md:overflow-x-scroll"
+        className="hide-scrollbar grid grid-cols-2 gap-x-5 gap-y-2.5 md:flex md:w-full md:gap-2.5 md:overflow-x-scroll min-w-screen pr-44"
       >
         {/* Left Arrow */}
         {canScrollLeft && (

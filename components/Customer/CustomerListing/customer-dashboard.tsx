@@ -42,7 +42,7 @@ const CustomerDashboard = () => {
               </h2>
               <p className="text-[#303030] max-sm:text-sm">
                 New users{" "}
-                <span className="text-gray-400 text-xs">in the last month</span>
+                <span className="text-gray-400 text-xs pl-1">(in the last month)</span>
               </p>
             </div>
             <span

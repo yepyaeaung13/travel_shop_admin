@@ -27,6 +27,7 @@ import { uploadImage } from "@/services/common.service";
 import { errorToast, successToast } from "@/components/toast";
 import UpdateSubCategoryItem from "@/components/Category/UpdateSubCategoryItem";
 import ConfirmDeleteDialog from "@/components/common/ConfirmDeleteDialog";
+import ConfirmDialog from "@/components/confirm-dialog/confirm-dialog";
 
 export default function Page() {
   return (
@@ -39,6 +40,7 @@ export default function Page() {
 function EditCategory() {
   const router = useRouter();
   const { id } = useParams();
+  const [discardModalOpen, setDiscardModalOpen] = useState(false);
 
   const { mutate: updateCategory, isPending: isSaving } = useUpdateCategory();
   const {
@@ -66,12 +68,12 @@ function EditCategory() {
   }>({ file: null, preview: null });
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
   const [bannerImageUrl, setBannerImageUrl] = useState<string | undefined>(
-    undefined
+    undefined,
   );
   const [open, setOpen] = useState(false);
   const [subOpen, setSubOpen] = useState(false);
   const [deleteSubCategoryId, setDeleteSubCategoryId] = useState<number | null>(
-    null
+    null,
   );
 
   useEffect(() => {
@@ -89,7 +91,8 @@ function EditCategory() {
       category.subCategories?.map((sub) => ({
         id: sub.id,
         name: sub.name || "",
-        image: `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${sub.image}` || ""
+        image:
+          `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${sub.image}` || "",
       })) ?? [];
 
     setSubCategories(apiSubCategories);
@@ -113,7 +116,7 @@ function EditCategory() {
 
   const removeSubCategory = (indexNo: number) => {
     const removeCategory = subCategories.find(
-      (sub, index) => index === indexNo
+      (sub, index) => index === indexNo,
     );
     if (removeCategory && removeCategory.id) {
       setDeleteSubCategoryId(removeCategory.id);
@@ -129,7 +132,7 @@ function EditCategory() {
     indexNo: number,
     name?: string,
     image?: string,
-    file?: File
+    file?: File,
   ) => {
     const subCategoriesName = subCategories
       .filter((sub, index) => index !== indexNo)
@@ -149,8 +152,8 @@ function EditCategory() {
               image: image ?? sub.image,
               file: file ?? sub.file,
             }
-          : sub
-      )
+          : sub,
+      ),
     );
   };
 
@@ -183,7 +186,7 @@ function EditCategory() {
             ...cat,
             image: uploadedImage?.data?.cid || cat.image,
           };
-        })
+        }),
       );
     }
 
@@ -251,7 +254,7 @@ function EditCategory() {
       onError(error: any, variables, context) {
         errorToast(
           "Failed",
-          error?.response?.data?.message || "Failed to delete category."
+          error?.response?.data?.message || "Failed to delete category.",
         );
       },
     });
@@ -269,7 +272,7 @@ function EditCategory() {
       onError(error: any, variables, context) {
         errorToast(
           "Failed",
-          error?.response?.data?.message || "Failed to delete category."
+          error?.response?.data?.message || "Failed to delete category.",
         );
       },
     });
@@ -342,7 +345,7 @@ function EditCategory() {
             disabled={isSaving || disabled}
             className={cn(
               "h-auto w-[135px] rounded-[10px] bg-[#FF333350] py-1.5 text-base font-medium text-white duration-300 hover:bg-[#FF3333] active:scale-95 md:w-[135px] md:text-lg",
-              disabled || (isSaving && "bg-[#444444]/50")
+              disabled || (isSaving && "bg-[#444444]/50"),
             )}
           >
             Delete
@@ -350,11 +353,11 @@ function EditCategory() {
           {/* UNPUBLISH Button - calls the core logic explicitly */}
           <Button
             type="button"
-            onClick={() => router.back()}
+            onClick={() => setDiscardModalOpen(true)}
             disabled={isSaving || disabled}
             className={cn(
               "h-auto w-[135px] rounded-[10px] bg-[#A1A1A1] py-1.5 text-base font-medium text-white duration-300 hover:bg-[#444444] active:scale-95 md:w-[135px] md:text-lg",
-              disabled || (isSaving && "bg-[#444444]/50")
+              disabled || (isSaving && "bg-[#444444]/50"),
             )}
           >
             Discard
@@ -367,7 +370,7 @@ function EditCategory() {
             disabled={isSaving || disabled}
             className={cn(
               "bg-primary h-auto w-[135px] rounded-[10px] py-1.5 text-base font-medium text-white duration-300 active:scale-95 md:w-[135px] md:text-lg",
-              disabled && "bg-primary/50"
+              disabled && "bg-primary/50",
             )}
           >
             {isSaving ? "Saving..." : "Save"}
@@ -516,7 +519,7 @@ function EditCategory() {
               disabled={isSaving || disabled}
               className={cn(
                 "h-auto w-[169px] rounded-[10px] bg-[#A1A1A1] py-1.5 text-base font-medium text-white duration-300 hover:bg-[#444444] active:scale-95 md:w-[135px] md:text-lg",
-                disabled || (isSaving && "bg-[#444444]/50")
+                disabled || (isSaving && "bg-[#444444]/50"),
               )}
             >
               Discard
@@ -529,7 +532,7 @@ function EditCategory() {
               disabled={isSaving || disabled}
               className={cn(
                 "bg-primary h-auto w-[169px] rounded-[10px] py-1.5 text-base font-medium text-white duration-300 active:scale-95 md:w-[135px] md:text-lg",
-                disabled && "bg-primary/50"
+                disabled && "bg-primary/50",
               )}
             >
               {isSaving ? "Saving..." : "Save"}
@@ -552,6 +555,20 @@ function EditCategory() {
         setOpen={setSubOpen}
         loading={isPendingSub}
         callback={handleDeleteSubCategory}
+      />
+
+      <ConfirmDialog
+        open={discardModalOpen}
+        setOpen={setDiscardModalOpen}
+        callback={() => {
+          router.back();
+          setDiscardModalOpen(false);
+        }}
+        loading={false}
+        title="Are you sure you want to discard all changes?"
+        description="This action cannot be undone"
+        className="w-[450px]"
+        titleClassName="max-w-[290px]"
       />
     </div>
   );

@@ -15,6 +15,7 @@ import { User } from "@/types/users.types";
 import { BlockUserModal } from "../BlockUserModal";
 import { useDeleteUser } from "@/queries/users.queries";
 import { PaginationInfo } from "@/types/shared/pagination.types";
+import TablePagination from "@/components/TablePagination";
 
 interface CustomerTableProps {
   data: User[];
@@ -73,15 +74,23 @@ const CustomerTable = ({
     pageCount: pagination.totalPages,
   });
 
+  const { page, size, total, totalPages } =
+    pagination;
+
   return (
     <div className="space-y-4">
       <TableWrapper table={table} columns={columns} loading={loading} />
       {pagination?.total > 0 && (
-        <Pagination
-          pagination={pagination}
-          onPageChange={onPageChange}
-          onPageSizeChange={onPageSizeChange}
-        />
+        <div className="pt-3 md:pb-5">
+          <TablePagination
+            currentPage={page}
+            totalPages={totalPages}
+            setPage={onPageChange}
+            setLimit={onPageSizeChange}
+            limit={size}
+            count={total}
+          />
+        </div>
       )}
       <BlockUserModal
         isOpen={isModalOpen && !!toBlockUser}

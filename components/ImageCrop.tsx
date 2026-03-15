@@ -196,7 +196,7 @@ export function ImageCrop({
               className="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               <Check className="w-4 h-4" />
-              {isProcessing ? "Processing..." : "Crop & Save"}
+              {isProcessing ? "Processing..." : "Crop"}
             </button>
           </div>
 

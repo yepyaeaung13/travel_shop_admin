@@ -8,7 +8,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="bg-background font-dm-sans flex h-screen flex-col overflow-hidden text-[#1E1E1E]">
+    <div className="bg-background flex h-screen flex-col overflow-hidden text-[#1E1E1E]">
       {/* Top Bar */}
       <AdminTopbar />
 

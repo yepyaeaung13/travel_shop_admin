@@ -402,7 +402,7 @@ export default function VariantSection({
               }}
             >
               <DialogContent className="max-w-[600px] flex flex-col items-center justify-center gap-7 rounded-[10px]">
-                <div className="w-full max-h-[500px] p-5 flex flex-col gap-2.5 overflow-y-auto scrollbar-none">
+                <div className="w-full max-h-[500px] p-5 flex flex-col gap-2.5 overflow-y-auto">
                   <label
                     className="text-sm md:text-base font-normal text-[#303030]"
                     htmlFor=""
@@ -410,7 +410,7 @@ export default function VariantSection({
                     Option name
                   </label>
                   <Input
-                    className="placeholder:md:text-base h-12 md:h-14 md:text-base rounded-[10px] font-normal text-[#303030]"
+                    className="placeholder:md:text-base h-12 md:min-h-14 md:text-base rounded-[10px] font-normal text-[#303030]"
                     placeholder="Option name"
                     value={editProductVarint.name}
                     onChange={(e) =>
@@ -444,7 +444,7 @@ export default function VariantSection({
                     </div>
                   ))}
                   <Input
-                    className={cn("placeholder:md:text-base h-12 md:h-14 md:text-base rounded-[10px] font-normal text-[#303030]", showError && "border border-[#FF3333]")}
+                    className={cn("placeholder:md:text-base h-12 md:min-h-14 md:text-base rounded-[10px] font-normal text-[#303030]", showError && "border border-[#FF3333]")}
                     type="text"
                     placeholder="Option values"
                     value={newEditValue}
@@ -550,7 +550,7 @@ export default function VariantSection({
                           <TableCell>
                             <Input
                               value={item.sellingPrice.toLocaleString()}
-                              className="h-8 max-w-60"
+                              className="h-8 w-44 md:w-60"
                               onChange={(e) => {
                                 const rawValue = e.target.value;
                                 const numericValue = rawValue.replace(
@@ -563,7 +563,7 @@ export default function VariantSection({
                                 });
                               }}
                             />
-                            <span className="text-[#3C3C3C] pl-2.5">Ks</span>
+                            <span className="text-[#3C3C3C] pl-2.5 max-sm:pr-5">Ks</span>
                           </TableCell>
 
                           <TableCell>
@@ -626,7 +626,7 @@ export default function VariantSection({
                             className="text-sm text-muted-foreground pt-3 pb-2 md:pt-5 md:pb-3.5"
                           >
                             <Input
-                              className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] max-w-60"
+                              className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] w-44 md:w-60"
                               value={min === max ? min.toLocaleString() : ""}
                               placeholder={
                                 min === max
@@ -685,7 +685,7 @@ export default function VariantSection({
                               <TableCell>
                                 <Input
                                   value={item.sellingPrice.toLocaleString()}
-                                  className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] max-w-60"
+                                  className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] w-44 md:w-60"
                                   onChange={(e) => {
                                     const rawValue = e.target.value;
                                     const numericValue = rawValue.replace(

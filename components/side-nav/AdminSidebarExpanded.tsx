@@ -39,7 +39,7 @@ export const sidebarItems = [
   },
   {
     icon: IconDelivery,
-    label: "Region and State Lists",
+    label: "Delivery management",
     path: "/delivery",
   },
   {
