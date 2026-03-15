@@ -94,26 +94,5 @@ export const CustomerTableColumns = (
         );
       },
     },
-    {
-      id: "actions",
-      size: 100,
-      header: () => <h3 className="text-center">Action</h3>,
-      enableHiding: false,
-      cell: ({ row }) => {
-        const user = row.original;
-        return (
-          <div className="flex justify-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="flex cursor-pointer items-center justify-center rounded-full"
-              onClick={() => onEditProduct(user.id)}
-            >
-              <ActionIcon />
-            </Button>
-          </div>
-        );
-      },
-    },
   ];
 };

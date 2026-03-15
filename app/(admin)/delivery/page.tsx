@@ -414,8 +414,6 @@ const DeliveryPage = () => {
     });
   }, [searchDisctrict, regionState]);
 
-  console.log("expand", expandedDistricts);
-
   return (
     <section className="flex flex-col gap-5 w-full">
       <div className="hidden md:flex items-center justify-between w-full">
@@ -450,7 +448,7 @@ const DeliveryPage = () => {
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 md:gap-5">
         <Card
           className={cn(
-            "w-full md:w-[320px] rounded-[10px] p-5 shrink-0 h-full md:h-[75vh] overflow-y-scroll hide-scrollbar",
+            "w-full md:w-[320px] rounded-[10px] p-5 shrink-0 h-full hide-scrollbar",
             showDetail && "hidden",
           )}
         >
@@ -510,7 +508,7 @@ const DeliveryPage = () => {
 
         <Card
           className={cn(
-            "w-full rounded-[10px] p-5 max-h-[75vh] overflow-y-scroll hide-scrollbar",
+            "w-full rounded-[10px] p-5",
             !showDetail && isMobile && "hidden",
           )}
         >

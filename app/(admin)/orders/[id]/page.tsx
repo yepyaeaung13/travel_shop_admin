@@ -121,7 +121,7 @@ const OrderDetails = () => {
                   View Receipt
                 </Button>
               )}
-              {isMobile && (
+              {isMobile && orderDetail?.data?.payment?.status?.toLowerCase() === PaymentStatus.PENDING && (
                 <div className=" flex w-full justify-center gap-4 md:gap-8 md:p-5">
                   <Button
                     variant="outline"

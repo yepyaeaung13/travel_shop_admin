@@ -23,44 +23,47 @@ import IconNavbar from "@/assets/icons/sidebar/IconNavbar";
 
 const header = (pathname: string) => {
   // Product
-  if (
-    pathname.startsWith("/admin/products") ||
-    pathname.startsWith("/admin/products/new") ||
-    pathname.startsWith("/admin/products/edit")
-  ) {
+  if (pathname.startsWith("/product") || pathname.startsWith("/product/add")) {
     return "Product Management";
   }
 
   // Category
   if (
-    pathname.startsWith("/admin/categories") ||
-    pathname.startsWith("/admin/categories/new") ||
-    pathname.startsWith("/admin/categories/edit")
+    pathname.startsWith("/category") ||
+    pathname.startsWith("/category/add") ||
+    pathname.startsWith("/category/products")
   ) {
     return "Category Management";
   }
 
-  // Inquiry
-  if (pathname.startsWith("/admin/inquiries")) {
-    return "Inquiry Management";
+  // orders
+  if (pathname.startsWith("/orders")) {
+    return "Order Management";
   }
 
-  // Blog
-  if (
-    pathname.startsWith("/admin/blogs") ||
-    pathname.startsWith("/admin/blogs/new") ||
-    pathname.startsWith("/admin/blogs/edit")
-  ) {
-    return "Blog Management";
+  // customers
+  if (pathname.startsWith("/customers")) {
+    return "Customer Management";
   }
 
-  // Activity
-  if (
-    pathname.startsWith("/admin/activities") ||
-    pathname.startsWith("/admin/activities/new") ||
-    pathname.startsWith("/admin/activities/edit")
-  ) {
-    return "Activity management";
+  // delivery
+  if (pathname.startsWith("/delivery")) {
+    return "Delivery Management";
+  }
+
+   // wallet
+  if (pathname.startsWith("/wallet")) {
+    return "Wallet Setup";
+  }
+
+   // noti
+  if (pathname.startsWith("/notification")) {
+    return "Notifications";
+  }
+  
+  // settings
+  if (pathname.startsWith("/settings") || pathname.startsWith("/store-front")) {
+    return "Settings";
   }
 
   return "Admin dashboard";
@@ -91,7 +94,7 @@ export default function AdminTopbar() {
         <button
           onClick={toggleOpen}
           className={cn(
-            "flex h-[40px] w-[40px] md:mr-10 items-center justify-center rounded-full"
+            "flex h-[40px] w-[40px] md:mr-10 items-center justify-center rounded-full",
           )}
         >
           <IconNavbar

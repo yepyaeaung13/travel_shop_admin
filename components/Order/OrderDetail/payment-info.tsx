@@ -33,7 +33,7 @@ const PaymentInfo = ({
       <div className="bg-card space-y-2.5 rounded-md p-4 md:space-y-5 md:p-5">
         <h3 className="text-foreground text-xl font-medium">Payment details</h3>
 
-        <div className="space-y-2.5 text-lg">
+        <div className="space-y-2.5 text-sm md:text-lg">
           <div className="flex justify-between">
             <span className="text-custom-dark-gray">Payment status</span>
             <p

@@ -14,6 +14,7 @@ import {
 import { User } from "@/types/users.types";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import IconLoading from "@/components/Loading";
 
 interface Props {
   table: ReactTable<User>;
@@ -24,7 +25,7 @@ interface Props {
 const TableWrapper = ({ table, columns, loading }: Props) => {
   const router = useRouter();
   const handleRowClick = (rowData: any) => {
-    router.push(`/customers/${rowData.id}`)
+    router.push(`/customers/${rowData.id}`);
   };
   return (
     <div className="min-h-80 bg-white rounded-b-[20px]">
@@ -33,13 +34,13 @@ const TableWrapper = ({ table, columns, loading }: Props) => {
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow
               key={headerGroup.id}
-              className="h-auto bg-[#EEEEEE] py-4 text-lg text-[#3C3C3C] hover:bg-[#EEEEEE]"
+              className="h-auto bg-[#EEEEEE] text-lg text-[#3C3C3C] hover:bg-[#EEEEEE]"
             >
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
                   style={{ width: header.getSize() }}
-                  className=""
+                  className="py-4"
                 >
                   {header.isPlaceholder
                     ? null
@@ -53,17 +54,7 @@ const TableWrapper = ({ table, columns, loading }: Props) => {
           ))}
         </TableHeader>
         <TableBody className="">
-          {loading ? (
-            Array.from({ length: 5 }).map((_, i) => (
-              <TableRow key={i}>
-                {columns.map((_, j) => (
-                  <TableCell key={j}>
-                    <div className="h-4 animate-pulse rounded bg-gray-200" />
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : table.getRowModel().rows?.length ? (
+          {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row, index) => (
               <TableRow
                 key={row.id}
@@ -86,15 +77,21 @@ const TableWrapper = ({ table, columns, loading }: Props) => {
                 ))}
               </TableRow>
             ))
-          ) : (
+          ) : !loading ? (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-80 text-center">
                 No results found.
               </TableCell>
             </TableRow>
-          )}
+          ) : null}
         </TableBody>
       </Table>
+
+      {loading && (
+        <div className="flex h-96 w-full items-center justify-center">
+          <IconLoading className="size-40" />
+        </div>
+      )}
     </div>
   );
 };

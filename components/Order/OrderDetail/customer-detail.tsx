@@ -46,7 +46,7 @@ const CustomerDetail = ({ order }: { order: any }) => {
       </div>
       <div className="bg-card space-y-2.5 md:space-y-5">
         <div className="flex items-center justify-between border-t px-4 md:px-5 pt-4 md:pt-5">
-          <h3 className="text-custom-dark-gray text-xl font-medium">
+          <h3 className="text-custom-dark-gray md:text-lg md:font-medium">
             Shipping address
           </h3>
         </div>
@@ -54,7 +54,7 @@ const CustomerDetail = ({ order }: { order: any }) => {
         <div className="space-y-1 md:space-y-2.5">
           <div className="flex gap-3 px-5">
             <MapPin className="text-custom-dark-gray mt-0.5 h-5 w-5 flex-shrink-0" />
-            <div className="text-custom-dark-gray space-y-1 text-sm">
+            <div className="text-custom-dark-gray space-y-1 text-sm md:text-base">
               <p>{order?.deliveryContactPersion}</p>
               <p>{order?.deliveryContactNumber}</p>
               <p>{order?.deliveryAddress}</p>
