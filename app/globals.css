@@ -97,7 +97,7 @@
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
 
-    --input: #e5e7eb;
+    --input: #3C3C3C4D;
     --ring: var(--primary);
 
     /* Sidebar */
@@ -305,4 +305,8 @@
 
 .custom-scrollbar::-webkit-scrollbar-corner {
     background-color: transparent;
+}
+
+.quill-wrapper .ql-editor.ql-blank::before {
+  color: #3C3C3C80;
 }

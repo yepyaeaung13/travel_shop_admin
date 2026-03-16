@@ -235,7 +235,7 @@ function CategoryList() {
       {unCategorizedLoading ? (
         <Skeleton className="bg-gray-300 h-10" />
       ) : (
-        <div className="bg-white rounded-xl px-5 py-3 flex justify-between">
+        <div className="bg-white rounded-xl px-5 py-6 flex justify-between">
           <p className="flex items-center gap-4">
             <IconDefaultCategory />
             {defaultCategory?.name}
@@ -255,7 +255,7 @@ function CategoryList() {
           <div className="flex items-center justify-between gap-2">
             {/* {selectedCategory.length === 0 ? ( */}
             <CardTitle className="text-nowrap flex gap-5 font-medium md:text-xl">
-              All Category ({totalItems})
+              All Categories
             </CardTitle>
             <div
               className={cn(
@@ -268,7 +268,7 @@ function CategoryList() {
                 placeholder="Search category"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-48 border-[#44444480] pl-10 md:w-80 md:text-lg md:placeholder:text-lg"
+                className="w-48 border-[#44444480] pl-10 md:w-80 md:text-lg md:placeholder:text-lg rounded-[20px]"
               />
             </div>
           </div>

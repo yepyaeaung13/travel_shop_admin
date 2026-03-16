@@ -220,7 +220,7 @@ function ProductList() {
           </>
         ) : (
           <>
-            <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between">
+            <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between shadow-[0px_2px_8px_0px_#0000001A]">
               <div className="space-y-[11px]">
                 <h2 className="text-[#1E1E1E] text-[24px] md:text-[28px] font-medium md:font-semibold">
                   {dashbaordData?.data?.total?.toLocaleString()}
@@ -235,7 +235,7 @@ function ProductList() {
               </span>
             </div>
 
-            <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between">
+            <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between shadow-[0px_2px_8px_0px_#0000001A]">
               <div className="space-y-[11px]">
                 <h2 className="text-[#1E1E1E] text-[24px] md:text-[28px] font-medium md:font-semibold">
                   {dashbaordData?.data?.totalActive?.toLocaleString()}
@@ -250,7 +250,7 @@ function ProductList() {
               </span>
             </div>
 
-            <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between">
+            <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between shadow-[0px_2px_8px_0px_#0000001A]">
               <div className="space-y-[11px]">
                 <h2 className="text-[#1E1E1E] text-[24px] md:text-[28px] font-medium md:font-semibold">
                   {dashbaordData?.data?.totalInactive?.toLocaleString()}
@@ -265,7 +265,7 @@ function ProductList() {
               </span>
             </div>
 
-            <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between">
+            <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between shadow-[0px_2px_8px_0px_#0000001A]">
               <div className="space-y-[11px]">
                 <h2 className="text-[#1E1E1E] text-[24px] md:text-[28px] font-medium md:font-semibold">
                   {dashbaordData?.data?.totalOutStock?.toLocaleString()}
@@ -313,7 +313,7 @@ function ProductList() {
             {/* {selectedProduct.length === 0 ? ( */}
             <CardTitle className="text-nowrap flex gap-5 font-medium md:text-xl">
               {selectedProduct.length === 0 ? (
-                "All Product"
+                "All Products"
               ) : (
                 <div className="flex items-center gap-5">
                   <span>{selectedProduct.length} selected</span>

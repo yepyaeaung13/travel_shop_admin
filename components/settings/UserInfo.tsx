@@ -36,7 +36,7 @@ const UserInfo = () => {
                     src={loginInfo?.picture || ""}
                     alt={loginInfo?.name}
                   />
-                  <AvatarFallback>{loginInfo?.name}</AvatarFallback>
+                  <AvatarFallback>{loginInfo?.name.slice(0, 2)}</AvatarFallback>
                 </Avatar>
                 <button className="absolute z-10 bottom-0 right-2.5 cursor-pointer">
                   <CameraIcon className="size-10" />
@@ -61,7 +61,7 @@ const UserInfo = () => {
               </div>
               <div className="space-y-2.5">
                 <label className="text-lg">Email</label>
-                <p className="text-xl font-medium">{loginInfo?.email}</p>
+                <p className="text-lg md:text-xl font-medium">{loginInfo?.email}</p>
               </div>
               <div className="space-y-2.5">
                 <label>Phone</label>

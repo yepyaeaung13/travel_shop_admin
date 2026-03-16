@@ -40,29 +40,7 @@ const inputFields = [
 
 const schema = z
   .object({
-    oldPassword: z
-      .string()
-      .min(1, "Old password is required")
-      .refine(
-        (val) => /[A-Z]/.test(val),
-        "Password must contain at least one uppercase letter",
-      )
-      .refine(
-        (val) => /[a-z]/.test(val),
-        "Password must contain at least one lowercase letter",
-      )
-      .refine(
-        (val) => /[0-9]/.test(val),
-        "Password must contain at least one number",
-      )
-      .refine(
-        (val) => /[^A-Za-z0-9]/.test(val),
-        "Password must contain at least one special character",
-      )
-      .refine(
-        (val) => val.length >= 8,
-        "Password must be at least 8 characters",
-      ),
+    oldPassword: z.string(),
     newPassword: z
       .string()
       .min(1, "New password is required")
@@ -154,11 +132,11 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
           onClose?.();
           resetForm();
         },
-        onError: (err: Error) => {
-          toast.error(err?.message || "Something went wrong!");
+        onError: (err: any) => {
+          toast.error(err?.response?.data?.message || "Something went wrong!");
           setConfirmModalOpen(false);
           onOpen?.();
-          console.error(err);
+          console.log(err);
         },
       },
     );

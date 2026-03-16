@@ -43,7 +43,7 @@ export function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
         <div className="flex flex-col items-center p-4 text-center">
           {/* Logout Icon */}
           <div className="relative mb-4 mt-8">
-            <div className="h-[100px] w-[100px] overflow-hidden rounded-full">
+            <div className="h-[100px] w-[100px] overflow-hidden">
               <Image
                 src={logoutImg}
                 alt="logout"

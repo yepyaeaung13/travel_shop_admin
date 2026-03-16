@@ -180,6 +180,7 @@ export default function VariantSection({
       return;
     }
     updateProductVariant(editProductVarint.indexNo, {
+      id: isEdit ? editProductVarint.id : undefined,
       name: editProductVarint.name,
       values: editProductVarint.values,
     });
@@ -251,7 +252,7 @@ export default function VariantSection({
     <>
       <Card className="gap-2">
         <CardHeader>
-          <CardTitle className="text-lg md:text-xl font-medium text-[#303030]">
+          <CardTitle className="text-lg md:text-xl font-medium">
             Variant
           </CardTitle>
         </CardHeader>
@@ -270,17 +271,14 @@ export default function VariantSection({
                 }}
                 className="hover:bg-gray-100 cursor-pointer border rounded-[10px] border-[#EEEEEE] p-5 flex flex-col gap-2.5"
               >
-                <label
-                  className="text-base md:text-lg font-normal text-[#303030]"
-                  htmlFor=""
-                >
+                <label className="text-base md:text-lg font-medium" htmlFor="">
                   {pv.name}
                 </label>
                 <div className="flex gap-1.5">
                   {pv.values.map((pvv) => (
                     <button
                       key={pvv}
-                      className="bg-primary text-white py-1 px-2.5 rounded-[4px]"
+                      className="bg-primary text-white py-1 px-2.5 rounded-[4px] text-sm"
                     >
                       {pvv}
                     </button>
@@ -347,7 +345,8 @@ export default function VariantSection({
                 <Input
                   className={cn(
                     "placeholder:md:text-base h-12 md:h-14 md:text-base rounded-[10px] font-normal text-[#303030]",
-                    tempProductError.name || showError && "border border-[#FF3333]",
+                    tempProductError.name ||
+                      (showError && "border border-[#FF3333]"),
                   )}
                   type="text"
                   placeholder="Type value and press Enter"
@@ -402,7 +401,7 @@ export default function VariantSection({
               }}
             >
               <DialogContent className="max-w-[600px] flex flex-col items-center justify-center gap-7 rounded-[10px]">
-                <div className="w-full max-h-[500px] p-5 flex flex-col gap-2.5 overflow-y-auto">
+                <div className="w-full max-h-[500px] flex flex-col gap-2.5 overflow-y-auto">
                   <label
                     className="text-sm md:text-base font-normal text-[#303030]"
                     htmlFor=""
@@ -444,7 +443,10 @@ export default function VariantSection({
                     </div>
                   ))}
                   <Input
-                    className={cn("placeholder:md:text-base h-12 md:min-h-14 md:text-base rounded-[10px] font-normal text-[#303030]", showError && "border border-[#FF3333]")}
+                    className={cn(
+                      "placeholder:md:text-base h-12 md:min-h-14 md:text-base rounded-[10px] font-normal text-[#303030]",
+                      showError && "border border-[#FF3333]",
+                    )}
                     type="text"
                     placeholder="Option values"
                     value={newEditValue}
@@ -530,27 +532,32 @@ export default function VariantSection({
 
                     if (productVarints.length === 1) {
                       return group.variantItems.map((item, itemIndex) => (
-                        <TableRow key={item.sku}>
-                          <TableCell className="pl-5 flex items-center gap-4 text-base md:text-lg font-normal text-[#303030]">
-                            <Switch
-                              checked={item.status === "active"}
-                              onCheckedChange={(checked) => {
-                                updateVariantItem(groupIndex, itemIndex, {
-                                  ...item,
-                                  status:
-                                    item.status === "active"
-                                      ? "inactive"
-                                      : "active",
-                                });
-                              }}
-                            />
-                            {item.name}
+                        <TableRow
+                          key={item.sku}
+                          className="border-b border-[#EEEEEE]"
+                        >
+                          <TableCell className="pl-5 text-base md:text-lg font-normal text-[#303030]">
+                            <div className="flex items-center gap-4">
+                              <Switch
+                                checked={item.status === "active"}
+                                onCheckedChange={(checked) => {
+                                  updateVariantItem(groupIndex, itemIndex, {
+                                    ...item,
+                                    status:
+                                      item.status === "active"
+                                        ? "inactive"
+                                        : "active",
+                                  });
+                                }}
+                              />
+                             <span> {item.name}</span>
+                            </div>
                           </TableCell>
 
-                          <TableCell>
+                          <TableCell className="py-5">
                             <Input
                               value={item.sellingPrice.toLocaleString()}
-                              className="h-8 w-44 md:w-60"
+                              className="h-8 md:h-10 w-44 md:w-60"
                               onChange={(e) => {
                                 const rawValue = e.target.value;
                                 const numericValue = rawValue.replace(
@@ -563,13 +570,15 @@ export default function VariantSection({
                                 });
                               }}
                             />
-                            <span className="text-[#3C3C3C] pl-2.5 max-sm:pr-5">Ks</span>
+                            <span className="text-[#3C3C3C] pl-2.5 max-sm:pr-5">
+                              Ks
+                            </span>
                           </TableCell>
 
                           <TableCell>
                             <Input
                               value={item.stock.toString()}
-                              className="h-8 w-20"
+                              className="h-8 md:h-10 w-20"
                               onChange={(e) => {
                                 const rawValue = e.target.value;
                                 const numericValue = rawValue.replace(
@@ -605,7 +614,12 @@ export default function VariantSection({
                     return (
                       <Fragment key={group.name}>
                         {/* GROUP ROW */}
-                        <TableRow className="bg-muted/40">
+                        <TableRow
+                          className={cn(
+                            !expanded[group.name] &&
+                              "border-b border-[#EEEEEE]",
+                          )}
+                        >
                           <TableCell className="pl-5 pt-3 pb-2 md:pt-5 md:pb-3.5 capitalize text-sm md:text-base font-normal text-[#3C3C3C]">
                             {group.name}
                             <button
@@ -664,80 +678,89 @@ export default function VariantSection({
 
                         {/* VARIANT ITEMS */}
                         {expanded[group.name] &&
-                          group.variantItems.map((item, itemIndex) => (
-                            <TableRow key={item.sku}>
-                              <TableCell className="pl-5 flex gap-4 text-sm md:text-base items-center pt-4 font-normal text-[#303030]">
-                                <Switch
-                                  checked={item.status === "active"}
-                                  onCheckedChange={(checked) => {
-                                    updateVariantItem(groupIndex, itemIndex, {
-                                      ...item,
-                                      status:
-                                        item.status === "active"
-                                          ? "inactive"
-                                          : "active",
-                                    });
-                                  }}
-                                />
-                                {item.name}
-                              </TableCell>
+                          group.variantItems.map((item, itemIndex) => {
+                            const isLast =
+                              itemIndex === group.variantItems.length - 1;
+                            return (
+                              <TableRow
+                                key={item.sku}
+                                className={cn(
+                                  isLast && "border-b border-[#EEEEEE]",
+                                )}
+                              >
+                                <TableCell className="pl-5 flex gap-4 text-sm md:text-base items-center pt-4 font-normal text-[#303030]">
+                                  <Switch
+                                    checked={item.status === "active"}
+                                    onCheckedChange={(checked) => {
+                                      updateVariantItem(groupIndex, itemIndex, {
+                                        ...item,
+                                        status:
+                                          item.status === "active"
+                                            ? "inactive"
+                                            : "active",
+                                      });
+                                    }}
+                                  />
+                                  {item.name}
+                                </TableCell>
 
-                              <TableCell>
-                                <Input
-                                  value={item.sellingPrice.toLocaleString()}
-                                  className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] w-44 md:w-60"
-                                  onChange={(e) => {
-                                    const rawValue = e.target.value;
-                                    const numericValue = rawValue.replace(
-                                      /[^0-9.]/g,
-                                      "",
-                                    );
-                                    updateVariantItem(groupIndex, itemIndex, {
-                                      ...item,
-                                      sellingPrice: Number(numericValue),
-                                    });
-                                  }}
-                                />
-                                <span className="text-[#3C3C3C] pl-2.5">
-                                  Ks
-                                </span>
-                              </TableCell>
+                                <TableCell>
+                                  <Input
+                                    value={item.sellingPrice.toLocaleString()}
+                                    className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] w-44 md:w-60"
+                                    onChange={(e) => {
+                                      const rawValue = e.target.value;
+                                      const numericValue = rawValue.replace(
+                                        /[^0-9.]/g,
+                                        "",
+                                      );
+                                      updateVariantItem(groupIndex, itemIndex, {
+                                        ...item,
+                                        sellingPrice: Number(numericValue),
+                                      });
+                                    }}
+                                  />
+                                  <span className="text-[#3C3C3C] pl-2.5">
+                                    Ks
+                                  </span>
+                                </TableCell>
 
-                              <TableCell>
-                                <Input
-                                  value={item.stock}
-                                  className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] w-36"
-                                  onChange={(e) => {
-                                    const rawValue = e.target.value;
-                                    const numericValue = rawValue.replace(
-                                      /[^0-9.]/g,
-                                      "",
-                                    );
-                                    updateVariantItem(groupIndex, itemIndex, {
-                                      ...item,
-                                      stock: Number(numericValue),
-                                    });
-                                  }}
-                                />
-                              </TableCell>
+                                <TableCell>
+                                  <Input
+                                    value={item.stock}
+                                    className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] w-36"
+                                    onChange={(e) => {
+                                      const rawValue = e.target.value;
+                                      const numericValue = rawValue.replace(
+                                        /[^0-9.]/g,
+                                        "",
+                                      );
+                                      updateVariantItem(groupIndex, itemIndex, {
+                                        ...item,
+                                        stock: Number(numericValue),
+                                      });
+                                    }}
+                                  />
+                                </TableCell>
 
-                              <TableCell>
-                                <button
-                                  type="button"
-                                  className=""
-                                  onClick={() =>
-                                    setSelectedVariant({
-                                      groupIndex,
-                                      itemIndex,
-                                      variantItem: item,
-                                    })
-                                  }
-                                >
-                                  <CircleChevronRight />
-                                </button>
-                              </TableCell>
-                            </TableRow>
-                          ))}
+                                <TableCell>
+                                  <button
+                                    type="button"
+                                    className=""
+                                    onClick={() =>
+                                      setSelectedVariant({
+                                        groupIndex,
+                                        itemIndex,
+                                        variantItem: item,
+                                      })
+                                    }
+                                  >
+                                    <CircleChevronRight />
+                                  </button>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
                       </Fragment>
                     );
                   })}
@@ -764,7 +787,7 @@ export default function VariantSection({
                 Price (MMK)
               </label>
               <Input
-                value={selectedVariant?.variantItem?.sellingPrice.toString()}
+                value={selectedVariant?.variantItem?.sellingPrice.toLocaleString()}
                 className="placeholder:md:text-base h-12 md:h-14 md:text-base rounded-[10px] font-normal text-[#303030]"
                 onChange={(e) => {
                   const rawValue = e.target.value;

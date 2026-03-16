@@ -20,7 +20,7 @@ const CustomerDashboard = () => {
         </>
       ) : (
         <>
-          <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between">
+          <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between shadow-[0px_2px_8px_0px_#0000001A]">
             <div className="space-y-[11px]">
               <h2 className="text-[#1E1E1E] text-[24px] md:text-[28px] font-medium md:font-semibold">
                 {dashbaordData?.data?.totalUsers?.toLocaleString()}
@@ -35,7 +35,7 @@ const CustomerDashboard = () => {
             </span>
           </div>
 
-          <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between">
+          <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between shadow-[0px_2px_8px_0px_#0000001A]">
             <div className="space-y-[11px]">
               <h2 className="text-[#1E1E1E] text-[24px] md:text-[28px] font-medium md:font-semibold">
                 {dashbaordData?.data?.newUsersLastMonth?.toLocaleString()}
@@ -53,7 +53,7 @@ const CustomerDashboard = () => {
             </span>
           </div>
 
-          <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between">
+          <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between shadow-[0px_2px_8px_0px_#0000001A]">
             <div className="space-y-[11px]">
               <h2 className="text-[#1E1E1E] text-[24px] md:text-[28px] font-medium md:font-semibold">
                 {dashbaordData?.data?.activeUsers?.toLocaleString()}
@@ -68,7 +68,7 @@ const CustomerDashboard = () => {
             </span>
           </div>
 
-          <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between">
+          <div className="rounded-[20px] py-5 px-6 bg-white flex justify-between shadow-[0px_2px_8px_0px_#0000001A]">
             <div className="space-y-[11px]">
               <h2 className="text-[#1E1E1E] text-[24px] md:text-[28px] font-medium md:font-semibold">
                 {dashbaordData?.data?.inactiveUsers?.toLocaleString()}

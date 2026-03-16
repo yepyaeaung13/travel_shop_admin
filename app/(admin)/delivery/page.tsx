@@ -599,7 +599,7 @@ const DeliveryPage = () => {
               <div className="w-full md:w-[340px] relative border border-[#A1A1A1] h-10 rounded-full">
                 <Search className="text-[#A1A1A1] size-6 absolute top-1/2 -translate-y-1/2 left-4" />
                 <Input
-                  placeholder="Search"
+                  placeholder="Search township"
                   value={searchDisctrict}
                   onChange={(e) => setsSearchDisctrict(e.target.value)}
                   className=" border-[#44444480] pl-12 h-10 rounded-full w-full md:w-[340px] md:text-lg md:placeholder:text-lg"

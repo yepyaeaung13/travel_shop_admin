@@ -135,7 +135,7 @@ export default function ProductTable({
     <Table className="table-fixed md:table-auto">
       <TableHeader className="bg-[#4444441A]">
         <TableRow className="md:text-lg">
-          <TableHead className="w-10 pl-5 md:w-10 md:pl-6 text-base md:text-lg py-2 md:py-4">
+          <TableHead className="w-10 pl-5 md:w-10 md:pl-6 text-base md:text-lg">
             <Checkbox
               checked={isAllSelected}
               onCheckedChange={handleSelectAll as (checked: boolean) => void}
@@ -254,10 +254,10 @@ export default function ProductTable({
                   <div className="flex flex-col items-center">
                     {product?.promoteValue != 0 && (
                       <p className="text-sm text-[#929292] line-through">
-                        {calculateOriginalPrice(product)?.toLocaleString()} ks
+                        {calculateOriginalPrice(product)?.toLocaleString()} Ks
                       </p>
                     )}
-                    <p>{calculatePromotePrice(product)?.toLocaleString()} ks</p>
+                    <p>{calculatePromotePrice(product)?.toLocaleString()} Ks</p>
                   </div>
                 </TableCell>
                 <TableCell>

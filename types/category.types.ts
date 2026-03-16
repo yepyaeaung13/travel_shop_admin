@@ -17,6 +17,7 @@ export type UpdateSubCategory = {
   id?: number;
   name: string;
   image: string;
+  imageCid?: string;
   file?: File;
 };
 

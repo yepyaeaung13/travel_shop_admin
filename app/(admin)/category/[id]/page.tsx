@@ -93,6 +93,7 @@ function EditCategory() {
         name: sub.name || "",
         image:
           `${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${sub.image}` || "",
+        imageCid: sub.image,
       })) ?? [];
 
     setSubCategories(apiSubCategories);
@@ -184,7 +185,7 @@ function EditCategory() {
 
           return {
             ...cat,
-            image: uploadedImage?.data?.cid || cat.image,
+            image: uploadedImage?.data?.cid || cat.imageCid as string,
           };
         }),
       );

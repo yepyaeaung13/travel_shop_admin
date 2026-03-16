@@ -15,6 +15,7 @@ import { User } from "@/types/users.types";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import IconLoading from "@/components/Loading";
+import IconNoFound from "@/assets/icons/NoFound";
 
 interface Props {
   table: ReactTable<User>;
@@ -80,7 +81,12 @@ const TableWrapper = ({ table, columns, loading }: Props) => {
           ) : !loading ? (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-80 text-center">
-                No results found.
+                <div className="flex w-full flex-col items-center justify-center gap-5 pb-16 pt-24">
+                  <IconNoFound className="h-[114px] w-[200px] md:h-[170px] md:w-[300px]" />
+                  <span className="text-xl font-medium text-[#444444]">
+                    No result found
+                  </span>
+                </div>
               </TableCell>
             </TableRow>
           ) : null}

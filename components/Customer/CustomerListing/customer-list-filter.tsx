@@ -23,7 +23,7 @@ const CustomerListFilters = ({
           title="Search customer name or email"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="h-auto rounded-[20px] pb-2 pl-10 pt-2.5 text-lg font-medium text-[#A1A1A1]"
+          className="h-auto rounded-[20px] pb-2 pl-10 pt-2.5 text-lg font-medium placeholder:text-[#A1A1A1]"
         />
       </div>
     </div>

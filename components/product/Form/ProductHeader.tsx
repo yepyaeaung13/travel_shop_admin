@@ -22,7 +22,7 @@ export default function ProductHeader({
             onClick={() => setOpenConfirmDlg(true)}
             asChild
             variant="ghost"
-            className="flex items-center"
+            className="flex items-center hover:text-[#616ff5]"
           >
             <p className="flex items-center text-xl font-medium">
               <ChevronLeft className="size-6 -ml-3" /> {title}

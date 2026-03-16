@@ -135,10 +135,10 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
               Personal Information
             </h4>
             <div className="space-y-4">
-               {["name", "phone", "email"].map((field) => (
+               {["name", "email", "phone"].map((field) => (
               <div key={field} className="flex flex-col space-y-1">
                 <label className="text-sm font-normal capitalize text-[#303030] md:text-lg">
-                  {field === "phone" ? "Phone Number" : field}
+                  {field === "phone" ? "Phone Number" : field} { field !== "phone" && <span className="text-red-500">*</span>}
                 </label>
                 <input
                   className={

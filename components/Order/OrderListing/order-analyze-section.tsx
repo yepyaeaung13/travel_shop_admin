@@ -58,7 +58,7 @@ const OrderAnalyzeSection = () => {
     <div className="relative overflow-visible">
       <div
         ref={scrollbarRef}
-        className="hide-scrollbar grid grid-cols-2 gap-x-5 gap-y-2.5 md:flex md:w-full md:gap-2.5 md:overflow-x-scroll min-w-screen pr-44"
+        className="hide-scrollbar grid grid-cols-2 gap-x-5 gap-y-2.5 md:flex md:w-full md:gap-2.5 md:overflow-x-scroll w-full md:min-w-screen md:pr-44 pb-1.5"
       >
         {/* Left Arrow */}
         {canScrollLeft && (
@@ -137,9 +137,9 @@ const OrderCard = ({
   label: string;
 }) => {
   return (
-    <div className="md:min-w-52 flex w-full flex-col space-y-5 rounded-[10px] bg-white p-2.5 md:w-52 md:space-y-0.5 md:rounded-[20px] md:p-5">
+    <div className="md:min-w-52 flex w-full flex-col space-y-5 rounded-[10px] bg-white p-2.5 md:w-52 md:space-y-0.5 md:rounded-[20px] md:p-5 shadow-[0px_2px_8px_0px_#0000001A]">
       <div className="flex justify-between">
-        <p className="text-2xl font-medium md:text-[28px] md:font-semibold">
+        <p className="text-2xl font-medium md:text-[28px] md:font-semibold text-[#1E1E1E]">
           {number}
         </p>
         <div className="size-9 md:size-11 shadow-xs flex items-center justify-center rounded-[12px] bg-white">
