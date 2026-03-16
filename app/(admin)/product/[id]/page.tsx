@@ -175,7 +175,7 @@ function ProductCreatePage() {
     setSelectedCategory(selectedCat);
     setSelectedSubCategory(selectedSubCat);
     setInitialData(updateData);
-  }, [product?.data, setInitialData]);
+  }, [product, categories]);
 
   useEffect(() => {
     return () => reset();
