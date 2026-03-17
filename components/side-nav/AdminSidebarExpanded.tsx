@@ -19,6 +19,7 @@ import { useNavStore } from "@/store/useNavStore";
 import { successToast } from "../toast";
 import IconDelivery from "@/assets/icons/sidebar/Delivery";
 import { User, UserRoundPen } from "lucide-react";
+import IconUser from "@/assets/icons/sidebar/User";
 
 export const sidebarItems = [
   { icon: IconProduct, label: "Product management", path: "/product" },
@@ -54,12 +55,12 @@ export const sidebarItems = [
   },
   {
     icon: IconSetting,
-    label: "Store Front",
+    label: "Storefront Settings",
     path: "/store-front",
   },
   {
-    icon: User,
-    label: "Setting",
+    icon: IconUser,
+    label: "Account Settings",
     path: "/settings",
   },
   // { icon: IconInquiry, label: "Inquiry management", path: "/inquiries" },

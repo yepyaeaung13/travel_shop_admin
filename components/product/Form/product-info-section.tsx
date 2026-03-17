@@ -88,7 +88,7 @@ export default function ProductInfoSection({
 
         <div className="flex flex-col gap-2">
           <label className="text-base md:text-lg font-normal text-[#303030]">
-            Category <span className="text-red-500">*</span>
+            Main category <span className="text-red-500">*</span>
           </label>
           <Select
             value={selectedCategory?.id?.toString()}
@@ -122,7 +122,7 @@ export default function ProductInfoSection({
 
         <div className="flex flex-col gap-2">
           <label className="text-base md:text-lg font-normal text-[#303030]">
-            Sub Category
+            Sub-category <span className="text-red-500">*</span>
           </label>
           <Select
             value={selectedSubCategory?.id?.toString()}

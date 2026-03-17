@@ -444,7 +444,7 @@ function EditCategory() {
                       htmlFor="has-subcategory"
                       className="cursor-pointer text-base font-medium md:text-lg"
                     >
-                      Add sub-category <span className="text-[#FF3333]">*</span>
+                      Add sub-category
                       <span className="md:text-xs">(Maximun 10)</span>
                     </Label>
                   </div>

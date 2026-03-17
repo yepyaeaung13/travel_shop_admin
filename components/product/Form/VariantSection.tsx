@@ -518,15 +518,18 @@ export default function VariantSection({
               <Table>
                 <TableHeader>
                   <TableRow className="bg-[#EEEEEE]">
-                    <TableHead className="text-base md:text-lg font-medium py-2 md:py-4 text-[#303030] pl-5">
+                    <TableHead className="text-base md:text-lg font-medium py-2 md:py-4 text-[#303030] pl-5 min-w-48 md:min-w-52">
                       Variants
                     </TableHead>
                     {/* <TableHead>Buying price</TableHead> */}
                     <TableHead className="text-base md:text-lg font-medium py-2 md:py-4 text-[#303030] ">
                       Price
                     </TableHead>
-                    <TableHead className="text-base md:text-lg font-medium py-2 md:py-4 text-[#303030] ">
+                    <TableHead className="text-base md:text-lg font-medium py-2 md:py-4 text-[#303030] min-w-28">
                       Stock
+                    </TableHead>
+                    <TableHead className="min-w-10">
+
                     </TableHead>
                     <TableHead />
                   </TableRow>
@@ -563,7 +566,7 @@ export default function VariantSection({
                           <TableCell className="py-5">
                             <Input
                               value={item.sellingPrice.toLocaleString()}
-                              className="h-8 md:h-10 w-44 md:w-60"
+                              className="h-8 md:h-10 w-44 md:w-52"
                               onChange={(e) => {
                                 const rawValue = e.target.value;
                                 const numericValue = rawValue.replace(
@@ -646,7 +649,7 @@ export default function VariantSection({
                             className="text-sm text-muted-foreground pt-3 pb-2 md:pt-5 md:pb-3.5"
                           >
                             <Input
-                              className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] w-44 md:w-60"
+                              className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] w-44 md:w-52"
                               value={min === max ? min.toLocaleString() : ""}
                               placeholder={
                                 min === max
@@ -677,7 +680,7 @@ export default function VariantSection({
                                 0,
                               )}
                               onChange={() => {}}
-                              className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] w-36 pointer-events-none"
+                              className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] w-24 pointer-events-none"
                             />
                           </TableCell>
                         </TableRow>
@@ -713,7 +716,7 @@ export default function VariantSection({
                                 <TableCell>
                                   <Input
                                     value={item.sellingPrice.toLocaleString()}
-                                    className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] w-44 md:w-60"
+                                    className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] w-44 md:w-52"
                                     onChange={(e) => {
                                       const rawValue = e.target.value;
                                       const numericValue = rawValue.replace(
@@ -734,7 +737,7 @@ export default function VariantSection({
                                 <TableCell>
                                   <Input
                                     value={item.stock}
-                                    className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] w-36"
+                                    className="h-8 md:h-10 md:text-base md:placeholder:text-base font-normal text-[#303030]/80 rounded-[10px] w-24"
                                     onChange={(e) => {
                                       const rawValue = e.target.value;
                                       const numericValue = rawValue.replace(

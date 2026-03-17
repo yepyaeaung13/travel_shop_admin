@@ -263,7 +263,7 @@ export default function CreateCategory() {
                       htmlFor="has-subcategory"
                       className="cursor-pointer text-lg md:text-xl font-medium text-black"
                     >
-                      Add sub-category <span className="text-[#FF3333]">*</span>
+                      Add sub-category
                     </Label>
                   </div>
 

@@ -23,7 +23,7 @@ export default function CustomerInfoCard({ customer }: CustomerInfoCardProps) {
   );
 
   return (
-    <div className="flex flex-col justify-center rounded-[20px] bg-white py-4 text-base text-black font-medium md:flex-row md:justify-start gap-3 md:gap-14 p-4 md:p-10">
+    <div className="flex flex-col justify-center rounded-[20px] bg-white py-4 text-base text-black font-medium md:flex-row md:justify-start gap-3 md:gap-6 p-4 md:p-10">
       <div className="flex flex-col items-center justify-center gap-5 md:flex-row">
         <Avatar className="h-28 w-28">
           <AvatarImage
@@ -39,14 +39,14 @@ export default function CustomerInfoCard({ customer }: CustomerInfoCardProps) {
           </AvatarFallback>
         </Avatar>
         <div className="flex flex-col justify-center gap-y-1 md:items-start">
-          <p className="text-lg font-medium min-w-[152px]">{customer?.name}</p>
-          <span className="text-sm text-[#3C3C3C]">
+          <p className="text-lg font-medium min-w-[152px] max-sm:text-center">{customer?.name}</p>
+          <span className="text-sm text-[#3C3C3C] max-sm:text-center">
             #{customer?.id.toString().padStart(4, "0")}
           </span>
         </div>
       </div>
 
-      <div className="flex h-full w-full flex-col justify-between space-y-2 md:w-[449px] md:border-x md:border-[#EEEEEE]">
+      <div className="flex h-full w-full flex-col justify-between space-y-2 md:w-[449px] md:border-x md:border-[#EEEEEE] md:px-6">
         <div className="flex items-start justify-between">
           <span className="text-[#303030] text-lg font-medium">
             Phone Number
