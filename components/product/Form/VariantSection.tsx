@@ -118,6 +118,8 @@ export default function VariantSection({
       name: editProductVarint.name,
       values: updateValues,
       indexNo: editProductVarint.indexNo,
+      id: isEdit ? editProductVarint.id : undefined,
+      order: isEdit ? editProductVarint.order : editProductVarint.indexNo + 1,
     });
   };
 
@@ -168,7 +170,10 @@ export default function VariantSection({
       });
       return;
     }
-    addProductVariant(tempProductVarint);
+    addProductVariant({
+      ...tempProductVarint,
+      order: productVarints.length + 1,
+    });
     setTempProductVarint({ name: "", values: [] });
     setNewValue("");
     setShowNew(false);
@@ -182,6 +187,7 @@ export default function VariantSection({
     updateProductVariant(editProductVarint.indexNo, {
       id: isEdit ? editProductVarint.id : undefined,
       name: editProductVarint.name,
+      order: isEdit ? editProductVarint.order : editProductVarint.indexNo + 1,
       values: editProductVarint.values,
     });
     setEditProductVarint({ name: "", values: [], indexNo: 0 });
@@ -550,7 +556,7 @@ export default function VariantSection({
                                   });
                                 }}
                               />
-                             <span> {item.name}</span>
+                              <span> {item.name}</span>
                             </div>
                           </TableCell>
 

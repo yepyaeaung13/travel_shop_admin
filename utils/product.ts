@@ -6,9 +6,10 @@ import {
 } from "@/store/useProductStore";
 
 export function mapProductToStore(product: any): Partial<CreateProductState> {
-  const TOpts = product.variantOptions.map((opt: any) => ({
+  const TOpts = product.variantOptions.map((opt: any, index: number) => ({
     id: opt.id,
     name: opt.name,
+    order: opt.order ?? index + 1,
     values: opt.values.split(","),
   }));
   return {

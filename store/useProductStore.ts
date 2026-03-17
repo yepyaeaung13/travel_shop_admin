@@ -30,6 +30,7 @@ export type VariantItem = {
 
 export type ProductVariant = {
   id?: number;
+  order?: number;
   name: string;
   values: string[];
 };
