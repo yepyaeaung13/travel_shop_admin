@@ -93,15 +93,15 @@ const WalletItem = ({ type, wallet, handlePublishStatus }: Props) => {
   };
 
   return (
-    <div className="flex flex-col w-full rounded-[10px] bg-white space-y-4">
-      <div className="flex justify-between pl-5">
+    <div className="flex flex-col w-full rounded-[10px] bg-white">
+      <div className="flex justify-between pl-5 h-full">
         <div className="flex items-center gap-4 py-5">
           <Image
             src={`${process.env.NEXT_PUBLIC_FILEBASE_GATEWAY_PATH}/${wallet?.image}`}
             alt="kpay"
             width={50}
             height={50}
-            className="size-10 md:size-[50px] rounded-[10px]"
+            className="size-10 md:w-[50px] md:h-[50px] rounded-[10px] object-contain"
           />
           <p className="text-base md:text-lg font-medium text-[#303030]">
             {wallet.name}
@@ -132,7 +132,7 @@ const WalletItem = ({ type, wallet, handlePublishStatus }: Props) => {
         </div>
       </div>
       {openDropdown && (
-        <div className="px-5 pb-5 flex flex-col md:flex-row md:items-start md:justify-between gap-2.5 md:gap-5">
+        <div className="p-5 flex flex-col md:flex-row md:items-start md:justify-between gap-2.5 md:gap-5">
           {type === "pay" && (
             <>
               {QRImage ? (

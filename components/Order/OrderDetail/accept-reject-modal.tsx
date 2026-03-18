@@ -14,6 +14,7 @@ interface ModalProps {
   onClose: () => void;
   onClick: (value: string) => void;
   variant: "Reject" | "Accept";
+  loading: boolean;
 }
 
 const AcceptRejectModal = ({
@@ -21,6 +22,7 @@ const AcceptRejectModal = ({
   onClose,
   onClick,
   variant,
+  loading,
 }: ModalProps) => {
   const [editNotes, setEditNotes] = useState("");
   return (
@@ -76,6 +78,7 @@ const AcceptRejectModal = ({
           {/* Action buttons */}
           <div className="flex w-full gap-3">
             <Button
+              disabled={loading}
               onClick={onClose}
               variant="secondary"
               className="flex-1 cursor-pointer rounded-[10px] border-0 bg-gray-400 py-3 font-medium text-white hover:bg-gray-500"
@@ -83,6 +86,7 @@ const AcceptRejectModal = ({
               Cancel
             </Button>
             <Button
+              disabled={loading}
               onClick={() => onClick(editNotes)}
               className={cn(
                 "flex-1 cursor-pointer rounded-[10px] border-0  py-3 font-medium text-white",
@@ -91,7 +95,11 @@ const AcceptRejectModal = ({
                   : "bg-red-500 hover:bg-red-600",
               )}
             >
-              {variant === "Accept" ? "Accept" : "Reject"}
+              {loading
+                ? "Processing..."
+                : variant === "Accept"
+                  ? "Accept"
+                  : "Reject"}
             </Button>
           </div>
         </div>

@@ -71,7 +71,7 @@ export default function PhotoSection({
       key={image.url}
       className={cn(
         "group relative",
-        isMain ? "h-48 w-full md:w-40" : "size-36 md:size-32",
+        isMain ? "h-[241px] md:h-48 w-full md:w-40" : "size-36 md:size-32",
       )}
     >
       {isMain ? (
@@ -79,7 +79,7 @@ export default function PhotoSection({
           <img
             src={image.url || "/placeholder.svg"}
             alt="Product"
-            className="h-full w-full object-cover rounded-[20px]"
+            className="h-[241px] md:h-full w-full object-cover rounded-[20px]"
           />
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-[20px] flex items-center justify-center">
             <span className="text-white text-sm">Click to change</span>
@@ -129,7 +129,7 @@ export default function PhotoSection({
       </CardHeader>
 
       <CardContent>
-        <div className="flex flex-col gap-6 md:flex-row">
+        <div className="flex flex-col gap-6 md:flex-row gap-5">
           {/* MAIN SLOT (index 0) */}
           <div className="space-y-2">
             <div className="text-base md:text-lg font-normal text-[#303030]">
@@ -142,7 +142,7 @@ export default function PhotoSection({
           </div>
 
           {/* OTHER 4 SLOTS (index 1–4) */}
-          <div className="flex-1 space-y-2">
+          <div className="space-y-2">
             <div className="text-base md:text-lg font-normal text-[#303030]/50">
               Photos <span className="">(max 5 photos)</span>
             </div>

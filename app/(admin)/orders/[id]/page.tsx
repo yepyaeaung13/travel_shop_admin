@@ -153,6 +153,7 @@ const OrderDetails = () => {
         onClick={handlePaymentStatus}
         onClose={handleCloseModal}
         variant={modalVariant}
+        loading={isPending}
       />
     </div>
   );

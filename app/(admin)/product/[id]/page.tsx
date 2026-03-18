@@ -323,6 +323,30 @@ function ProductCreatePage() {
             />
           )}
         </div>
+
+        <div className="md:hidden flex justify-center gap-4 mt-5">
+          <Button
+            type="button"
+            onClick={() => setDiscardModalOpen(true)}
+            disabled={loading || isPending || disabled}
+            className={cn(
+              "h-10 max-md:flex-1 md:h-12 w-full rounded-[10px] bg-[#A1A1A1] py-1.5 text-base font-medium text-white duration-300 hover:bg-[#444444] active:scale-95 md:w-[215px] md:text-lg",
+            )}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            onClick={handleSubmit}
+            disabled={loading || isPending || disabled}
+            className={cn(
+              "bg-primary max-md:flex-1 h-10 md:h-12 w-full rounded-[10px] py-1.5 text-base font-medium text-white duration-300 active:scale-95 md:w-[215px] md:text-lg",
+              disabled && "bg-primary/50",
+            )}
+          >
+            {isPending ? "Saving..." : "Save"}
+          </Button>
+        </div>
       </form>
 
       {/* Delete Dialog */}

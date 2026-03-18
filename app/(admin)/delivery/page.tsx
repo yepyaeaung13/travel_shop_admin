@@ -900,7 +900,7 @@ const DeliveryPage = () => {
 
                                     <td className="text-center pt-3 pb-3">
                                       <div className="flex justify-center">
-                                        <div className="w-[242px] h-10 rounded-[8px] border border-[#3C3C3C]/30 relative">
+                                        <div className="w-[242px] h-12 rounded-[8px] border border-[#3C3C3C]/30 relative">
                                           <Input
                                             value={ts.fee}
                                             onChange={(e) => {
@@ -912,7 +912,7 @@ const DeliveryPage = () => {
                                               );
                                               setDisabled(false);
                                             }}
-                                            className="pl-4 pr-10 h-10 rounded-[8px]"
+                                            className="pl-4 pr-10 h-12 rounded-[8px]"
                                           />
                                           <span className="absolute top-1/2 -translate-y-1/2 right-4 text-sm">
                                             Ks
