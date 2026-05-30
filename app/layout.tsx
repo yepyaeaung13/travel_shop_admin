@@ -12,6 +12,9 @@ const beVietnamPro = Be_Vietnam_Pro({
 
 export const metadata: Metadata = {
   title: "Travel Shop Admin",
+  icons: {
+    icon: "/logo-white.svg"
+  },
   description: "Travel Shop Admin website",
 };
 

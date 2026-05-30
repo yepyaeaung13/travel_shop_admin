@@ -135,20 +135,20 @@ export default function AdminTopbar() {
               />
             </PopoverContent>
           </Popover>
-          {loginInfo?.picture ? (
+          {/* {loginInfo?.picture ? ( */}
             <Avatar>
               <AvatarImage
-                src={loginInfo.picture}
+                src={"/logo.png"}
                 alt="Profile"
                 width={40}
                 height={40}
-                className="size-10 rounded-full border"
+                className="rounded-full object-cover object-top"
               ></AvatarImage>
               <AvatarFallback>A</AvatarFallback>
             </Avatar>
-          ) : (
+          {/* ) : (
             <button className="size-10 bg-gray-300 rounded-full"></button>
-          )}
+          )} */}
 
           <div className="flex flex-col pl-2.5 max-md:hidden">
             <p className="text-lg font-normal">{loginInfo?.name}</p>

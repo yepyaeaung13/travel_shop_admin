@@ -33,14 +33,14 @@ const UserInfo = () => {
               <div className="size-[100px] md:size-[200px] relative z-0">
                 <Avatar className="w-full h-full border border-border">
                   <AvatarImage
-                    src={loginInfo?.picture || ""}
+                    src={"/logo.png"}
                     alt={loginInfo?.name}
                   />
                   <AvatarFallback>{loginInfo?.name.slice(0, 2)}</AvatarFallback>
                 </Avatar>
-                <button className="absolute z-10 bottom-0 right-2.5 cursor-pointer">
+                {/* <button className="absolute z-10 bottom-0 right-2.5 cursor-pointer">
                   <CameraIcon className="size-10" />
-                </button>
+                </button> */}
               </div>
 
               <div className="hidden md:block">
