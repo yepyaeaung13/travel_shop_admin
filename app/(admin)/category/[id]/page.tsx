@@ -41,6 +41,7 @@ function EditCategory() {
   const router = useRouter();
   const { id } = useParams();
   const [discardModalOpen, setDiscardModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const { mutate: updateCategory, isPending: isSaving } = useUpdateCategory();
   const {
@@ -164,6 +165,7 @@ function EditCategory() {
 
   // --- CREATE CATEGORY FORM ---
   const handleSubmit = async () => {
+    setLoading(true);
     let uploadedImage;
     let uploaddedBanner;
     if (image.file) {
@@ -205,15 +207,16 @@ function EditCategory() {
     updateCategory(payload, {
       onSuccess: async (res) => {
         successToast("Success", "Main Category updated!");
+        setLoading(false);
         router.back();
       },
     });
   };
 
   const handleImageChange = (file: File) => {
-    const MAX_SIZE = 512 * 1024;
+    const MAX_SIZE = 5120 * 1024;
     if (file.size > MAX_SIZE) {
-      errorToast("Image too large", "Image must be under 512 KB");
+      errorToast("Image too large", "Image must be under 5 MB");
       return;
     }
     const preview = URL.createObjectURL(file);
@@ -221,9 +224,9 @@ function EditCategory() {
   };
 
   const handleBannerImageChange = (file: File) => {
-    const MAX_SIZE = 1024 * 1024;
+    const MAX_SIZE = 5120 * 1024;
     if (file.size > MAX_SIZE) {
-      errorToast("Image too large", "Image must be under 1 MB");
+      errorToast("Image too large", "Image must be under 5 MB");
       return;
     }
     const preview = URL.createObjectURL(file);
@@ -308,7 +311,7 @@ function EditCategory() {
     bannerImage,
   ]);
 
-  if (isSaving || isLoading) {
+  if (isSaving || isLoading || loading) {
     const loadingText = isLoading ? "Loading...." : "Updating category...";
     return <FullLoading label={loadingText} />;
   }
@@ -368,13 +371,13 @@ function EditCategory() {
           <Button
             type="button"
             onClick={handleSubmit}
-            disabled={isSaving || disabled}
+            disabled={isSaving || disabled || loading}
             className={cn(
               "bg-primary h-auto w-[135px] rounded-[10px] py-1.5 text-base font-medium text-white duration-300 active:scale-95 md:w-[135px] md:text-lg",
               disabled && "bg-primary/50",
             )}
           >
-            {isSaving ? "Saving..." : "Save"}
+            {isSaving || loading ? "Saving..." : "Save"}
           </Button>
         </div>
       </div>

@@ -48,9 +48,9 @@ export default function UpdateSubCategoryItem({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const MAX_SIZE = 512 * 1024;
+    const MAX_SIZE = 5120 * 1024;
     if (file.size > MAX_SIZE) {
-      errorToast("Image too large", "Image must be under 512 KB");
+      errorToast("Image too large", "Image must be under 5 MB");
       e.target.value = "";
       return;
     }

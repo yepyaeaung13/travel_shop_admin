@@ -23,7 +23,7 @@ interface EditProfileModalProps {
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().min(1, "Email is required").email("Invalid email address"),
-  phone: z.string().min(1, "Phone Number is required"),
+  phone: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof schema>;

@@ -134,9 +134,9 @@ export default function CreateCategory() {
   };
 
   const handleImageChange = (file: File) => {
-    const MAX_SIZE = 1024 * 1024;
+    const MAX_SIZE = 5120 * 1024;
     if (file.size > MAX_SIZE) {
-      errorToast("Image too large", "Image must be under 1MB");
+      errorToast("Image too large", "Image must be under 5 MB");
       return;
     }
     const preview = URL.createObjectURL(file);
@@ -144,9 +144,9 @@ export default function CreateCategory() {
   };
 
   const handleBannerImageChange = (file: File) => {
-    const MAX_SIZE = 1024 * 1024;
+    const MAX_SIZE = 5120 * 1024;
     if (file.size > MAX_SIZE) {
-      errorToast("Image too large", "Image must be under 1 MB");
+      errorToast("Image too large", "Image must be under 5 MB");
       return;
     }
     const preview = URL.createObjectURL(file);
