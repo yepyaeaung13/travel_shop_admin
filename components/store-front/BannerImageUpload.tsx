@@ -64,7 +64,7 @@ const BannerImageUpload = ({
 
       video.onloadedmetadata = () => {
         window.URL.revokeObjectURL(video.src);
-        if (video.duration > 5) {
+        if (video.duration > 10) {
           setShowVideoErrorDialog(true);
         } else {
           const videoUrl = URL.createObjectURL(file);
