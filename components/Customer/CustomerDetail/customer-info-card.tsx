@@ -57,10 +57,7 @@ export default function CustomerInfoCard({ customer }: CustomerInfoCardProps) {
           <span className="text-[#303030] text-lg font-medium">Email</span>
           <p>{customer?.email}</p>
         </div>
-        <div className="flex items-start justify-between">
-          <span className="text-[#303030] text-lg font-medium">Gender</span>
-          <p>{customer?.gender || "_"}</p>
-        </div>
+       
         <div className="flex items-start justify-between">
           <span className="text-[#303030] text-lg font-medium">Status</span>
           <span
